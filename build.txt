@@ -1,0 +1,9 @@
+author = Plexus
+version = 0.06
+displayName = Another RPG Mod
+homepage = https://forums.terraria.org/index.php?threads/another-rpg-mod.67218/
+hideCode = false
+hideResources = false
+includeSource = true
+buildIgnore = *.csproj, *.user, obj\*, bin\*, .vs\*
+includePDB = true

@@ -1,0 +1,45 @@
+Yet another RPG mod ! 
+
+Started it one day ago so don't expect much 
+Basic XP and level up 
+Gain hp, mana , and damage as you level up 
+
+Webpage link to discord since I still dont have terraria forum post for now
+
+
+Changelog : 
+0.6 -
+Tried to balance a bit the expert mode ( roughly halved Ennemy level and reduced boss level)
+Each time you kill a new boss, weakest ennemy will gain level , also when you enter hardmode (not tested)
+Healing item will heal more than displayed (will have to find a fix later on) based on your Health per Heart
+Added Stats windows where you can Attribute your stats to differents stats, actuals stats are : 
+Vit (Vitality) : Increase Health and Slighty Armor
+Foc (Focus) : Increase mana and Slighty Summon Damage
+Con (Constitution) : Increase Armor and Slighty Health
+Str (Strength) : Increase Melee damage and Slighty Throw Damage
+Agi (Agility) : Increase Ranged Damage and Slighty Melee Damage
+Dex (Dexterity) : Increase Trow Damage and Slighty Ranged Damage
+Int (Intelect) : Increase Ranged Damage and Slighty Melee Damage
+Spr (Spirit) : Increase Trow Damage and Slighty Ranged Damage
+
+Added a reset command "/reset" to reset your stat attribution, free, unlimited use, don't get used to it, gonna be costy later ^^
+Slight improvement to HealthBar
+Bring back old hud along with actual one so buff are displayed
+
+
+0.4 - 
+Initial Launch
+
+
+Todo List : 
+Display more Ennemy Info
+balance this stuff (especialy for boss , nothing is balanced for now)
+CleanupCode & Multiplayer compatibility
+
+Longterm : 
+Having the possibilities to disable each component of mod via config file
+Allowing Weapon level and upgrade (more you use a weapon , the more it gain strength)
+NewGame + ? 
+
+
+Ty to Kalciphoz & Infera for makign their mod opensource so people can learn from it ^^
