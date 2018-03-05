@@ -8,10 +8,21 @@ When you kill a new boss for the first time , ennemies become more powerfull (on
 
 
 
-Webpage link to discord since I still dont have terraria forum post for now
+Join Discord : https://discord.gg/UQueeQE ! (link also on webpage)
 
 
 Changelog : 
+
+0.7.2 -
+Stats menu Tweak : 
+Added Increase when hovering Upgrade button
+Right click will add 5 stats
+Middle Click will add 25 stats
+Aligned texts
+Added Reset Button
+
+0.7.1 - 
+Don't erase other mods' rename (like prefixe or afixe)
 
 0.7 -
 Multiplayer support 

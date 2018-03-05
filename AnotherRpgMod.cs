@@ -96,7 +96,12 @@ namespace AnotherRpgMod
                         npc.life = npc.lifeMax;
                         npc.damage = Mathf.FloorInt(npc.damage * (1 + level * 0.05f + tier * 0.08f));
                         npc.defense = Mathf.FloorInt(npc.defense * (1 + level * 0.01f + tier * 0.025f));
-                        npc.GivenName = ("Lvl. " + (level + tier) + " " + npc.TypeName);
+                        if (npc.GivenName == "")
+                        {
+                            npc.GivenName = ("Lvl. " + (level + tier) + " " + npc.TypeName);
+                        }
+                        else 
+                        npc.GivenName = ("Lvl. " + (level + tier) + " " + npc.GivenName);
                     }
                     break;
             }

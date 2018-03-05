@@ -262,7 +262,7 @@ namespace AnotherRpgMod.RPGModule
             {
 
 
-                //exp = ReduceExp(exp, _level);
+                exp = ReduceExp(exp, _level);
 
 
 

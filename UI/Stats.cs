@@ -49,9 +49,12 @@ namespace AnotherRpgMod.UI
     }
     class Stats : UIState
     {
+        public static Stats Instance;
         public UIPanel statsPanel;
         private RPGPlayer Char;
         public static bool visible = false;
+
+        
 
         private int Amount = 1;
 
@@ -62,22 +65,34 @@ namespace AnotherRpgMod.UI
 
         private UIText[] UpgradeStatText = new UIText[8];
         private UIText[] UpgradeStatDetails = new UIText[8];
+        private UIText[] UpgradeStatOver = new UIText[8];
         private UIText PointsLeft = new UIText("");
 
+        UIText ResetText;
+
         private float baseYOffset = 100;
-        private float baseXOffset = 100;
+        private float baseXOffset = 50;
         private float YOffset = 35;
-        private float XOffset = 100;
+        private float XOffset = 120;
+
+        private void ResetTextHover(UIMouseEvent evt, UIElement listeningElement)
+        {
+            ResetText.TextColor = Color.White;
+        }
+        private void ResetTextOut(UIMouseEvent evt, UIElement listeningElement)
+        {
+            ResetText.TextColor = Color.LightGray;
+        }
 
         public override void OnInitialize()
         {
 
-           
+            Instance = this;
             statsPanel = new UIPanel();
             statsPanel.SetPadding(0);
             statsPanel.Left.Set(400f, 0f);
             statsPanel.Top.Set(100f, 0f);
-            statsPanel.Width.Set(800, 0f);
+            statsPanel.Width.Set(900, 0f);
             statsPanel.Height.Set(400, 0f);
             statsPanel.BackgroundColor = new Color(73, 94, 171);
 
@@ -87,50 +102,173 @@ namespace AnotherRpgMod.UI
             PointsLeft = new UIText("Points : 0 / 0");
             PointsLeft.Left.Set(250, 0f);
             PointsLeft.Top.Set(20, 0f);
-            PointsLeft.Width.Set(22, 0f);
-            PointsLeft.Height.Set(22, 0f);
+            PointsLeft.Width.Set(0, 0f);
+            PointsLeft.Height.Set(0, 0f);
             statsPanel.Append(PointsLeft);
+
+            
+            
+            ResetText = new UIText("RESET", 1, true)
+            {
+                TextColor = Color.LightGray
+            };
+            ResetText.Left.Set(50, 0f);
+            ResetText.Top.Set(20, 0f);
+            ResetText.Width.Set(0, 0f);
+            ResetText.Height.Set(0, 0f);
+            ResetText.OnClick += new MouseEvent(ResetStats);
+            ResetText.OnMouseOver += new MouseEvent(ResetTextHover);
+            ResetText.OnMouseOut += new MouseEvent(ResetTextOut);
+            statsPanel.Append(ResetText);
 
             Texture2D Button = ModLoader.GetTexture("Terraria/UI/ButtonPlay");
             for (int i = 0; i < 8; i++)
             {
                 UIImageButton UpgradeStatButton = new UIImageButton(Button);
+               
                 UpgradeStatButton.Left.Set(baseXOffset+ XOffset, 0f);
                 UpgradeStatButton.Top.Set(baseYOffset+(YOffset*i), 0f);
                 UpgradeStatButton.Width.Set(22, 0f);
                 UpgradeStatButton.Height.Set(22, 0f);
                 Stat Statused = (Stat)i;
-                UpgradeStatButton.OnClick += new MouseEvent((UIMouseEvent, UIElement) => UpgradeStat(UIMouseEvent, UIElement, Statused));
+                UpgradeStatButton.OnMouseOver += new MouseEvent((UIMouseEvent, UIElement) => UpdateStat(UIMouseEvent, UIElement, Statused));
+                UpgradeStatButton.OnMouseOut += new MouseEvent(ResetOver);
+                UpgradeStatButton.OnClick += new MouseEvent((UIMouseEvent, UIElement) => UpgradeStat(UIMouseEvent, UIElement, Statused,1));
+                UpgradeStatButton.OnRightClick += new MouseEvent((UIMouseEvent, UIElement) => UpgradeStat(UIMouseEvent, UIElement, Statused, 5));
+                UpgradeStatButton.OnMiddleClick += new MouseEvent((UIMouseEvent, UIElement) => UpgradeStat(UIMouseEvent, UIElement, Statused, 25));
                 statsPanel.Append(UpgradeStatButton);
 
-                UpgradeStatText[i] = new UIText((Stat)i + " : " + 50 + " + " + 0);
+                
+                UpgradeStatText[i] = new UIText("0");
+                UpgradeStatText[i].SetText("Mana : 10 + 10");
                 UpgradeStatText[i].Left.Set(baseXOffset, 0f);
                 UpgradeStatText[i].Top.Set(baseYOffset + (YOffset * i), 0f);
-                UpgradeStatText[i].Width.Set(22, 0f);
-                UpgradeStatText[i].Height.Set(22, 0f);
+                UpgradeStatText[i].HAlign = 0f;
+                UpgradeStatText[i].VAlign = 0f;
+                UpgradeStatText[i].MinWidth.Set(150, 0);
+                UpgradeStatText[i].MaxWidth.Set(150, 0);
                 statsPanel.Append(UpgradeStatText[i]);
 
-                UpgradeStatDetails[i] = new UIText("Increase Melee Damage And Slightly Throw Damage");
-                UpgradeStatDetails[i].Left.Set(baseXOffset+ (XOffset * 2), 0f);
+                UpgradeStatDetails[i] = new UIText("");
+                if (i < 3)
+                {
+                    
+                    UpgradeStatDetails[i].SetText("Health : 100 - 5 Heart x 20 Health Per Heart");
+                }
+                UpgradeStatDetails[i].SetText("Melee Damage Multiplier : 1");
+                UpgradeStatDetails[i].Left.Set(baseXOffset+ (XOffset * 1.5f), 0f);
                 UpgradeStatDetails[i].Top.Set(baseYOffset + (YOffset * i), 0f);
-                UpgradeStatDetails[i].Width.Set(22, 0f);
-                UpgradeStatDetails[i].Height.Set(22, 0f);
+                UpgradeStatDetails[i].HAlign = 0f;
+                UpgradeStatDetails[i].VAlign = 0f;
+                UpgradeStatDetails[i].MinWidth.Set(300f, 0);
+                UpgradeStatDetails[i].MaxWidth.Set(300f, 0);
                 statsPanel.Append(UpgradeStatDetails[i]);
+
+                UpgradeStatOver[i] = new UIText("")
+                {
+                    TextColor = Color.Aqua
+                };
+                UpgradeStatOver[i].SetText("");
+                UpgradeStatOver[i].Left.Set(baseXOffset + (XOffset * 5.3f), 0f);
+                UpgradeStatOver[i].Top.Set(baseYOffset + (YOffset * i), 0f);
+                UpgradeStatOver[i].HAlign = 0f;
+                UpgradeStatOver[i].VAlign = 0f;
+                UpgradeStatOver[i].MinWidth.Set(20f,0);
+                UpgradeStatOver[i].MaxWidth.Set(20f, 0);
+                statsPanel.Append(UpgradeStatOver[i]);
             }
             Append(statsPanel);
+            
+
 
         }
 
+        private Color MainColor = new Color(75,75, 255);
+        private Color SecondaryColor = new Color(150, 150, 255);
 
-
-        private void UpgradeStat(UIMouseEvent evt, UIElement listeningElement, Stat stat)
+        public void UpdateStat(UIMouseEvent evt, UIElement listeningElement, Stat stat)
+        {
+            Recalculate();
+            for (int i = 0; i < 8; i++)
+            {
+                UpgradeStatOver[i].TextColor = SecondaryColor;
+            }
+            switch (stat)
+            {
+                case (Stat.Vit):
+                    UpgradeStatOver[0].SetText("+ " + ((Char.player.statLifeMax / 20) * 0.5f) + " Hp");
+                    UpgradeStatOver[0].TextColor = MainColor;
+                    UpgradeStatOver[2].SetText("+ " + (Char.BaseArmor*0.1f) + " Armor");
+                    UpgradeStatOver[2].TextColor = SecondaryColor;
+                    break;
+                case (Stat.Foc):
+                    UpgradeStatOver[1].SetText("+ " + ((Char.player.statManaMax / 20) * 0.5f) + " Mana");
+                    UpgradeStatOver[1].TextColor = MainColor;
+                    UpgradeStatOver[7].SetText("+ 0.05 Multiplier");
+                    UpgradeStatOver[7].TextColor = SecondaryColor;
+                    break;
+                case (Stat.Con):
+                    UpgradeStatOver[2].SetText("+ " + (Char.BaseArmor * 0.2f) + " Armor");
+                    UpgradeStatOver[2].TextColor = MainColor;
+                    UpgradeStatOver[0].SetText("+ " + ((Char.player.statLifeMax / 20) * 0.25f) + " Hp");
+                    UpgradeStatOver[0].TextColor = SecondaryColor;
+                    break;
+                case (Stat.Str):
+                    UpgradeStatOver[3].SetText("+ 0.1 Multiplier");
+                    UpgradeStatOver[3].TextColor = MainColor;
+                    UpgradeStatOver[5].SetText("+ 0.05 Multiplier");
+                    UpgradeStatOver[5].TextColor = SecondaryColor;
+                    break;
+                case (Stat.Agi):
+                    UpgradeStatOver[4].SetText("+ 0.1 Multiplier");
+                    UpgradeStatOver[4].TextColor = MainColor;
+                    UpgradeStatOver[3].SetText("+ 0.05 Multiplier");
+                    UpgradeStatOver[3].TextColor = SecondaryColor;
+                    break;
+                case (Stat.Dex):
+                    UpgradeStatOver[5].SetText("+ 0.1 Multiplier");
+                    UpgradeStatOver[5].TextColor = MainColor;
+                    UpgradeStatOver[4].SetText("+ 0.05 Multiplier");
+                    UpgradeStatOver[4].TextColor = SecondaryColor;
+                    break;
+                case (Stat.Int):
+                    UpgradeStatOver[6].SetText("+ 0.1 Multiplier");
+                    UpgradeStatOver[6].TextColor = MainColor;
+                    UpgradeStatOver[1].SetText("+ " + ((Char.player.statManaMax / 20) * 0.25f) + " Mana");
+                    UpgradeStatOver[1].TextColor = SecondaryColor;
+                    break;
+                case (Stat.Spr):
+                    UpgradeStatOver[7].SetText("+ 0.1 Multiplier");
+                    UpgradeStatOver[7].TextColor = MainColor;
+                    UpgradeStatOver[6].SetText("+ 0.05 Multiplier");
+                    UpgradeStatOver[6].TextColor = SecondaryColor;
+                    break;
+            }
+        }
+        public void ResetOver(UIMouseEvent evt, UIElement listeningElement)
+        {
+            for (int i = 0; i < 8; i++)
+            {
+                UpgradeStatOver[i].SetText("");
+            }
+        }
+        private void ResetStats(UIMouseEvent evt, UIElement listeningElement)
+        {
+            Main.PlaySound(SoundID.MenuOpen);
+            Char.ResetStats();
+        }
+        public void CheckChar()
         {
             if (Char == null)
             {
                 loadchar();
             }
+        }
+
+        private void UpgradeStat(UIMouseEvent evt, UIElement listeningElement, Stat stat,int amount)
+        {
             Main.PlaySound(SoundID.MenuOpen);
-            Char.SpendPoints(stat, Amount);
+            Char.SpendPoints(stat, amount);
             
         }
 
@@ -138,15 +276,13 @@ namespace AnotherRpgMod.UI
         {
             if (visible)
                 UpdateStats();
+                Recalculate();
             base.Update(gameTime);
         }
 
         void UpdateStats()
         {
-            if (Char == null)
-            {
-                loadchar();
-            }
+            CheckChar();
             for (int i = 0; i < 8; i++)
             {
                 UpgradeStatText[i].SetText((Stat)i + " : " + Char.GetNaturalStat((Stat)i) + " + " + Char.GetAddStat((Stat)i));
@@ -156,9 +292,10 @@ namespace AnotherRpgMod.UI
                 UpgradeStatDetails[i+3].SetText((DamageType)i + " Damage Multiplier : " + Char.GetDamageMult((DamageType)i));
             }
             UpgradeStatDetails[0].SetText("Health : "+ Char.player.statLifeMax2 + " - " +(Char.player.statLifeMax / 20) + " Heart x " + Char.GetHealthPerHeart() + " Health Per Heart + 10");
-            UpgradeStatDetails[1].SetText("Mana : " + Char.player.statManaMax2 + " - " + (Char.player.statManaMax / 20) + " Mana Crystal x " +Utils.Mathf.Clamp( Char.GetManaPerStar(),0,20) + " Mana per crystal + 4");
+            UpgradeStatDetails[1].SetText("Mana : " + Char.player.statManaMax2 + " - " + (Char.player.statManaMax / 20) + " Crystal x " +Utils.Mathf.Clamp( Char.GetManaPerStar(),0,20) + " Mana per crystal + 4");
             UpgradeStatDetails[2].SetText("Defense : " + Char.player.statDefense + " - " + Char.BaseArmor + " Armor x " + Char.GetDefenceMult() + " Defense Per Armor");
             PointsLeft.SetText("Points : " + Char.FreePtns + " / " + Char.TotalPtns,1,true);
+
         }
 
         Vector2 offset;
