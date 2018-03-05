@@ -2,10 +2,13 @@ using Terraria;
 using Terraria.ModLoader;
 using Terraria.ID;
 using System;
+using System.IO;
 using Microsoft.Xna.Framework;
 using System.Collections.Generic;
 using Terraria.UI;
 using AnotherRpgMod.UI;
+using AnotherRpgMod.RPGModule.Entities;
+using AnotherRpgMod.Utils;
 
 namespace AnotherRpgMod
 {
@@ -16,6 +19,29 @@ namespace AnotherRpgMod
         Throw,
         Magic,
         Summon
+    }
+
+    public enum Message : byte {
+        AddXP,
+        SyncLevel,
+        SyncNPC
+    };
+
+    public class DataTag
+    {
+        public static DataTag amount = new DataTag(reader => reader.ReadInt32());
+        public static DataTag level = new DataTag(reader => reader.ReadInt32());
+        public static DataTag amount_single = new DataTag(reader => reader.ReadSingle());
+        public static DataTag playerId = new DataTag(reader => reader.ReadInt32());
+        public static DataTag npcId = new DataTag(reader => reader.ReadInt32());
+        public static DataTag itemId = new DataTag(reader => reader.ReadInt32());
+
+        public Func<BinaryReader, object> read;
+
+        public DataTag(Func<BinaryReader, object> read)
+        {
+            this.read = read;
+        }
     }
 
 
@@ -29,6 +55,52 @@ namespace AnotherRpgMod
         public Stats statMenu;
         public OpenStatsButton openStatMenu;
 
+        public static Dictionary<Message, List<DataTag>> dataTags = new Dictionary<Message, List<DataTag>>()
+        {
+            { Message.AddXP, new List<DataTag>(){ DataTag.amount, DataTag.level } },
+            { Message.SyncLevel, new List<DataTag>(){ DataTag.playerId, DataTag.amount } },
+            { Message.SyncNPC, new List<DataTag>(){ DataTag.npcId, DataTag.level } },
+        };
+
+
+
+        public override void HandlePacket(BinaryReader reader, int whoAmI)
+        {
+
+            Message msg = (Message)reader.ReadByte();
+            Dictionary<DataTag, object> tags = new Dictionary<DataTag, object>();
+            foreach (DataTag tag in dataTags[msg])
+                tags.Add(tag, tag.read(reader));
+            switch (msg)
+            {
+                case Message.SyncLevel:
+                    if (Main.netMode == 2)
+                        Main.player[(int)tags[DataTag.playerId]].GetModPlayer<RPGPlayer>().SyncLevel((int)tags[DataTag.amount]);
+                    break;
+                case Message.AddXP:
+                    if (Main.netMode == 1)
+                    {
+                        Main.LocalPlayer.GetModPlayer<RPGPlayer>().AddXp((int)tags[DataTag.amount], (int)tags[DataTag.level]);
+                    }
+                    break;
+                case Message.SyncNPC:
+                    if (Main.netMode == 1)
+                    {
+                        int id = (int)tags[DataTag.npcId];
+
+                        NPC npc = Main.npc[id];
+
+                        int level = RPGModule.Entities.Utils.GetBaseLevel(npc);
+                        int tier = (int)tags[DataTag.level];
+                        npc.lifeMax = Mathf.FloorInt(npc.lifeMax * (1 + level * 0.25f + tier * 0.4f));
+                        npc.life = npc.lifeMax;
+                        npc.damage = Mathf.FloorInt(npc.damage * (1 + level * 0.05f + tier * 0.08f));
+                        npc.defense = Mathf.FloorInt(npc.defense * (1 + level * 0.01f + tier * 0.025f));
+                        npc.GivenName = ("Lvl. " + (level + tier) + " " + npc.TypeName);
+                    }
+                    break;
+            }
+        }
         public override void Load()
         {
             if (!Main.dedServ)

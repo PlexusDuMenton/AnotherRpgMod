@@ -1,5 +1,5 @@
 author = Plexus
-version = 0.06
+version = 0.07
 displayName = Another RPG Mod
 homepage = https://forums.terraria.org/index.php?threads/another-rpg-mod.67218/
 hideCode = false

@@ -69,21 +69,38 @@ namespace AnotherRpgMod.RPGModule.Entities
                 return true;
             }
         }
+        private void SyncNpc(NPC npc) // only sync tier since it's the only random value, rest is calculed on client
+        {
+            if (Main.netMode == 2)
+            {
+                ModPacket packet = mod.GetPacket();
+                packet.Write((byte)Message.SyncNPC);
+                packet.Write(npc.whoAmI);
+                packet.Write(tier);
+                packet.Send();
+            }
+        }
+
         public override void PostAI(NPC npc)
         {
             if (npc.friendly) return;
             if (npc.townNPC) return;
-            if (StatsCreated)
-                return;
-            level = Utils.GetBaseLevel(npc);
-            tier = Utils.GetTier(npc,level);
-            npc.lifeMax = Mathf.FloorInt(npc.lifeMax * (1 + level * 0.25f + tier*0.4f));
-            npc.life = npc.lifeMax;
-            npc.damage = Mathf.FloorInt(npc.damage * (1 + level * 0.05f + tier * 0.08f));
-            npc.defense = Mathf.FloorInt(npc.defense * (1 + level * 0.01f + tier * 0.025f));
 
-            npc.GivenName = ("Lvl. " + (level+ tier) + " " + npc.TypeName);
-            StatsCreated = true;
+            if (Main.netMode !=1) { 
+                if (StatsCreated)
+                    return;
+                level = Utils.GetBaseLevel(npc);
+                tier = Utils.GetTier(npc,level);
+                npc.lifeMax = Mathf.FloorInt(npc.lifeMax * (1 + level * 0.25f + tier*0.4f));
+                npc.life = npc.lifeMax;
+                npc.damage = Mathf.FloorInt(npc.damage * (1 + level * 0.05f + tier * 0.08f));
+                npc.defense = Mathf.FloorInt(npc.defense * (1 + level * 0.01f + tier * 0.025f));
+                npc.GivenName = ("Lvl. " + (level+ tier) + " " + npc.TypeName);
+
+                SyncNpc(npc);
+
+                StatsCreated = true;
+            }
         }
 
 
@@ -99,7 +116,6 @@ namespace AnotherRpgMod.RPGModule.Entities
                 player = Main.player[npc.target];
             else
                 return;
-            RPGPlayer character = player.GetModPlayer<RPGPlayer>();
             int XPToDrop = Utils.GetExp(npc);
             if (npc.rarity > 0)
             {
@@ -110,10 +126,18 @@ namespace AnotherRpgMod.RPGModule.Entities
                 XPToDrop = XPToDrop * 10;
                 WorldManager.OnBossDefeated(npc);
             }
-            character.AddXp(XPToDrop, level);
-        }
 
-        private int baseLevel;
-        private int scaledLevel;
+            if (Main.netMode == 2)
+            {
+                ModPacket packet = mod.GetPacket();
+                packet.Write((byte)Message.AddXP);
+                packet.Write(XPToDrop);
+                packet.Write(level + tier);
+                packet.Send();
+            }
+            else
+                player.GetModPlayer<RPGPlayer>().AddXp(XPToDrop, level + tier);
+
+        }
     }
 }

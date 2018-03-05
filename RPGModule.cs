@@ -87,7 +87,16 @@ namespace AnotherRpgMod.RPGModule
             private int level = 1;
             private int armor;
             public int BaseArmor { get { return armor; } }
-            
+
+
+            public void SyncLevel(int _level) //only use for sync
+            {
+                level = _level;
+            }
+            public void SyncStat(int value,Stat stat) //only use for sync
+            {
+                Stats.SetStats(stat, value);
+            }
 
             public int GetStat(Stat s)
             {
@@ -281,6 +290,15 @@ namespace AnotherRpgMod.RPGModule
                 CombatText.NewText(player.getRect(), new Color(255, 25, 100), "LEVEL UP !!!!");
                 Main.NewText(player.name + " Is now level : " + level.ToString() + " .Congratulation !", 255, 223, 63);
                 level++;
+
+                if (Main.netMode == 1)
+                {
+                    ModPacket packet = mod.GetPacket();
+                    packet.Write((byte)Message.SyncLevel);
+                    packet.Write(player.whoAmI);
+                    packet.Write(level);
+                    packet.Send();
+                }
             }
             public int XPToNextLevel()
             {
@@ -332,6 +350,16 @@ namespace AnotherRpgMod.RPGModule
                 totalPoints = tag.GetInt("totalPoints");
                 freePoints = tag.GetInt("freePoints");
             }
+
+            public override void PlayerConnect(Player player)
+            {
+                ModPacket packet = mod.GetPacket();
+                packet.Write((byte)Message.SyncLevel);
+                packet.Write(player.whoAmI);
+                packet.Write(level);
+                packet.Send();
+            }
+
         }
 
         
