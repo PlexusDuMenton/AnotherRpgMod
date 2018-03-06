@@ -30,11 +30,18 @@ namespace AnotherRpgMod
     public class DataTag
     {
         public static DataTag amount = new DataTag(reader => reader.ReadInt32());
-        public static DataTag level = new DataTag(reader => reader.ReadInt32());
+        
         public static DataTag amount_single = new DataTag(reader => reader.ReadSingle());
         public static DataTag playerId = new DataTag(reader => reader.ReadInt32());
         public static DataTag npcId = new DataTag(reader => reader.ReadInt32());
         public static DataTag itemId = new DataTag(reader => reader.ReadInt32());
+
+
+        public static DataTag level = new DataTag(reader => reader.ReadInt32());
+        public static DataTag damage = new DataTag(reader => reader.ReadInt32());
+        public static DataTag life = new DataTag(reader => reader.ReadInt32());
+        public static DataTag defense = new DataTag(reader => reader.ReadInt32());
+
 
         public Func<BinaryReader, object> read;
 
@@ -59,9 +66,8 @@ namespace AnotherRpgMod
         {
             { Message.AddXP, new List<DataTag>(){ DataTag.amount, DataTag.level } },
             { Message.SyncLevel, new List<DataTag>(){ DataTag.playerId, DataTag.amount } },
-            { Message.SyncNPC, new List<DataTag>(){ DataTag.npcId, DataTag.level } },
-        };
-
+            { Message.SyncNPC, new List<DataTag>(){ DataTag.npcId, DataTag.level, DataTag.life, DataTag.damage, DataTag.defense } },
+};
 
 
         public override void HandlePacket(BinaryReader reader, int whoAmI)
@@ -86,28 +92,25 @@ namespace AnotherRpgMod
                 case Message.SyncNPC:
                     if (Main.netMode == 1)
                     {
-                        int id = (int)tags[DataTag.npcId];
+                        NPC npc = Main.npc[(int)tags[DataTag.npcId]];
 
-                        NPC npc = Main.npc[id];
-
-                        int level = RPGModule.Entities.Utils.GetBaseLevel(npc);
-                        int tier = (int)tags[DataTag.level];
-                        npc.lifeMax = Mathf.FloorInt(npc.lifeMax * (1 + level * 0.25f + tier * 0.4f));
+                        npc.lifeMax = (int)tags[DataTag.life];
                         npc.life = npc.lifeMax;
-                        npc.damage = Mathf.FloorInt(npc.damage * (1 + level * 0.05f + tier * 0.08f));
-                        npc.defense = Mathf.FloorInt(npc.defense * (1 + level * 0.01f + tier * 0.025f));
+                        npc.damage = (int)tags[DataTag.damage];
+                        npc.defense = (int)tags[DataTag.defense];
                         if (npc.GivenName == "")
                         {
-                            npc.GivenName = ("Lvl. " + (level + tier) + " " + npc.TypeName);
+                            npc.GivenName = ("Lvl. " + ((int)tags[DataTag.level]) + " " + npc.TypeName);
                         }
-                        else 
-                        npc.GivenName = ("Lvl. " + (level + tier) + " " + npc.GivenName);
+                        else
+                            npc.GivenName = ("Lvl. " + ((int)tags[DataTag.level]) + " " + npc.GivenName);
                     }
                     break;
             }
         }
         public override void Load()
         {
+            ConfigFile.Init();
             if (!Main.dedServ)
             {
                 customResources = new UserInterface();
@@ -126,7 +129,7 @@ namespace AnotherRpgMod
                 openStatMenu = new OpenStatsButton();
                 OpenStatsButton.visible = true;
                 customOpenstats.SetState(openStatMenu);
-                
+
 
                 /*
                 
@@ -155,6 +158,9 @@ namespace AnotherRpgMod
 
         public override void ModifyInterfaceLayers(List<GameInterfaceLayer> layers)
         {
+            if (Main.netMode == 2)
+                return;
+
             int id = layers.FindIndex(layer => layer.Name.Equals("Vanilla: Inventory"));
             if (id != -1)
             {
