@@ -81,7 +81,7 @@ namespace AnotherRpgMod.UI
         }
         private void ResetTextOut(UIMouseEvent evt, UIElement listeningElement)
         {
-            ResetText.TextColor = Color.LightGray;
+            ResetText.TextColor = Color.Gray;
         }
 
         public override void OnInitialize()
@@ -94,7 +94,7 @@ namespace AnotherRpgMod.UI
             statsPanel.Top.Set(100f, 0f);
             statsPanel.Width.Set(900, 0f);
             statsPanel.Height.Set(400, 0f);
-            statsPanel.BackgroundColor = new Color(73, 94, 171);
+            statsPanel.BackgroundColor = new Color(73, 94, 171,150);
 
             statsPanel.OnMouseDown += new UIElement.MouseEvent(DragStart);
             statsPanel.OnMouseUp += new UIElement.MouseEvent(DragEnd);
@@ -110,7 +110,7 @@ namespace AnotherRpgMod.UI
             
             ResetText = new UIText("RESET", 1, true)
             {
-                TextColor = Color.LightGray
+                TextColor = Color.Gray
             };
             ResetText.Left.Set(50, 0f);
             ResetText.Top.Set(20, 0f);
@@ -193,54 +193,55 @@ namespace AnotherRpgMod.UI
             {
                 UpgradeStatOver[i].TextColor = SecondaryColor;
             }
+            CheckChar();
             switch (stat)
             {
                 case (Stat.Vit):
-                    UpgradeStatOver[0].SetText("+ " + ((Char.player.statLifeMax / 20) * 0.5f) + " Hp");
+                    UpgradeStatOver[0].SetText("+ " + ((Char.player.statLifeMax / 20) * 0.5f * Char.statMultiplier) + " Hp");
                     UpgradeStatOver[0].TextColor = MainColor;
                     UpgradeStatOver[2].SetText("+ " + (Char.BaseArmor*0.1f) + " Armor");
                     UpgradeStatOver[2].TextColor = SecondaryColor;
                     break;
                 case (Stat.Foc):
-                    UpgradeStatOver[1].SetText("+ " + ((Char.player.statManaMax / 20) * 0.5f) + " Mana");
+                    UpgradeStatOver[1].SetText("+ " + ((Char.player.statManaMax / 20) * 0.5f * Char.statMultiplier) + " Mana");
                     UpgradeStatOver[1].TextColor = MainColor;
-                    UpgradeStatOver[7].SetText("+ 0.05 Multiplier");
+                    UpgradeStatOver[7].SetText("+ " + (0.05 * Char.statMultiplier) + " Multiplier");
                     UpgradeStatOver[7].TextColor = SecondaryColor;
                     break;
                 case (Stat.Con):
                     UpgradeStatOver[2].SetText("+ " + (Char.BaseArmor * 0.2f) + " Armor");
                     UpgradeStatOver[2].TextColor = MainColor;
-                    UpgradeStatOver[0].SetText("+ " + ((Char.player.statLifeMax / 20) * 0.25f) + " Hp");
+                    UpgradeStatOver[0].SetText("+ " + ((Char.player.statLifeMax / 20) * 0.25f * Char.statMultiplier) + " Hp");
                     UpgradeStatOver[0].TextColor = SecondaryColor;
                     break;
                 case (Stat.Str):
-                    UpgradeStatOver[3].SetText("+ 0.1 Multiplier");
+                    UpgradeStatOver[3].SetText("+ " +(0.1*Char.statMultiplier)+ " Multiplier");
                     UpgradeStatOver[3].TextColor = MainColor;
-                    UpgradeStatOver[5].SetText("+ 0.05 Multiplier");
+                    UpgradeStatOver[5].SetText("+ " + (0.05 * Char.statMultiplier) + " Multiplier");
                     UpgradeStatOver[5].TextColor = SecondaryColor;
                     break;
                 case (Stat.Agi):
-                    UpgradeStatOver[4].SetText("+ 0.1 Multiplier");
+                    UpgradeStatOver[4].SetText("+ " + (0.1 * Char.statMultiplier) + " Multiplier");
                     UpgradeStatOver[4].TextColor = MainColor;
-                    UpgradeStatOver[3].SetText("+ 0.05 Multiplier");
+                    UpgradeStatOver[3].SetText("+ " + (0.05 * Char.statMultiplier) + " Multiplier");
                     UpgradeStatOver[3].TextColor = SecondaryColor;
                     break;
                 case (Stat.Dex):
-                    UpgradeStatOver[5].SetText("+ 0.1 Multiplier");
+                    UpgradeStatOver[5].SetText("+ " + (0.1 * Char.statMultiplier) + " Multiplier");
                     UpgradeStatOver[5].TextColor = MainColor;
-                    UpgradeStatOver[4].SetText("+ 0.05 Multiplier");
+                    UpgradeStatOver[4].SetText("+ " + (0.05 * Char.statMultiplier) + " Multiplier");
                     UpgradeStatOver[4].TextColor = SecondaryColor;
                     break;
                 case (Stat.Int):
-                    UpgradeStatOver[6].SetText("+ 0.1 Multiplier");
+                    UpgradeStatOver[6].SetText("+ " + (0.1 * Char.statMultiplier) + " Multiplier");
                     UpgradeStatOver[6].TextColor = MainColor;
-                    UpgradeStatOver[1].SetText("+ " + ((Char.player.statManaMax / 20) * 0.25f) + " Mana");
+                    UpgradeStatOver[1].SetText("+ " + ((Char.player.statManaMax / 20) * 0.25f * Char.statMultiplier) + " Mana");
                     UpgradeStatOver[1].TextColor = SecondaryColor;
                     break;
                 case (Stat.Spr):
-                    UpgradeStatOver[7].SetText("+ 0.1 Multiplier");
+                    UpgradeStatOver[7].SetText("+ " + (0.1 * Char.statMultiplier) + " Multiplier");
                     UpgradeStatOver[7].TextColor = MainColor;
-                    UpgradeStatOver[6].SetText("+ 0.05 Multiplier");
+                    UpgradeStatOver[6].SetText("+ " + (0.05 * Char.statMultiplier) + " Multiplier");
                     UpgradeStatOver[6].TextColor = SecondaryColor;
                     break;
             }
