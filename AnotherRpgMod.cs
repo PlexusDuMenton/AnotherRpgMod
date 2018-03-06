@@ -90,12 +90,10 @@ namespace AnotherRpgMod
                     }
                     break;
                 case Message.SyncNPC:
-                    if (Main.netMode == 1)
-                    {
                         NPC npc = Main.npc[(int)tags[DataTag.npcId]];
 
                         npc.lifeMax = (int)tags[DataTag.life];
-                        npc.life = npc.lifeMax;
+                        npc.life = (int)tags[DataTag.life];
                         npc.damage = (int)tags[DataTag.damage];
                         npc.defense = (int)tags[DataTag.defense];
                         if (npc.GivenName == "")
@@ -104,7 +102,6 @@ namespace AnotherRpgMod
                         }
                         else
                             npc.GivenName = ("Lvl. " + ((int)tags[DataTag.level]) + " " + npc.GivenName);
-                    }
                     break;
             }
         }

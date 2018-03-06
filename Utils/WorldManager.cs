@@ -35,11 +35,12 @@ namespace AnotherRpgMod.Utils
         {
             int bonuslevel = 0;
 
-            bonuslevel = BossDefeated * 8;
+            bonuslevel = BossDefeated * 13;
 
             if (Main.hardMode)
             {
-                bonuslevel = bonuslevel * 2;
+                bonuslevel = Mathf.CeilInt(bonuslevel * 1.2f);
+                bonuslevel += 35;
             }
             
             return bonuslevel;

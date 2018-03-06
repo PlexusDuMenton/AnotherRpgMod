@@ -11,20 +11,20 @@ namespace AnotherRpgMod.RPGModule.Entities
         public static int GetBaseLevel(NPC npc)
         {
             
-            int baselevel = (int)(npc.lifeMax / 30 + Mathf.Pow(npc.damage * 0.3f, 1.1f) + Mathf.Pow(npc.defense, 1.2f));
+            int baselevel = (int)(npc.lifeMax / 20 + Mathf.Pow(npc.damage * 0.3f, 1.1f) + Mathf.Pow(npc.defense, 1.2f));
             if (npc.boss)
             {
                 float health = npc.lifeMax;
                 if (npc.aiStyle == 6)
-                    health = health * 0.2f;
+                    health = health * 0.4f;
 
                 if (Main.expertMode)
                 {
-                    baselevel = (int)(npc.lifeMax / 150 + Mathf.Pow(npc.damage * 0.2f, 1.05f) + Mathf.Pow(npc.defense * 0.8f, 1.07f));
+                    baselevel = (int)(npc.lifeMax / 120 + Mathf.Pow(npc.damage * 0.33f, 1.05f) + Mathf.Pow(npc.defense * 0.8f, 1.07f));
                 }
                 else
                 {
-                    baselevel = (int)(npc.lifeMax / 100 + Mathf.Pow(npc.damage * 0.2f, 1.03f) + Mathf.Pow(npc.defense * 0.8f, 1.05f));
+                    baselevel = (int)(npc.lifeMax / 85 + Mathf.Pow(npc.damage * 0.33f, 1.04f) + Mathf.Pow(npc.defense * 0.8f, 1.05f));
                 }
                 
             }
@@ -41,7 +41,8 @@ namespace AnotherRpgMod.RPGModule.Entities
         public static int GetTier(NPC npc,int baselevel)
         {
             int BonusLevel = WorldManager.GetWorldAdditionalLevel();
-            int randomlevel = Mathf.RandomInt(-1, 2 + (int)(baselevel * 0.1f));
+
+            int randomlevel = Mathf.RandomInt(-1, 3);
             if (BonusLevel*2 > baselevel)
             {
                 return randomlevel = Mathf.Clamp(randomlevel + BonusLevel, randomlevel,BonusLevel*2 - baselevel) ;
@@ -62,6 +63,7 @@ namespace AnotherRpgMod.RPGModule.Entities
         private bool StatsCreated = false;
         private int level;
         private int tier;
+        private int basehealth = 0;
         public override bool InstancePerEntity
         {
             get
@@ -85,19 +87,63 @@ namespace AnotherRpgMod.RPGModule.Entities
             }
         }
 
+        public override void SetDefaults(NPC npc)
+        {
+            if (npc.friendly) return;
+            if (npc.townNPC) return;
+            if (Main.netMode != 1)
+            {
+                level = Mathf.CeilInt(Utils.GetBaseLevel(npc) * ConfigFile.GetConfig.NpclevelMultiplier);
+                if (ConfigFile.GetConfig.NpcProgress)
+                    tier = Mathf.CeilInt(Utils.GetTier(npc, level) * ConfigFile.GetConfig.NpclevelMultiplier);
+
+                if (npc.boss)
+                {
+                    npc.lifeMax = Mathf.FloorInt(npc.lifeMax * (1 + level * 0.5f + tier * 0.8f));
+                }
+                else
+                    npc.lifeMax = Mathf.FloorInt(npc.lifeMax * (1 + level * 0.23f + tier * 0.3f));
+
+                npc.damage = Mathf.FloorInt(npc.damage * (1 + level * 0.04f + tier * 0.05f));
+                npc.defense = Mathf.FloorInt(npc.defense * (1 + level * 0.01f + tier * 0.018f));
+            }
+            base.SetDefaults(npc);
+        }
         public override void PostAI(NPC npc)
         {
             if (npc.friendly) return;
             if (npc.townNPC) return;
+            if (Main.netMode != 1) { 
+                if (StatsCreated == false) {
+                    StatsCreated = true;
+                    npc.life = npc.lifeMax;
 
-            if (Main.netMode !=1) {
+                    if (npc.GivenName == "")
+                    {
+                        npc.GivenName = ("Lvl. " + (level + tier) + " " + npc.TypeName);
+                    }
+                    else
+                        npc.GivenName = ("Lvl. " + (level + tier) + " " + npc.GivenName);
+                    SyncNpc(npc);
+                }
+            }
+        }
+        /*
+        public override void PostAI(NPC npc)
+        {
+
+
+            if (npc.friendly) return;
+            if (npc.townNPC) return;
+
                 if (StatsCreated)
                     return;
                 level = Mathf.CeilInt( Utils.GetBaseLevel(npc)*ConfigFile.GetConfig.NpclevelMultiplier);
                 if (ConfigFile.GetConfig.NpcProgress)
                     tier = Mathf.CeilInt(Utils.GetTier(npc, level) * ConfigFile.GetConfig.NpclevelMultiplier);
+                basehealth = npc.life;
                 npc.lifeMax = Mathf.FloorInt(npc.lifeMax * (1 + level * 0.25f + tier * 0.4f));
-                npc.life = npc.lifeMax;
+                npc.life = Mathf.Clamp(Mathf.FloorInt(npc.life * (1 + level * 0.25f + tier * 0.4f)),0, basehealth*5);
                 npc.damage = Mathf.FloorInt(npc.damage * (1 + level * 0.05f + tier * 0.08f));
                 npc.defense = Mathf.FloorInt(npc.defense * (1 + level * 0.01f + tier * 0.025f));
                 if (npc.GivenName == "")
@@ -107,12 +153,12 @@ namespace AnotherRpgMod.RPGModule.Entities
                 else
                     npc.GivenName = ("Lvl. " + (level + tier) + " " + npc.GivenName);
 
-                SyncNpc(npc);
+                //SyncNpc(npc);
 
                 StatsCreated = true;
-            }
-        }
 
+        }
+        */
 
         public override void NPCLoot(NPC npc)
         {
@@ -131,9 +177,13 @@ namespace AnotherRpgMod.RPGModule.Entities
             {
                 XPToDrop = (int)(XPToDrop * 1.5f);
             }
+            if (npc.GivenName.Contains("godly")|| npc.GivenName.Contains("Legendary"))
+            {
+                XPToDrop = XPToDrop * 2;
+            }
             if (npc.boss)
             {
-                XPToDrop = XPToDrop * 5;
+                XPToDrop = XPToDrop * 2;
                 WorldManager.OnBossDefeated(npc);
             }
 

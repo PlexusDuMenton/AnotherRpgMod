@@ -199,7 +199,7 @@ namespace AnotherRpgMod.UI
                 case (Stat.Vit):
                     UpgradeStatOver[0].SetText("+ " + ((Char.player.statLifeMax / 20) * 0.5f * Char.statMultiplier) + " Hp");
                     UpgradeStatOver[0].TextColor = MainColor;
-                    UpgradeStatOver[2].SetText("+ " + (Char.BaseArmor*0.1f) + " Armor");
+                    UpgradeStatOver[2].SetText("+ " + (Char.BaseArmor*0.02f) + " Armor");
                     UpgradeStatOver[2].TextColor = SecondaryColor;
                     break;
                 case (Stat.Foc):
@@ -209,7 +209,7 @@ namespace AnotherRpgMod.UI
                     UpgradeStatOver[7].TextColor = SecondaryColor;
                     break;
                 case (Stat.Con):
-                    UpgradeStatOver[2].SetText("+ " + (Char.BaseArmor * 0.2f) + " Armor");
+                    UpgradeStatOver[2].SetText("+ " + (Char.BaseArmor * 0.04f) + " Armor");
                     UpgradeStatOver[2].TextColor = MainColor;
                     UpgradeStatOver[0].SetText("+ " + ((Char.player.statLifeMax / 20) * 0.25f * Char.statMultiplier) + " Hp");
                     UpgradeStatOver[0].TextColor = SecondaryColor;
@@ -255,6 +255,8 @@ namespace AnotherRpgMod.UI
         }
         private void ResetStats(UIMouseEvent evt, UIElement listeningElement)
         {
+            if (!visible)
+                return;
             Main.PlaySound(SoundID.MenuOpen);
             Char.ResetStats();
         }
@@ -303,12 +305,16 @@ namespace AnotherRpgMod.UI
         public bool dragging = false;
         private void DragStart(UIMouseEvent evt, UIElement listeningElement)
         {
+            if (!visible)
+                return;
             offset = new Vector2(evt.MousePosition.X - statsPanel.Left.Pixels, evt.MousePosition.Y - statsPanel.Top.Pixels);
             dragging = true;
         }
 
         private void DragEnd(UIMouseEvent evt, UIElement listeningElement)
         {
+            if (!visible)
+                return;
             Vector2 end = evt.MousePosition;
             dragging = false;
 

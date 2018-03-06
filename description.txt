@@ -13,6 +13,22 @@ Join Discord : https://discord.gg/UQueeQE ! (link also on webpage)
 
 Changelog : 
 
+0.9 -
+
+Should no longer crash game at startup when having other mods
+Balancing a lot of stuff : 
+Health is now a more important way to calculate level (from one level every 30 hp to one every 20 hp)
+slight debuff to ennemy damage 
+slight debuff to ennemy defense
+Fixed Stats menu still being clicable even when invisible (reset without wanting to)
+Fix Defence upgrade display when overing vitality or constituion upgrade
+Buff to armor gain via constitution and vitality
+Buff to bosses, they were WAY too weak
+Increase Level gained on monster for each boss killed by 50%
+
+0.8 -
+Definetly fixed desync problem between client and server , no more monster dispearing and total multiplayer fixed (I hope there will not be any other problem)
+
 0.7.3 - 
 Added transparency to the stats menu
 Healing item no display correct value in inventory

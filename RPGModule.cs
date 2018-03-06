@@ -133,7 +133,7 @@ namespace AnotherRpgMod.RPGModule
 
             public float GetDefenceMult()
             {
-                    return (Stats.GetStat(Stat.Vit) * 0.01f + Stats.GetStat(Stat.Con) * 0.02f) * statMultiplier + 0.6f;
+                    return (Stats.GetStat(Stat.Vit) * 0.02f + Stats.GetStat(Stat.Con) * 0.04f) * statMultiplier + 0.6f;
             }
 
             public float GetHealthPerHeart()
@@ -147,21 +147,24 @@ namespace AnotherRpgMod.RPGModule
 
             public override void PreUpdateBuffs()
             {
-
+                if (Main.netMode != 2) { 
                     player.meleeDamage *= GetDamageMult(DamageType.Melee);
                     player.thrownDamage *= GetDamageMult(DamageType.Throw);
                     player.rangedDamage *= GetDamageMult(DamageType.Ranged);
                     player.magicDamage *= GetDamageMult(DamageType.Magic);
-                    player.minionDamage *= GetDamageMult(DamageType.Summon);    
+                    player.minionDamage *= GetDamageMult(DamageType.Summon);
+                }
 
             }
             public override void PostUpdateEquips()
             {
-                armor = player.statDefense;
+                if (Main.netMode != 2) { 
+                    armor = player.statDefense;
                     player.statLifeMax2 = (int)(player.statLifeMax * GetHealthPerHeart() / 20) + 10;
                     player.statManaMax2 = (int)(player.statManaMax * GetManaPerStar() / 20) + 4;
                     player.statDefense = (int)(player.statDefense * GetDefenceMult());
 
+                }
             }
 
 
