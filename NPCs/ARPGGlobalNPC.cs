@@ -2,7 +2,7 @@
 using Terraria;
 using Terraria.ModLoader;
 using AnotherRpgMod.Utils;
-using Microsoft.Xna.Framework;
+
 namespace AnotherRpgMod.RPGModule.Entities
 {
     class Utils
@@ -54,7 +54,7 @@ namespace AnotherRpgMod.RPGModule.Entities
         }
     }
 
-    
+
 
     class ARPGGlobalNPC : GlobalNPC
     {
@@ -69,7 +69,6 @@ namespace AnotherRpgMod.RPGModule.Entities
                 return true;
             }
         }
-
         private void SyncNpc(NPC npc) // only sync tier since it's the only random value, rest is calculed on client
         {
             if (Main.netMode == 2)
@@ -77,10 +76,7 @@ namespace AnotherRpgMod.RPGModule.Entities
                 ModPacket packet = mod.GetPacket();
                 packet.Write((byte)Message.SyncNPC);
                 packet.Write(npc.whoAmI);
-                packet.Write(tier+level);
-                packet.Write(npc.lifeMax);
-                packet.Write(npc.damage);
-                packet.Write(npc.defense);
+                packet.Write(tier);
                 packet.Send();
             }
         }
@@ -90,13 +86,12 @@ namespace AnotherRpgMod.RPGModule.Entities
             if (npc.friendly) return;
             if (npc.townNPC) return;
 
-            if (Main.netMode !=1) {
+            if (Main.netMode !=1) { 
                 if (StatsCreated)
                     return;
-                level = Mathf.CeilInt( Utils.GetBaseLevel(npc)*ConfigFile.GetConfig.NpclevelMultiplier);
-                if (ConfigFile.GetConfig.NpcProgress)
-                    tier = Mathf.CeilInt(Utils.GetTier(npc, level) * ConfigFile.GetConfig.NpclevelMultiplier);
-                npc.lifeMax = Mathf.FloorInt(npc.lifeMax * (1 + level * 0.25f + tier * 0.4f));
+                level = Utils.GetBaseLevel(npc);
+                tier = Utils.GetTier(npc,level);
+                npc.lifeMax = Mathf.FloorInt(npc.lifeMax * (1 + level * 0.25f + tier*0.4f));
                 npc.life = npc.lifeMax;
                 npc.damage = Mathf.FloorInt(npc.damage * (1 + level * 0.05f + tier * 0.08f));
                 npc.defense = Mathf.FloorInt(npc.defense * (1 + level * 0.01f + tier * 0.025f));
@@ -129,31 +124,24 @@ namespace AnotherRpgMod.RPGModule.Entities
             int XPToDrop = Utils.GetExp(npc);
             if (npc.rarity > 0)
             {
-                XPToDrop = (int)(XPToDrop * 1.5f);
+                XPToDrop = (int)(XPToDrop * 3f);
             }
             if (npc.boss)
             {
-                XPToDrop = XPToDrop * 5;
+                XPToDrop = XPToDrop * 10;
                 WorldManager.OnBossDefeated(npc);
             }
 
-            XPToDrop = Mathf.CeilInt(XPToDrop * ConfigFile.GetConfig.XpMultiplier);
-
-            int xplevel = level + tier;
-            if (!ConfigFile.GetConfig.XPReduction)
-            {
-                xplevel = 99999;
-            }
             if (Main.netMode == 2)
             {
                 ModPacket packet = mod.GetPacket();
                 packet.Write((byte)Message.AddXP);
                 packet.Write(XPToDrop);
-                packet.Write(xplevel);
+                packet.Write(level + tier);
                 packet.Send();
             }
             else
-                player.GetModPlayer<RPGPlayer>().AddXp(XPToDrop, xplevel);
+                player.GetModPlayer<RPGPlayer>().AddXp(XPToDrop, level + tier);
 
         }
     }

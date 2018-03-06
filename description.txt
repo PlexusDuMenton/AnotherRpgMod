@@ -13,13 +13,6 @@ Join Discord : https://discord.gg/UQueeQE ! (link also on webpage)
 
 Changelog : 
 
-0.7.3 - 
-Added transparency to the stats menu
-Healing item no display correct value in inventory
-Added Config File -allow to enable or disable monster progress 
-can also change exp gain ratio , if there is reduction (when character level is higer) and monster level multiplier
-
-
 0.7.2 -
 Stats menu Tweak : 
 Added Increase when hovering Upgrade button
@@ -29,7 +22,7 @@ Aligned texts
 Added Reset Button
 
 0.7.1 - 
-Don't erase other mods' rename on npcs (like prefixe or afixe)
+Don't erase other mods' rename (like prefixe or afixe)
 
 0.7 -
 Multiplayer support 
@@ -61,11 +54,11 @@ Initial Launch
 
 
 Todo List : 
+Display more Ennemy Info
 balancing
 
 Longterm : 
 Having the possibilities to disable each component of mod via config file
-Display more Ennemy Info (having issue to make this atm)
 Allowing Weapon level and upgrade (more you use a weapon , the more it gain strength)
 NewGame + ? 
 

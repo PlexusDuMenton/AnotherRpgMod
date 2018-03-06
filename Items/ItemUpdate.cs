@@ -14,52 +14,24 @@ namespace AnotherRpgMod.Items
 {
     class ItemUpdate : GlobalItem
     {
-        bool init = false;
-        int baseHealLife = 0;
-        int baseHealMana = 0;
-
-        public override bool InstancePerEntity
-        {
-            get
-            {
-                return true;
-            }
-        }
-        public override bool CloneNewInstances
-        {
-            get
-            {
-                return true;
-            }
-        }
-
-        private void InitItem(Item item,RPGPlayer character)
-        {
-            if (init)
-                return;
-
-            if (item.healLife > 0)
-                baseHealLife = item.healLife;
-
-            if (item.healMana > 0)
-                baseHealMana = item.healMana;
-            init = true;
-        }
-
-        public override void UpdateInventory(Item item, Player player)
+        public override bool UseItem(Item item, Player player)
         {
             RPGPlayer character = player.GetModPlayer<RPGPlayer>();
             if (character != null)
             {
-                InitItem(item, character);       
                 if (item.healLife > 0)
-                    item.healLife = Mathf.CeilInt(baseHealLife * character.GetBonusHeal());
+                {
+                    int heal = Mathf.CeilInt(item.healLife * character.GetBonusHeal())- item.healLife;
+                    player.statLife = Mathf.Clamp(player.statLife+heal,0, player.statLifeMax2);
+
+                }
                 if (item.healMana > 0)
-                    baseHealMana = Mathf.CeilInt(baseHealMana * character.GetBonusHealMana());
-                
-                
+                {
+                    int mana = Mathf.CeilInt(item.healMana * character.GetBonusHealMana())- item.healMana;
+                    player.statMana = Mathf.Clamp(player.statLife + mana, 0, player.statManaMax2);
+                }
             }
-            
+            return base.UseItem(item, player);
         }
 
     }

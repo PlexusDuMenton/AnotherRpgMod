@@ -88,7 +88,6 @@ namespace AnotherRpgMod.RPGModule
             private int armor;
             public int BaseArmor { get { return armor; } }
 
-            public float statMultiplier = 1;
 
             public void SyncLevel(int _level) //only use for sync
             {
@@ -133,34 +132,36 @@ namespace AnotherRpgMod.RPGModule
 
             public float GetDefenceMult()
             {
-                    return (Stats.GetStat(Stat.Vit) * 0.01f + Stats.GetStat(Stat.Con) * 0.02f) * statMultiplier + 0.6f;
+                return Stats.GetStat(Stat.Vit) * 0.01f + Stats.GetStat(Stat.Con) * 0.02f + 0.6f;
             }
 
             public float GetHealthPerHeart()
             {
-                    return (Stats.GetStat(Stat.Vit) * 0.5f + Stats.GetStat(Stat.Con) * 0.25f)* statMultiplier + BASEHEALTHPERHEART;
+                return Stats.GetStat(Stat.Vit) * 0.5f + Stats.GetStat(Stat.Con) * 0.25f + BASEHEALTHPERHEART;
             }
             public float GetManaPerStar()
             {
-                    return (Stats.GetStat(Stat.Foc) * 0.2f + Stats.GetStat(Stat.Int) * 0.1f) * statMultiplier + BASEMANAPERSTAR;
+                return Stats.GetStat(Stat.Foc) * 0.2f + Stats.GetStat(Stat.Int) * 0.1f + BASEMANAPERSTAR;
             }
 
             public override void PreUpdateBuffs()
             {
 
-                    player.meleeDamage *= GetDamageMult(DamageType.Melee);
-                    player.thrownDamage *= GetDamageMult(DamageType.Throw);
-                    player.rangedDamage *= GetDamageMult(DamageType.Ranged);
-                    player.magicDamage *= GetDamageMult(DamageType.Magic);
-                    player.minionDamage *= GetDamageMult(DamageType.Summon);    
+                
+
+                player.meleeDamage *= GetDamageMult(DamageType.Melee);
+                player.thrownDamage *= GetDamageMult(DamageType.Throw);
+                player.rangedDamage *= GetDamageMult(DamageType.Ranged);
+                player.magicDamage *= GetDamageMult(DamageType.Magic);
+                player.minionDamage *= GetDamageMult(DamageType.Summon);
 
             }
             public override void PostUpdateEquips()
             {
+                player.statLifeMax2 = (int)(player.statLifeMax * GetHealthPerHeart() / 20) + 10;
+                player.statManaMax2 = (int)(player.statManaMax * GetManaPerStar() / 20) + 4;
                 armor = player.statDefense;
-                    player.statLifeMax2 = (int)(player.statLifeMax * GetHealthPerHeart() / 20) + 10;
-                    player.statManaMax2 = (int)(player.statManaMax * GetManaPerStar() / 20) + 4;
-                    player.statDefense = (int)(player.statDefense * GetDefenceMult());
+                player.statDefense = (int)(player.statDefense * GetDefenceMult());
 
             }
 
@@ -202,34 +203,34 @@ namespace AnotherRpgMod.RPGModule
 
             public int GetHealthRegen()
             {
-                return Mathf.CeilInt((Stats.GetStat(Stat.Vit) + Stats.GetStat(Stat.Con)) * 0.05f * statMultiplier);
+                return Mathf.CeilInt((Stats.GetStat(Stat.Vit) + Stats.GetStat(Stat.Con)) * 0.05f);
             }
             public int GetManaRegen()
             {
-                return Mathf.CeilInt((Stats.GetStat(Stat.Int) + Stats.GetStat(Stat.Spr)) * 0.05f * statMultiplier);
+                return Mathf.CeilInt((Stats.GetStat(Stat.Int) + Stats.GetStat(Stat.Spr)) * 0.05f);
             }
 
             public float GetDamageMult(DamageType type)
             {
                 if (type == DamageType.Melee)
                 {
-                    return (Stats.GetStat(Stat.Str) * 0.1f+ Stats.GetStat(Stat.Agi) * 0.05f)*statMultiplier + 0.4f;
+                    return Stats.GetStat(Stat.Str) * 0.1f+ Stats.GetStat(Stat.Agi) * 0.05f + 0.4f;
                 }
                 else if (type == DamageType.Magic)
                 {
-                    return (Stats.GetStat(Stat.Int) * 0.1f + Stats.GetStat(Stat.Spr) * 0.05f)*statMultiplier + 0.4f;
+                    return Stats.GetStat(Stat.Int) * 0.1f + Stats.GetStat(Stat.Spr) * 0.05f + 0.4f;
                 }
                 else if (type == DamageType.Ranged)
                 {
-                    return (Stats.GetStat(Stat.Agi) * 0.1f + Stats.GetStat(Stat.Dex) * 0.05f) * statMultiplier + 0.4f;
+                    return Stats.GetStat(Stat.Agi) * 0.1f + Stats.GetStat(Stat.Dex) * 0.05f + 0.4f;
                 }
                 else if (type == DamageType.Summon)
                 {
-                    return (Stats.GetStat(Stat.Spr) * 0.1f + Stats.GetStat(Stat.Foc) * 0.05f)*statMultiplier + 0.4f;
+                    return Stats.GetStat(Stat.Spr) * 0.1f + Stats.GetStat(Stat.Foc) * 0.05f + 0.4f;
                 }
                 else
                 {
-                    return (Stats.GetStat(Stat.Dex) * 0.1f + Stats.GetStat(Stat.Str)*0.05f)*statMultiplier + 0.4f;
+                    return Stats.GetStat(Stat.Dex) * 0.1f + Stats.GetStat(Stat.Str)*0.05f + 0.4f;
                 }
             }
 
@@ -259,6 +260,7 @@ namespace AnotherRpgMod.RPGModule
             }
             public void AddXp(int exp,int _level)
             {
+
 
                 exp = ReduceExp(exp, _level);
 
@@ -340,8 +342,6 @@ namespace AnotherRpgMod.RPGModule
             }
             public override void Load(TagCompound tag)
             {
-                
-
                 Stats = new RpgStats();
 
                 Exp = tag.GetInt("Exp");
