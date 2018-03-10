@@ -19,7 +19,8 @@ namespace AnotherRpgMod.UI
         HP,
         MANA,
         XP,
-        Breath
+        Breath,
+        Weapon
     }
 
     class HealthBar : UIState
@@ -27,9 +28,13 @@ namespace AnotherRpgMod.UI
 
         private Player player;
 
+        float YOffSet = -28;
+        float YDefaultOffSet = -100 + ConfigFile.GetConfig.HealthBarYoffSet;
+
         Ressource hp;
         Ressource xp;
         Ressource mana;
+        Ressource weapon;
         RessourceBreath breath;
         UIOverlay Overlay;
 
@@ -38,6 +43,7 @@ namespace AnotherRpgMod.UI
         public UIElement MainPanel3;
         public UIElement MainPanel4;
         public UIElement MainPanel5;
+        public UIElement MainPanel6;
 
         private UIText health;
         private UIText manatext;
@@ -78,28 +84,29 @@ namespace AnotherRpgMod.UI
             MainPanel1.Width.Set(840f, 0f);
             MainPanel1.Height.Set(393f, 0f);
 
-            MainPanel1.Top.Set(Main.screenHeight - MainPanel1.Height.Pixels, 0f);
+
+            MainPanel1.Top.Set(Main.screenHeight - MainPanel1.Height.Pixels + YDefaultOffSet, 0f);
 
             MainPanel2 = new PanelBar(Mode.HP, ModLoader.GetTexture("AnotherRpgMod/Textures/UI/HealthBar"));
             MainPanel2.SetPadding(0);
             MainPanel2.Left.Set(14, 0f);
             MainPanel2.Width.Set(ModLoader.GetTexture("AnotherRpgMod/Textures/UI/HealthBar").Width, 0f);
             MainPanel2.Height.Set(ModLoader.GetTexture("AnotherRpgMod/Textures/UI/HealthBar").Height, 0f);
-            MainPanel2.Top.Set(Main.screenHeight - MainPanel1.Height.Pixels + 54 + 262, 0f);
+            MainPanel2.Top.Set(Main.screenHeight - MainPanel1.Height.Pixels + 54 + 262 + YDefaultOffSet+ YOffSet, 0f);
 
             MainPanel3 = new PanelBar(Mode.MANA, ModLoader.GetTexture("AnotherRpgMod/Textures/UI/ManaBar"));
             MainPanel3.SetPadding(0);
             MainPanel3.Left.Set(31, 0f);
             MainPanel3.Width.Set(ModLoader.GetTexture("AnotherRpgMod/Textures/UI/ManaBar").Width, 0f);
             MainPanel3.Height.Set(ModLoader.GetTexture("AnotherRpgMod/Textures/UI/ManaBar").Height, 0f);
-            MainPanel3.Top.Set(Main.screenHeight - MainPanel1.Height.Pixels + 90 + 262, 0f);
+            MainPanel3.Top.Set(Main.screenHeight - MainPanel1.Height.Pixels + 90 + 262 + YDefaultOffSet+ YOffSet, 0f);
 
             MainPanel4 = new PanelBar(Mode.XP, ModLoader.GetTexture("AnotherRpgMod/Textures/UI/XPBar"));
             MainPanel4.SetPadding(0);
             MainPanel4.Left.Set(44, 0f);
             MainPanel4.Width.Set(ModLoader.GetTexture("AnotherRpgMod/Textures/UI/XPBar").Width, 0f);
             MainPanel4.Height.Set(ModLoader.GetTexture("AnotherRpgMod/Textures/UI/XPBar").Height, 0f);
-            MainPanel4.Top.Set(Main.screenHeight - MainPanel1.Height.Pixels + 113 + 262, 0f);
+            MainPanel4.Top.Set(Main.screenHeight - MainPanel1.Height.Pixels + 113 + 262 + YDefaultOffSet+ YOffSet, 0f);
 
 
             MainPanel5 = new PanelBar(Mode.Breath, ModLoader.GetTexture("AnotherRpgMod/Textures/UI/BreathBar"));
@@ -107,8 +114,14 @@ namespace AnotherRpgMod.UI
             MainPanel5.Left.Set(5, 0f);
             MainPanel5.Width.Set(ModLoader.GetTexture("AnotherRpgMod/Textures/UI/BreathBar").Width, 0f);
             MainPanel5.Height.Set(ModLoader.GetTexture("AnotherRpgMod/Textures/UI/BreathBar").Height, 0f);
-            MainPanel5.Top.Set(Main.screenHeight - MainPanel1.Height.Pixels + 64, 0f);
+            MainPanel5.Top.Set(Main.screenHeight - MainPanel1.Height.Pixels + 64 + YDefaultOffSet+ YOffSet, 0f);
 
+            MainPanel6 = new PanelBar(Mode.Breath, ModLoader.GetTexture("AnotherRpgMod/Textures/UI/WeaponBar"));
+            MainPanel6.SetPadding(0);
+            MainPanel6.Left.Set(5, 0f);
+            MainPanel6.Width.Set(ModLoader.GetTexture("AnotherRpgMod/Textures/UI/WeaponBar").Width, 0f);
+            MainPanel6.Height.Set(ModLoader.GetTexture("AnotherRpgMod/Textures/UI/WeaponBar").Height, 0f);
+            MainPanel6.Top.Set(Main.screenHeight - MainPanel1.Height.Pixels + 360 + YDefaultOffSet, 0f);
 
             Overlay = new UIOverlay(ModLoader.GetTexture("AnotherRpgMod/Textures/UI/OverlayHealthBar"));
             MainPanel1.Append(Overlay);
@@ -124,13 +137,15 @@ namespace AnotherRpgMod.UI
 
             breath = new RessourceBreath(Mode.Breath, ModLoader.GetTexture("AnotherRpgMod/Textures/UI/BreathBar"));
             MainPanel5.Append(breath);
-
+            weapon = new Ressource(Mode.Weapon, ModLoader.GetTexture("AnotherRpgMod/Textures/UI/WeaponBar"));
+            MainPanel6.Append(weapon);
 
 
             base.Append(MainPanel2);
             base.Append(MainPanel3);
             base.Append(MainPanel4);
             base.Append(MainPanel5);
+            base.Append(MainPanel6);
             base.Append(MainPanel1);
 
             health = new UIText("0|0", 1.2f);
@@ -148,14 +163,15 @@ namespace AnotherRpgMod.UI
             Level.Height.Set(131f, 0f);
 
             health.Left.Set(0, 0f);
-            health.Top.Set(65 + 262, 0f);
+            health.Top.Set(60 + 262+ YOffSet, 0f);
             manatext.Left.Set(0, 0f);
-            manatext.Top.Set(90 + 262, 0f);
+            manatext.Top.Set(90 + 262 + YOffSet, 0f);
             xptext.Left.Set(0, 0f);
-            xptext.Top.Set(112 + 262, 0f);
+            xptext.Top.Set(112 + 262 + YOffSet, 0f);
 
             Level.Left.Set(-290, 0f);
-            Level.Top.Set(285, 0f);
+            Level.HAlign = 0;
+            Level.Top.Set(285+ YOffSet, 0f);
 
             MainPanel1.Append(health);
             MainPanel1.Append(manatext);
@@ -274,6 +290,9 @@ namespace AnotherRpgMod.UI
                     break;
                 case Mode.XP:
                     quotient = (float)player.GetModPlayer<RPGPlayer>().GetExp() / (float)player.GetModPlayer<RPGPlayer>().XPToNextLevel();
+                    break;
+                case Mode.Weapon:
+                    quotient = (float)player.GetModPlayer<RPGPlayer>().EquipedItemXp / (float)player.GetModPlayer<RPGPlayer>().EquipedItemMaxXp;
                     break;
 
                 default:

@@ -11,20 +11,19 @@ namespace AnotherRpgMod.RPGModule.Entities
         public static int GetBaseLevel(NPC npc)
         {
             
-            int baselevel = (int)(npc.lifeMax / 20 + Mathf.Pow(npc.damage * 0.3f, 1.1f) + Mathf.Pow(npc.defense, 1.2f));
+            int baselevel = (int)((npc.lifeMax / 25 + Mathf.Pow(npc.damage * 0.28f, 1.1f) + Mathf.Pow(npc.defense, 1.3f))*0.8f);
             if (npc.boss)
             {
                 float health = npc.lifeMax;
                 if (npc.aiStyle == 6)
                     health = health * 0.4f;
-
                 if (Main.expertMode)
                 {
-                    baselevel = (int)(npc.lifeMax / 120 + Mathf.Pow(npc.damage * 0.33f, 1.05f) + Mathf.Pow(npc.defense * 0.8f, 1.07f));
+                    baselevel = (int)(npc.lifeMax / 140 + Mathf.Pow(npc.damage * 0.31f, 1.05f) + Mathf.Pow(npc.defense * 0.8f, 1.07f));
                 }
                 else
                 {
-                    baselevel = (int)(npc.lifeMax / 85 + Mathf.Pow(npc.damage * 0.33f, 1.04f) + Mathf.Pow(npc.defense * 0.8f, 1.05f));
+                    baselevel = (int)(npc.lifeMax / 100 + Mathf.Pow(npc.damage * 0.30f, 1.04f) + Mathf.Pow(npc.defense * 0.7f, 1.05f));
                 }
                 
             }
@@ -49,6 +48,10 @@ namespace AnotherRpgMod.RPGModule.Entities
             }
             return randomlevel;
         }
+        public static int GetTierAlly(NPC npc, int baselevel)
+        {
+            return WorldManager.GetWorldAdditionalLevel();
+        }
         public static int GetExp(NPC npc)
         {
             return Mathf.CeilInt(npc.lifeMax / 20 + npc.damage/2 + npc.defense);
@@ -71,7 +74,6 @@ namespace AnotherRpgMod.RPGModule.Entities
                 return true;
             }
         }
-
         private void SyncNpc(NPC npc) // only sync tier since it's the only random value, rest is calculed on client
         {
             if (Main.netMode == 2)
@@ -89,8 +91,15 @@ namespace AnotherRpgMod.RPGModule.Entities
 
         public override void SetDefaults(NPC npc)
         {
+            if (npc.townNPC && Main.netMode != 1)
+            {
+                level = Mathf.CeilInt(Utils.GetBaseLevel(npc) * ConfigFile.GetConfig.NpclevelMultiplier);
+                tier = Mathf.CeilInt(Utils.GetTierAlly(npc, level) * ConfigFile.GetConfig.NpclevelMultiplier);
+                npc.lifeMax = Mathf.FloorInt(npc.lifeMax * (1 + level * 0.2f + tier * 0.25f));
+                npc.damage = Mathf.FloorInt(npc.damage * (1 + level * 0.05f + tier * 0.06f));
+                npc.defense = Mathf.FloorInt(npc.defense * (1 + level * 0.012f + tier * 0.02f));
+            }
             if (npc.friendly) return;
-            if (npc.townNPC) return;
             if (Main.netMode != 1)
             {
                 level = Mathf.CeilInt(Utils.GetBaseLevel(npc) * ConfigFile.GetConfig.NpclevelMultiplier);
@@ -99,20 +108,19 @@ namespace AnotherRpgMod.RPGModule.Entities
 
                 if (npc.boss)
                 {
-                    npc.lifeMax = Mathf.FloorInt(npc.lifeMax * (1 + level * 0.5f + tier * 0.8f));
+                    npc.lifeMax = Mathf.FloorInt(npc.lifeMax * (1 + level * 0.5f + tier * 0.6f));
                 }
                 else
-                    npc.lifeMax = Mathf.FloorInt(npc.lifeMax * (1 + level * 0.23f + tier * 0.3f));
+                    npc.lifeMax = Mathf.FloorInt(npc.lifeMax * (1 + level * 0.2f + tier * 0.25f));
 
-                npc.damage = Mathf.FloorInt(npc.damage * (1 + level * 0.04f + tier * 0.05f));
-                npc.defense = Mathf.FloorInt(npc.defense * (1 + level * 0.01f + tier * 0.018f));
+                npc.damage = Mathf.FloorInt(npc.damage * (1 + level * 0.05f + tier * 0.06f));
+                npc.defense = Mathf.FloorInt(npc.defense * (1 + level * 0.012f + tier * 0.02f));
             }
             base.SetDefaults(npc);
         }
         public override void PostAI(NPC npc)
         {
             if (npc.friendly) return;
-            if (npc.townNPC) return;
             if (Main.netMode != 1) { 
                 if (StatsCreated == false) {
                     StatsCreated = true;

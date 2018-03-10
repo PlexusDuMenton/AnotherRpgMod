@@ -24,10 +24,12 @@ namespace AnotherRpgMod.UI
 
         public override void OnInitialize()
         {
+
+
             OpenStatsPanel = new UIElement();
             OpenStatsPanel.SetPadding(0);
             OpenStatsPanel.Left.Set(57, 0f);
-            OpenStatsPanel.Top.Set(933, 0f);
+            OpenStatsPanel.Top.Set((Main.screenHeight - 275) + ConfigFile.GetConfig.HealthBarYoffSet, 0f);
             OpenStatsPanel.Width.Set(32, 0f);
             OpenStatsPanel.Height.Set(64, 0f);
 
@@ -41,14 +43,17 @@ namespace AnotherRpgMod.UI
             OpenStatsPanel.Append(OpenButton);
             base.Append(OpenStatsPanel);
         }
-        private void OpenStatMenu(UIMouseEvent evt, UIElement listeningElement)
+        public void OpenStatMenu(UIMouseEvent evt, UIElement listeningElement)
         {
             Main.PlaySound(SoundID.MenuOpen);
+            Stats.Instance.LoadChar();
             Stats.visible = !Stats.visible;
         }
     }
     class Stats : UIState
     {
+        private float SizeMultiplier = 1;
+
         public static Stats Instance;
         public UIPanel statsPanel;
         private RPGPlayer Char;
@@ -58,14 +63,20 @@ namespace AnotherRpgMod.UI
 
         private int Amount = 1;
 
-        private void loadchar()
+        public void LoadChar()
         {
             Char = Main.player[Main.myPlayer].GetModPlayer<RPGPlayer>();
+            
         }
 
         private UIText[] UpgradeStatText = new UIText[8];
         private UIText[] UpgradeStatDetails = new UIText[8];
         private UIText[] UpgradeStatOver = new UIText[8];
+        private UIText[] StatProgress = new UIText[8];
+
+        public StatProgress[] progressStatsBar = new StatProgress[8];
+        public ProgressBG[] progressStatsBarBG = new ProgressBG[8];
+
         private UIText PointsLeft = new UIText("");
 
         UIText ResetText;
@@ -86,34 +97,40 @@ namespace AnotherRpgMod.UI
 
         public override void OnInitialize()
         {
+            SizeMultiplier = (Main.screenHeight / 1080f);
+            baseYOffset *= SizeMultiplier;
+            baseXOffset *= SizeMultiplier;
+            YOffset *= SizeMultiplier;
+            XOffset *= SizeMultiplier;
+
 
             Instance = this;
             statsPanel = new UIPanel();
             statsPanel.SetPadding(0);
-            statsPanel.Left.Set(400f, 0f);
-            statsPanel.Top.Set(100f, 0f);
-            statsPanel.Width.Set(900, 0f);
-            statsPanel.Height.Set(400, 0f);
+            statsPanel.Left.Set(400f* SizeMultiplier, 0f);
+            statsPanel.Top.Set(100f* SizeMultiplier, 0f);
+            statsPanel.Width.Set(1000* SizeMultiplier, 0f);
+            statsPanel.Height.Set(400* SizeMultiplier, 0f);
             statsPanel.BackgroundColor = new Color(73, 94, 171,150);
 
             statsPanel.OnMouseDown += new UIElement.MouseEvent(DragStart);
             statsPanel.OnMouseUp += new UIElement.MouseEvent(DragEnd);
 
-            PointsLeft = new UIText("Points : 0 / 0");
-            PointsLeft.Left.Set(250, 0f);
-            PointsLeft.Top.Set(20, 0f);
+            PointsLeft = new UIText("Points : 0 / 0", SizeMultiplier);
+            PointsLeft.Left.Set(250* SizeMultiplier, 0f);
+            PointsLeft.Top.Set(20* SizeMultiplier, 0f);
             PointsLeft.Width.Set(0, 0f);
             PointsLeft.Height.Set(0, 0f);
             statsPanel.Append(PointsLeft);
 
             
             
-            ResetText = new UIText("RESET", 1, true)
+            ResetText = new UIText("RESET",SizeMultiplier, true)
             {
                 TextColor = Color.Gray
             };
-            ResetText.Left.Set(50, 0f);
-            ResetText.Top.Set(20, 0f);
+            ResetText.Left.Set(50 * SizeMultiplier, 0f);
+            ResetText.Top.Set(20 * SizeMultiplier, 0f);
             ResetText.Width.Set(0, 0f);
             ResetText.Height.Set(0, 0f);
             ResetText.OnClick += new MouseEvent(ResetStats);
@@ -126,10 +143,10 @@ namespace AnotherRpgMod.UI
             {
                 UIImageButton UpgradeStatButton = new UIImageButton(Button);
                
-                UpgradeStatButton.Left.Set(baseXOffset+ XOffset, 0f);
+                UpgradeStatButton.Left.Set(baseXOffset+ XOffset*2, 0f);
                 UpgradeStatButton.Top.Set(baseYOffset+(YOffset*i), 0f);
-                UpgradeStatButton.Width.Set(22, 0f);
-                UpgradeStatButton.Height.Set(22, 0f);
+                UpgradeStatButton.Width.Set(22* SizeMultiplier, 0f);
+                UpgradeStatButton.Height.Set(22* SizeMultiplier, 0f);
                 Stat Statused = (Stat)i;
                 UpgradeStatButton.OnMouseOver += new MouseEvent((UIMouseEvent, UIElement) => UpdateStat(UIMouseEvent, UIElement, Statused));
                 UpgradeStatButton.OnMouseOut += new MouseEvent(ResetOver);
@@ -138,43 +155,75 @@ namespace AnotherRpgMod.UI
                 UpgradeStatButton.OnMiddleClick += new MouseEvent((UIMouseEvent, UIElement) => UpgradeStat(UIMouseEvent, UIElement, Statused, 25));
                 statsPanel.Append(UpgradeStatButton);
 
+
+                progressStatsBar[i] = new StatProgress((Stat)i, ModLoader.GetTexture("AnotherRpgMod/Textures/UI/Blank"));
+                progressStatsBar[i].Left.Set(baseXOffset + XOffset*1.1f, 0f);
+                progressStatsBar[i].Top.Set(baseYOffset + (YOffset * i)+6, 0f);
+                progressStatsBar[i].Width.Set(105, 0);
+                progressStatsBar[i].HAlign = 0;
+                progressStatsBar[i].Height.Set(10, 0);
+                progressStatsBar[i].width = 105;
+                progressStatsBar[i].left = baseYOffset + (YOffset * i);
+                statsPanel.Append(progressStatsBar[i]);
+
+                progressStatsBarBG[i] = new ProgressBG(ModLoader.GetTexture("AnotherRpgMod/Textures/UI/Blank"));
+                progressStatsBarBG[i].Left.Set(baseXOffset + XOffset * 1.1f, 0f);
+                progressStatsBarBG[i].Top.Set(baseYOffset + (YOffset * i)+6, 0f);
+                progressStatsBarBG[i].Width.Set(105, 0);
+                progressStatsBarBG[i].HAlign = 0;
+                progressStatsBarBG[i].Height.Set(10, 0);
+                progressStatsBarBG[i].color = new Color(10, 0, 0,128);
+                progressStatsBar[i].left = baseYOffset + (YOffset * i);
+
+                statsPanel.Append(progressStatsBarBG[i]);
+
+                StatProgress[i] = new UIText("0", SizeMultiplier);
+                StatProgress[i].SetText("0/2");
+                StatProgress[i].Left.Set(baseXOffset + XOffset * 2.3f, 0f);
+                StatProgress[i].Top.Set(baseYOffset + (YOffset * i), 0f);
+                StatProgress[i].HAlign = 0f;
+                StatProgress[i].VAlign = 0f;
+                StatProgress[i].MinWidth.Set(150 * SizeMultiplier, 0);
+                StatProgress[i].MaxWidth.Set(150 * SizeMultiplier, 0);
                 
-                UpgradeStatText[i] = new UIText("0");
+                statsPanel.Append(StatProgress[i]);
+
+                UpgradeStatText[i] = new UIText("0", SizeMultiplier);
                 UpgradeStatText[i].SetText("Mana : 10 + 10");
                 UpgradeStatText[i].Left.Set(baseXOffset, 0f);
                 UpgradeStatText[i].Top.Set(baseYOffset + (YOffset * i), 0f);
                 UpgradeStatText[i].HAlign = 0f;
                 UpgradeStatText[i].VAlign = 0f;
-                UpgradeStatText[i].MinWidth.Set(150, 0);
-                UpgradeStatText[i].MaxWidth.Set(150, 0);
+                UpgradeStatText[i].MinWidth.Set(150* SizeMultiplier, 0);
+                UpgradeStatText[i].MaxWidth.Set(150* SizeMultiplier, 0);
                 statsPanel.Append(UpgradeStatText[i]);
 
-                UpgradeStatDetails[i] = new UIText("");
+                UpgradeStatDetails[i] = new UIText("", SizeMultiplier);
                 if (i < 3)
                 {
                     
                     UpgradeStatDetails[i].SetText("Health : 100 - 5 Heart x 20 Health Per Heart");
                 }
                 UpgradeStatDetails[i].SetText("Melee Damage Multiplier : 1");
-                UpgradeStatDetails[i].Left.Set(baseXOffset+ (XOffset * 1.5f), 0f);
+                UpgradeStatDetails[i].Left.Set(baseXOffset+ (XOffset * 2.9f), 0f);
                 UpgradeStatDetails[i].Top.Set(baseYOffset + (YOffset * i), 0f);
                 UpgradeStatDetails[i].HAlign = 0f;
                 UpgradeStatDetails[i].VAlign = 0f;
-                UpgradeStatDetails[i].MinWidth.Set(300f, 0);
-                UpgradeStatDetails[i].MaxWidth.Set(300f, 0);
+                UpgradeStatDetails[i].MinWidth.Set(300f* SizeMultiplier, 0);
+                UpgradeStatDetails[i].MaxWidth.Set(300f* SizeMultiplier, 0);
                 statsPanel.Append(UpgradeStatDetails[i]);
 
-                UpgradeStatOver[i] = new UIText("")
+                UpgradeStatOver[i] = new UIText("", SizeMultiplier)
                 {
                     TextColor = Color.Aqua
                 };
                 UpgradeStatOver[i].SetText("");
-                UpgradeStatOver[i].Left.Set(baseXOffset + (XOffset * 5.3f), 0f);
+                UpgradeStatOver[i].Left.Set(baseXOffset + (XOffset * 6.7f), 0f);
                 UpgradeStatOver[i].Top.Set(baseYOffset + (YOffset * i), 0f);
                 UpgradeStatOver[i].HAlign = 0f;
                 UpgradeStatOver[i].VAlign = 0f;
-                UpgradeStatOver[i].MinWidth.Set(20f,0);
-                UpgradeStatOver[i].MaxWidth.Set(20f, 0);
+                UpgradeStatOver[i].MinWidth.Set(20f* SizeMultiplier, 0);
+                UpgradeStatOver[i].MaxWidth.Set(20f* SizeMultiplier, 0);
                 statsPanel.Append(UpgradeStatOver[i]);
             }
             Append(statsPanel);
@@ -188,12 +237,17 @@ namespace AnotherRpgMod.UI
 
         public void UpdateStat(UIMouseEvent evt, UIElement listeningElement, Stat stat)
         {
+            
             Recalculate();
+            if (Char == null)
+            {
+                LoadChar();
+            }
+
             for (int i = 0; i < 8; i++)
             {
                 UpgradeStatOver[i].TextColor = SecondaryColor;
             }
-            CheckChar();
             switch (stat)
             {
                 case (Stat.Vit):
@@ -260,16 +314,12 @@ namespace AnotherRpgMod.UI
             Main.PlaySound(SoundID.MenuOpen);
             Char.ResetStats();
         }
-        public void CheckChar()
-        {
-            if (Char == null)
-            {
-                loadchar();
-            }
-        }
+
 
         private void UpgradeStat(UIMouseEvent evt, UIElement listeningElement, Stat stat,int amount)
         {
+            if (!visible)
+                return;
             Main.PlaySound(SoundID.MenuOpen);
             Char.SpendPoints(stat, amount);
             
@@ -285,10 +335,14 @@ namespace AnotherRpgMod.UI
 
         void UpdateStats()
         {
-            CheckChar();
+            float statprogresscolor = 0;
             for (int i = 0; i < 8; i++)
             {
                 UpgradeStatText[i].SetText((Stat)i + " : " + Char.GetNaturalStat((Stat)i) + " + " + Char.GetAddStat((Stat)i));
+                statprogresscolor = (float)Char.GetStatXP((Stat)i) / (float)Char.GetStatXPMax((Stat)i);
+                StatProgress[i].TextColor = new Color(127, (int)(280 * statprogresscolor), (int)(243 * statprogresscolor));
+                StatProgress[i].SetText(Char.GetStatXP((Stat)i) + " / " + Char.GetStatXPMax((Stat)i));
+                progressStatsBar[i].color = new Color((int)(200*(1- statprogresscolor)), (int)(280 * statprogresscolor), (int)(130 * statprogresscolor) +50,1); ;
             }
             for (int i = 0; i < 5; i++)
             {
@@ -337,6 +391,90 @@ namespace AnotherRpgMod.UI
                 statsPanel.Top.Set(MousePosition.Y - offset.Y, 0f);
                 Recalculate();
             }
+        }
+    }
+
+    class StatProgress : UIElement
+    {
+        private Texture2D _texture;
+        public float ImageScale = 1f;
+        public Color color;
+
+        private Stat stat;
+        public float width;
+        public float left;
+
+        public StatProgress(Stat stat, Texture2D texture)
+        {
+            _texture = texture;
+            Width.Set(_texture.Width, 0f);
+            Height.Set(_texture.Height, 0f);
+            width = _texture.Width;
+            Left.Set(0, 0f);
+            Top.Set(0, 0f);
+            this.color = Color.White;
+            this.stat = stat;
+        }
+
+        public void SetImage(Texture2D texture)
+        {
+            _texture = texture;
+            Width.Set(_texture.Width, 0f);
+            Height.Set(_texture.Height, 0f);
+
+
+        }
+
+        public override void Draw(SpriteBatch spriteBatch)
+        {
+            RPGPlayer player = Main.player[Main.myPlayer].GetModPlayer<RPGPlayer>();
+            float quotient = 1f;
+            //Calculate quotient
+
+            
+            quotient = (float)player.GetStatXP(stat) / (float)player.GetStatXPMax(stat);
+
+            this.Width.Set(quotient * width, 0f);
+            //Left.Set((1 - quotient) * width, 0);
+            Recalculate(); // recalculate the position and size
+
+            base.Draw(spriteBatch);
+        }
+
+        protected override void DrawSelf(SpriteBatch spriteBatch)
+        {
+            CalculatedStyle dimensions = GetDimensions();
+            Point point1 = new Point((int)dimensions.X, (int)dimensions.Y);
+            int width = (int)Math.Ceiling(dimensions.Width);
+            int height = (int)Math.Ceiling(dimensions.Height);
+
+            spriteBatch.Draw(_texture, dimensions.Position() + _texture.Size() * (1f - ImageScale) / 2f, new Rectangle(point1.X, point1.Y, width, height), color, 0f, Vector2.Zero, ImageScale, SpriteEffects.None, 0f);
+        }
+    }
+
+    class ProgressBG : UIElement
+    {
+        private Texture2D _texture;
+        public float ImageScale = 1f;
+        public Color color;
+
+        public ProgressBG(Texture2D texture)
+        {
+            _texture = texture;
+            Width.Set(_texture.Width, 0f);
+            Height.Set(_texture.Height, 0f);
+            this.color = Color.White;
+        }
+
+
+        protected override void DrawSelf(SpriteBatch spriteBatch)
+        {
+            CalculatedStyle dimensions = GetDimensions();
+            Point point1 = new Point((int)dimensions.X, (int)dimensions.Y);
+            int width = (int)Math.Ceiling(dimensions.Width);
+            int height = (int)Math.Ceiling(dimensions.Height);
+
+            spriteBatch.Draw(_texture, dimensions.Position() + _texture.Size() * (1f - ImageScale) / 2f, new Rectangle(point1.X, point1.Y, width, height), color, 0f, Vector2.Zero, ImageScale, SpriteEffects.None, 0f);
         }
     }
 

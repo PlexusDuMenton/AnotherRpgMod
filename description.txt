@@ -1,10 +1,8 @@
-Yet another RPG mod ! 
+And another RPG mod ! 
 
-Simple RPG mod for now, planning to make it growth : 
+A very active mod that have almost daily update ! 
 
-Experience , level
-You gain points to spent into stats each time you level up
-When you kill a new boss for the first time , ennemies become more powerfull (only weakers ones)
+Rpg mod that add Level, Stats , and even weapon upgrade ! 
 
 
 
@@ -12,6 +10,61 @@ Join Discord : https://discord.gg/UQueeQE ! (link also on webpage)
 
 
 Changelog : 
+
+0.12.3
+fix bug when having item with a ascending over 4 
+
+
+0.12.2
+Ascencion level reset on join is fixed 
+Ascension level to obtain ascension is fixed (was lvl 1 >.>)
+Fix reset on item being drop on mp servers
+removes autoUse on magic & summon weapon on ascension
+
+0.12.1
+quick fix on ascended weapon damage display
+
+0.12 -
+Extended weapon upgrade : 
+When reaching level 11, item will ascend , reset his level to 0 and gaining powerfull bonus : 
+	+100% base damage 
+	+1 projectile (if have projectile)
+	AutoUse (or 40% attack speed gain if allready have autouse)
+	50% mana reduction (if use mana)
+	+1 max minion (if create minion)
+then each new ascend will at (ascend level X 10) (20 for second ascend , 30 for third)
+second ascend will give : 50% chance not to use ammo , +50% summon damage (summon weapon only)
+starting at second ascend,each ascend will give  : 
+100% base damage, +1 projectile, +1 minion(minion weapon),7.5% lifesteal (melee only), 7.5% mana regen (magic weaapon),
+Fix minor that allowed adding points even when stats windows was closed
+_____________________________________________________________________
+0.11.1
+Allow to move of the healthbar with (on the y axis) "HealthBarYoffSet" parametter in AnRPG_Setting.json in Documents\My Games\Terraria\ModLoader 
+
+0.11 - 
+Added Weapon Experience and level, each time you use a weapon, it gain experience and possibly level that will increase weapon's damage by 10% per level
+Changed a bit Healthbar, added Weapon XP bar, Moved healthbar up a bit to allow more compatiblities with chat and "Yet Another Boss Health Bar"
+fix Ocasional crash for no reason when not oppening stats menu
+Fix bug that make your character spawn with 3 missing stat on each stats
+
+
+0.10 - 
+Change how stats work , you now have to put multiple points into a stats before it goes up (and the number of points will icnrease every 25 points, poitns from level are not affected)
+Increase stats points per level (to balance) ----- Type "/reset" in chat to reset all your stat and get the points your should have
+Fixed level calculation for WormType monster (well ,especialy you, eater of world)
+Generaly lowered ennemy level
+Increased ennemy power by level
+Reduce ennmy level gain when killing a boss
+Reduced Slighty xp need to level up
+
+
+0.9.2 - 
+Fix resolution bug where stats button would not be displayed
+Fix bug that when you level up, the congratulation text was one level off
+
+0.9.1 -
+Fix loading with allready existing character
+
 
 0.9 -
 

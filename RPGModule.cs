@@ -28,46 +28,96 @@ namespace AnotherRpgMod.RPGModule
         Int, //Intelect : Increase Magic Damage, Increase Mana Regen, Increase Mana (light)
         Spr //Spirit : Increase Summon Damage,  Increase Mana Regen, Increase Magic Damage (light)
     }
-    
 
-    namespace Entities { 
+
+    namespace Entities {
+        class StatData
+        {
+            private int natural;
+            private int level;
+            private int xp;
+
+            public int AddLevel { get { return level; } }
+            public int NaturalLevel { get { return natural; } }
+            public int GetLevel { get { return level+ natural; } }
+            public int GetXP { get { return xp; } }
+
+            public int XpForLevel()
+            {
+                return Mathf.CeilInt(level * 0.04f) + 1;
+            }
+            public void AddXp(int _xp)
+            {
+                xp += _xp;
+                while (xp >= XpForLevel())
+                {
+                    xp -= XpForLevel();
+                    level=level +1;
+                }
+            }
+            public StatData(int _natural, int _level = 0, int _xp = 0)
+            {
+                natural = _natural;
+                xp = _xp;
+                level = _level;
+            }
+            public void LevelUp()
+            {
+                natural++;
+            }
+            
+        }
+
         class RpgStats
         {
-            static int Default = 4;
-            private Dictionary<Stat, int> ActualStat;
+            readonly int Default = 4;
+            private Dictionary<Stat, StatData> ActualStat;
 
             public RpgStats()
             {
-                ActualStat = new Dictionary<Stat, int>(8);
+                ActualStat = new Dictionary<Stat, StatData>(8);
                 for (int i = 0; i <= 7; i++)
                 {
-                    ActualStat.Add((Stat)i, Default);
+                    ActualStat.Add((Stat)i,new StatData(Default));
                 }
             }
 
-            public void SetStats(Stat a,int b)
+            public void SetStats(Stat _stat,int _natural,int _level,int _xp)
             {
-                ActualStat[a] = b;
+                ActualStat[_stat] = new StatData(_natural, _level,_xp);
             }
 
+            public int GetLevelStat(Stat a)
+            {
+                return ActualStat[a].AddLevel;
+            }
             public int GetStat(Stat a)
             {
-                return ActualStat[a];
+                return ActualStat[a].GetLevel;
             }
-            public int GetNaturalStat(Stat a, int level)
+            public int GetNaturalStat(Stat a)
             {
-                return level + Default - 1;
+                return ActualStat[a].NaturalLevel;
             }
+
             public void UpgradeStat(Stat statname,int value = 1)
             {
-                ActualStat[statname] += value;
+                ActualStat[statname].AddXp(value);
+            }
+            public int GetStatXP(Stat statname)
+            {
+                return ActualStat[statname].GetXP;
+            }
+            public int GetStatXPMax(Stat statname)
+            {
+                return ActualStat[statname].XpForLevel();
             }
 
             public void Reset(int level)
             {
                 for (int i = 0; i <= 7; i++)
                 {
-                    ActualStat[(Stat)i] = level+ Default-1;
+                    ActualStat[(Stat)i] = new StatData(level + Default-1);
                 }
             }
 
@@ -75,7 +125,7 @@ namespace AnotherRpgMod.RPGModule
             {
                 for (int i = 0; i <= 7; i++)
                 {
-                    ActualStat[(Stat)i] += 1;
+                    ActualStat[(Stat)i].LevelUp();
                 }
             }
         }
@@ -88,28 +138,39 @@ namespace AnotherRpgMod.RPGModule
             private int armor;
             public int BaseArmor { get { return armor; } }
 
+            public int EquipedItemXp = 0;
+            public int EquipedItemMaxXp = 1;
+
             public float statMultiplier = 1;
 
             public void SyncLevel(int _level) //only use for sync
             {
                 level = _level;
             }
-            public void SyncStat(int value,Stat stat) //only use for sync
+            public void SyncStat(StatData data ,Stat stat) //only use for sync
             {
-                Stats.SetStats(stat, value);
+                Stats.SetStats(stat,level, data.GetLevel, data.GetXP);
             }
 
+            public int GetStatXP(Stat s)
+            {
+                return Stats.GetStatXP(s);
+            }
+            public int GetStatXPMax(Stat s)
+            {
+                return Stats.GetStatXPMax(s);
+            }
             public int GetStat(Stat s)
             {
                 return Stats.GetStat(s);
             }
             public int GetNaturalStat(Stat s)
             {
-                return Stats.GetNaturalStat(s,level);
+                return Stats.GetNaturalStat(s);
             }
             public int GetAddStat(Stat s)
             {
-                return Stats.GetStat(s)- Stats.GetNaturalStat(s, level);
+                return Stats.GetLevelStat(s);
             }
             public int GetLevel()
             {
@@ -130,6 +191,39 @@ namespace AnotherRpgMod.RPGModule
             private int BASEHEALTHPERHEART = 15;
             private int BASEMANAPERSTAR = 5;
 
+
+
+            private void AddWeaponXp(int damage)
+            {
+                if (player.HeldItem != null && player.HeldItem.damage > 0 && player.HeldItem.maxStack <= 1)
+                {
+                    Items.ItemUpdate Item = player.HeldItem.GetGlobalItem<Items.ItemUpdate>();
+                    if (Item != null && Item.NeedsSaving(player.HeldItem))
+                    {
+                        Item.AddExp(Mathf.CeilInt(damage * 0.2f), player);
+                    }
+                }
+            }
+
+            public override void OnHitNPC(Item item, NPC target, int damage, float knockback, bool crit)
+            {
+                AddWeaponXp(damage);
+                int lifeHeal = (int)(damage * GetLifeLeech());
+                player.statLife += lifeHeal;
+                int manaHeal = (int)(player.statManaMax2 * GetManaLeech());
+                player.statMana += manaHeal;
+                if (lifeHeal>0)
+                    CombatText.NewText(player.getRect(), new Color(50, 255, 50),"+"+ lifeHeal);
+                if (manaHeal>0)
+                    CombatText.NewText(player.getRect(), new Color(50, 50, 255), "+" + manaHeal);
+            }
+
+            public override void OnHitNPCWithProj(Projectile proj, NPC target, int damage, float knockback, bool crit)
+            {
+                AddWeaponXp(damage);
+                player.statMana += (int)(player.statManaMax2 * GetManaLeech());
+                player.statLife += (int)(damage * GetLifeLeech());
+            }
 
             public float GetDefenceMult()
             {
@@ -153,11 +247,20 @@ namespace AnotherRpgMod.RPGModule
                     player.rangedDamage *= GetDamageMult(DamageType.Ranged);
                     player.magicDamage *= GetDamageMult(DamageType.Magic);
                     player.minionDamage *= GetDamageMult(DamageType.Summon);
+                    if (player.HeldItem != null && player.HeldItem.damage>0&& player.HeldItem.maxStack <= 1) { 
+                        Items.ItemUpdate Item = player.HeldItem.GetGlobalItem<Items.ItemUpdate>();
+                        if (Item != null && Item.NeedsSaving(player.HeldItem))
+                        {
+                            EquipedItemXp = Item.GetXp;
+                            EquipedItemMaxXp = Item.GetMaxXp;
+                        }
+                    }
                 }
 
             }
             public override void PostUpdateEquips()
             {
+                
                 if (Main.netMode != 2) { 
                     armor = player.statDefense;
                     player.statLifeMax2 = (int)(player.statLifeMax * GetHealthPerHeart() / 20) + 10;
@@ -262,11 +365,7 @@ namespace AnotherRpgMod.RPGModule
             }
             public void AddXp(int exp,int _level)
             {
-
                 exp = ReduceExp(exp, _level);
-
-
-
                 if (exp >= XPToNextLevel() * 0.1f)
                 {
                     CombatText.NewText(player.getRect(), new Color(50, 26, 255), exp + " XP !!");
@@ -282,16 +381,62 @@ namespace AnotherRpgMod.RPGModule
             {
                 LevelUp();
             }
+            private void SilentLevelUp()
+            {
+                int pointsToGain = 5 + Mathf.FloorInt(Mathf.Pow(level, 0.5f));
+                totalPoints += pointsToGain;
+                freePoints += pointsToGain;
+                Stats.OnLevelUp();
+                level++;
+            }
+            public void RecalculateStat()
+            {
+                int _level = level;
+                level = 0;
+                totalPoints = 0;
+                freePoints = 0;
+                Stats = new RpgStats();
+                for (int i = 0; i< _level; i++)
+                {
+                    SilentLevelUp();
+                }
+
+            }
+
+            public float GetLifeLeech()
+            {
+                if (player.HeldItem != null && player.HeldItem.damage > 0 && player.HeldItem.maxStack <= 1)
+                {
+                    Items.ItemUpdate Item = player.HeldItem.GetGlobalItem<Items.ItemUpdate>();
+                    if (Item != null && Item.NeedsSaving(player.HeldItem))
+                    {
+                        return Item.GetLifeLeech*0.01f;
+                    }
+                }
+                return 0;
+            }
+            public float GetManaLeech()
+            {
+                if (player.HeldItem != null && player.HeldItem.damage > 0 && player.HeldItem.maxStack <= 1)
+                {
+                    Items.ItemUpdate Item = player.HeldItem.GetGlobalItem<Items.ItemUpdate>();
+                    if (Item != null && Item.NeedsSaving(player.HeldItem))
+                    {
+                        return Item.GetManaLeech * 0.01f;
+                    }
+                }
+                return 0;
+            }
             private void LevelUp()
             {
-                int pointsToGain = 3 + Mathf.FloorInt(Mathf.Pow(level,0.4f));
+                int pointsToGain = 5 + Mathf.FloorInt(Mathf.Pow(level,0.5f));
                 totalPoints += pointsToGain;
                 freePoints += pointsToGain; 
                 Stats.OnLevelUp();
                 CombatText.NewText(player.getRect(), new Color(255, 25, 100), "LEVEL UP !!!!");
-                Main.NewText(player.name + " Is now level : " + level.ToString() + " .Congratulation !", 255, 223, 63);
+                
                 level++;
-
+                Main.NewText(player.name + " Is now level : " + level.ToString() + " .Congratulation !", 255, 223, 63);
                 if (Main.netMode == 1)
                 {
                     ModPacket packet = mod.GetPacket();
@@ -303,7 +448,7 @@ namespace AnotherRpgMod.RPGModule
             }
             public int XPToNextLevel()
             {
-                return 15 * level + 5 * Mathf.CeilInt(Mathf.Pow(level, 2)) + 40;
+                return 15 * level + 5 * Mathf.CeilInt(Mathf.Pow(level, 1.8f)) + 40;
             }
 
 
@@ -312,20 +457,46 @@ namespace AnotherRpgMod.RPGModule
                 int[] convertedStats = new int[8];
                 for (int i = 0; i < 8; i++)
                 {
-                    convertedStats[i] = Stats.GetStat((Stat)i);
+                    convertedStats[i] = GetAddStat((Stat)i);
                 }
                 return convertedStats;
             }
 
-            public void ConvertIntToStat(int[] convertedStats)
+            public int[] ConvertStatXPToInt()
             {
+                int[] convertedStats = new int[8];
                 for (int i = 0; i < 8; i++)
                 {
-                    
-
-                    Stats.SetStats((Stat)i, convertedStats[i]);
+                    convertedStats[i] = GetStatXP((Stat)i);
                 }
+                return convertedStats;
             }
+
+            void LoadStats(int[] _level, int[] _xp)
+            {
+                if (_xp.Length != 8) //if save is not correct , will try to port
+                {
+
+                    RecalculateStat();
+                    if (_level.Length != 8) //if port don't work
+                    {
+                        return;
+                    }
+                    for (int i = 0; i < 8; i++)
+                    {
+                        Stats.UpgradeStat((Stat)i, _level[i]);
+                    }
+                }
+                else
+                {
+                    for (int i = 0; i < 8; i++)
+                    {
+                        Stats.SetStats((Stat)i,level+3,_level[i], _xp[i]);
+                    }
+                }
+                
+            }
+
 
             public override TagCompound Save()
             {
@@ -337,19 +508,22 @@ namespace AnotherRpgMod.RPGModule
                     {"Exp", Exp},
                     {"level", level},
                     {"Stats", ConvertStatToInt()},
+                    {"StatsXP", ConvertStatXPToInt()},
                     {"totalPoints", totalPoints},
-                    {"freePoints", freePoints}
+                    {"freePoints", freePoints},
+                    {"AnRPGSaveVersion", 1}
                 };
             }
+            public override void Initialize()
+            {
+                Stats = new RpgStats();
+            }
+
             public override void Load(TagCompound tag)
             {
-                
-
-                Stats = new RpgStats();
-
                 Exp = tag.GetInt("Exp");
                 level = tag.GetInt("level");
-                ConvertIntToStat( tag.GetIntArray("Stats"));
+                LoadStats( tag.GetIntArray("Stats"), tag.GetIntArray("StatsXP"));
                 totalPoints = tag.GetInt("totalPoints");
                 freePoints = tag.GetInt("freePoints");
             }

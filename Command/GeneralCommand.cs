@@ -11,7 +11,7 @@ using AnotherRpgMod.RPGModule;
 using AnotherRpgMod.Utils;
 namespace AnotherRpgMod.Command
 {
-    /*
+    /*   
     public class Level : ModCommand
     {
         public override CommandType Type
@@ -38,7 +38,7 @@ namespace AnotherRpgMod.Command
         {
             RPGPlayer character = caller.Player.GetModPlayer<RPGPlayer>(mod);
             int level = Int32.Parse(args[0]);
-            level = Utils.Mathf.Clamp(level, 0, 999);
+            level = Utils.Mathf.Clamp(level, 0, 2500);
             for (int i = 0; i< level; i++)
             {
                 character.commandLevelup();
@@ -53,36 +53,32 @@ namespace AnotherRpgMod.Command
             
         }
     }*/
-
-    public class ResetCommand : ModCommand
-    {
-        public override CommandType Type
+        public class ResetCommand : ModCommand
         {
-            get { return CommandType.Chat; }
+            public override CommandType Type
+            {
+                get { return CommandType.Chat; }
+            }
+
+            public override string Command
+            {
+                get { return "reset"; }
+            }
+
+            public override string Usage
+            {
+                get { return "/reset "; }
+            }
+
+            public override string Description
+            {
+                get { return "Reset your points"; }
+            }
+
+            public override void Action(CommandCaller caller, string input, string[] args)
+            {
+                RPGPlayer character = caller.Player.GetModPlayer<RPGPlayer>(mod);
+                character.RecalculateStat();
+            }
         }
-
-        public override string Command
-        {
-            get { return "reset"; }
-        }
-
-        public override string Usage
-        {
-            get { return "/reset "; }
-        }
-
-        public override string Description
-        {
-            get { return "Reset your spent points"; }
-        }
-
-        public override void Action(CommandCaller caller, string input, string[] args)
-        {
-            RPGPlayer character = caller.Player.GetModPlayer<RPGPlayer>(mod);
-            character.ResetStats();
-
-
-        }
-    }
-    
 }

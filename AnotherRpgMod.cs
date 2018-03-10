@@ -24,7 +24,8 @@ namespace AnotherRpgMod
     public enum Message : byte {
         AddXP,
         SyncLevel,
-        SyncNPC
+        SyncNPC,
+        SyncWeapon
     };
 
     public class DataTag
@@ -67,7 +68,7 @@ namespace AnotherRpgMod
             { Message.AddXP, new List<DataTag>(){ DataTag.amount, DataTag.level } },
             { Message.SyncLevel, new List<DataTag>(){ DataTag.playerId, DataTag.amount } },
             { Message.SyncNPC, new List<DataTag>(){ DataTag.npcId, DataTag.level, DataTag.life, DataTag.damage, DataTag.defense } },
-};
+        };
 
 
         public override void HandlePacket(BinaryReader reader, int whoAmI)
@@ -105,11 +106,17 @@ namespace AnotherRpgMod
                     break;
             }
         }
+        public override void PreSaveAndQuit()
+        {
+            Stats.visible = false;
+            base.PreSaveAndQuit();
+        }
         public override void Load()
         {
-            ConfigFile.Init();
+            
             if (!Main.dedServ)
             {
+                ConfigFile.Init();
                 customResources = new UserInterface();
                 healthBar = new HealthBar();
                 HealthBar.visible = true;
@@ -119,8 +126,6 @@ namespace AnotherRpgMod
                 statMenu = new Stats();
                 Stats.visible = false;
                 customstats.SetState(statMenu);
-
-
 
                 customOpenstats = new UserInterface();
                 openStatMenu = new OpenStatsButton();
@@ -135,6 +140,7 @@ namespace AnotherRpgMod
                 customstats.SetState(statMenu);
                 */
             }
+            
         }
 
         public Arpg()

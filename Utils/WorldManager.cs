@@ -35,7 +35,7 @@ namespace AnotherRpgMod.Utils
         {
             int bonuslevel = 0;
 
-            bonuslevel = BossDefeated * 13;
+            bonuslevel = BossDefeated * 8;
 
             if (Main.hardMode)
             {
