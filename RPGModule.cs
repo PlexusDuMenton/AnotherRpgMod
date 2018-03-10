@@ -10,6 +10,7 @@ using Terraria.ModLoader;
 using Terraria.DataStructures;
 using AnotherRpgMod.Utils;
 using Terraria.ModLoader.IO;
+using Terraria.GameInput;
 
 namespace AnotherRpgMod.RPGModule
 {
@@ -205,25 +206,39 @@ namespace AnotherRpgMod.RPGModule
                 }
             }
 
-            public override void OnHitNPC(Item item, NPC target, int damage, float knockback, bool crit)
+            public override void ModifyHitNPC(Item item, NPC target, ref int damage, ref float knockback, ref bool crit)
             {
-                AddWeaponXp(damage);
+                if (crit)
+                {
+                    damage = (int)(0.5f * damage * GetCriticalDamage());
+                }
+                if (target.type != 488)
+                    AddWeaponXp(damage);
                 int lifeHeal = (int)(damage * GetLifeLeech());
                 player.statLife += lifeHeal;
                 int manaHeal = (int)(player.statManaMax2 * GetManaLeech());
                 player.statMana += manaHeal;
-                if (lifeHeal>0)
-                    CombatText.NewText(player.getRect(), new Color(50, 255, 50),"+"+ lifeHeal);
-                if (manaHeal>0)
+                if (lifeHeal > 0)
+                    CombatText.NewText(player.getRect(), new Color(50, 255, 50), "+" + lifeHeal);
+                if (manaHeal > 0)
                     CombatText.NewText(player.getRect(), new Color(50, 50, 255), "+" + manaHeal);
-            }
 
-            public override void OnHitNPCWithProj(Projectile proj, NPC target, int damage, float knockback, bool crit)
+            }
+            public override void ModifyHitNPCWithProj(Projectile proj, NPC target, ref int damage, ref float knockback, ref bool crit, ref int hitDirection)
             {
-                AddWeaponXp(damage);
+                if (crit)
+                {
+                    damage = (int)(0.5f * damage * GetCriticalDamage());
+                }
+                if (target.type != 488)
+                    AddWeaponXp(damage);
                 player.statMana += (int)(player.statManaMax2 * GetManaLeech());
                 player.statLife += (int)(damage * GetLifeLeech());
+
+                
             }
+
+ 
 
             public float GetDefenceMult()
             {
@@ -239,6 +254,14 @@ namespace AnotherRpgMod.RPGModule
                     return (Stats.GetStat(Stat.Foc) * 0.2f + Stats.GetStat(Stat.Int) * 0.1f) * statMultiplier + BASEMANAPERSTAR;
             }
 
+
+            private void UpdateThoriumDamage(Player player)
+            {
+                Mod Thorium = ModLoader.GetMod("ThoriumMod");
+                //player.GetModPlayer<Thorium.ThoriumPlayer>().symphonicDamage *= GetDamageMult(DamageType.Symphonic);
+                //player.GetModPlayer<Thorium.ThoriumPlayer>().radiantBoost *= GetDamageMult(DamageType.Radiant);
+            }
+
             public override void PreUpdateBuffs()
             {
                 if (Main.netMode != 2) { 
@@ -246,7 +269,19 @@ namespace AnotherRpgMod.RPGModule
                     player.thrownDamage *= GetDamageMult(DamageType.Throw);
                     player.rangedDamage *= GetDamageMult(DamageType.Ranged);
                     player.magicDamage *= GetDamageMult(DamageType.Magic);
+                    player.meleeCrit = (int)(player.meleeCrit + GetCriticalChanceBonus());
+                    player.thrownCrit = (int)(player.thrownCrit + GetCriticalChanceBonus());
+                    player.magicCrit = (int)(player.magicCrit + GetCriticalChanceBonus());
+                    player.rangedCrit = (int)(player.rangedCrit + GetCriticalChanceBonus());
+                    player.lifeRegen += Mathf.FloorInt(GetHealthRegen());
+                    player.manaRegenBonus += Mathf.FloorInt(GetManaRegen());
+
                     player.minionDamage *= GetDamageMult(DamageType.Summon);
+                    if (Arpg.LoadedMods[SupportedMod.Thorium]) {
+                        
+                    }
+
+
                     if (player.HeldItem != null && player.HeldItem.damage>0&& player.HeldItem.maxStack <= 1) { 
                         Items.ItemUpdate Item = player.HeldItem.GetGlobalItem<Items.ItemUpdate>();
                         if (Item != null && Item.NeedsSaving(player.HeldItem))
@@ -266,7 +301,7 @@ namespace AnotherRpgMod.RPGModule
                     player.statLifeMax2 = (int)(player.statLifeMax * GetHealthPerHeart() / 20) + 10;
                     player.statManaMax2 = (int)(player.statManaMax * GetManaPerStar() / 20) + 4;
                     player.statDefense = (int)(player.statDefense * GetDefenceMult());
-
+                    
                 }
             }
 
@@ -288,14 +323,25 @@ namespace AnotherRpgMod.RPGModule
 
             public float GetCriticalChanceBonus()
             {
-                int X = Mathf.CeilInt((Stats.GetStat(Stat.Foc) + Stats.GetStat(Stat.Dex))*0.2);
-                return Mathf.Round(Mathf.Log(Mathf.Pow(X,15)),3); // please don't juge weird maths
+                float X = (Stats.GetStat(Stat.Foc) + Stats.GetStat(Stat.Dex))*0.05f;
+                return X;
             }
             public float GetCriticalDamage()
             {
-                float X = (Stats.GetStat(Stat.Agi) + Stats.GetStat(Stat.Str))*0.001f;
-                return 1+(1-(X/(1+X)));
+                float X = (Stats.GetStat(Stat.Agi) + Stats.GetStat(Stat.Str))*0.02f;
+                return 1+X;
             }
+
+            public override void ProcessTriggers(TriggersSet triggersSet)
+            {
+                if (Arpg.StatsHotKey.JustPressed)
+                {
+                    Main.PlaySound(SoundID.MenuOpen);
+                    UI.Stats.Instance.LoadChar();
+                    UI.Stats.visible = !UI.Stats.visible;
+                }
+            }
+
 
             public float GetBonusHeal()
             {
@@ -306,36 +352,34 @@ namespace AnotherRpgMod.RPGModule
                 return GetManaPerStar() / 20;
             }
 
-            public int GetHealthRegen()
+            public float GetHealthRegen()
             {
-                return Mathf.CeilInt((Stats.GetStat(Stat.Vit) + Stats.GetStat(Stat.Con)) * 0.05f * statMultiplier);
+                return (Stats.GetStat(Stat.Vit) + Stats.GetStat(Stat.Con)) * 0.1f * statMultiplier;
             }
-            public int GetManaRegen()
+            public float GetManaRegen()
             {
-                return Mathf.CeilInt((Stats.GetStat(Stat.Int) + Stats.GetStat(Stat.Spr)) * 0.05f * statMultiplier);
+                return (Stats.GetStat(Stat.Int) + Stats.GetStat(Stat.Spr)) * 0.1f * statMultiplier;
             }
 
             public float GetDamageMult(DamageType type)
             {
-                if (type == DamageType.Melee)
+
+                switch (type)
                 {
-                    return (Stats.GetStat(Stat.Str) * 0.1f+ Stats.GetStat(Stat.Agi) * 0.05f)*statMultiplier + 0.4f;
-                }
-                else if (type == DamageType.Magic)
-                {
-                    return (Stats.GetStat(Stat.Int) * 0.1f + Stats.GetStat(Stat.Spr) * 0.05f)*statMultiplier + 0.4f;
-                }
-                else if (type == DamageType.Ranged)
-                {
-                    return (Stats.GetStat(Stat.Agi) * 0.1f + Stats.GetStat(Stat.Dex) * 0.05f) * statMultiplier + 0.4f;
-                }
-                else if (type == DamageType.Summon)
-                {
-                    return (Stats.GetStat(Stat.Spr) * 0.1f + Stats.GetStat(Stat.Foc) * 0.05f)*statMultiplier + 0.4f;
-                }
-                else
-                {
-                    return (Stats.GetStat(Stat.Dex) * 0.1f + Stats.GetStat(Stat.Str)*0.05f)*statMultiplier + 0.4f;
+                    case DamageType.Magic:
+                        return (Stats.GetStat(Stat.Int) * 0.1f + Stats.GetStat(Stat.Spr) * 0.05f) * statMultiplier + 0.4f;
+                    case DamageType.Ranged:
+                        return (Stats.GetStat(Stat.Agi) * 0.1f + Stats.GetStat(Stat.Dex) * 0.05f) * statMultiplier + 0.4f;
+                    case DamageType.Summon:
+                        return (Stats.GetStat(Stat.Spr) * 0.1f + Stats.GetStat(Stat.Foc) * 0.05f) * statMultiplier + 0.4f;
+                    case DamageType.Throw:
+                        return (Stats.GetStat(Stat.Dex) * 0.1f + Stats.GetStat(Stat.Str) * 0.05f) * statMultiplier + 0.4f;
+                    case DamageType.Symphonic:
+                        return (Stats.GetStat(Stat.Agi) * 0.075f + Stats.GetStat(Stat.Foc) * 0.075f) *statMultiplier + 0.4f;
+                    case DamageType.Radiant:
+                        return (Stats.GetStat(Stat.Int) * 0.075f + Stats.GetStat(Stat.Spr) * 0.075f) * statMultiplier + 0.4f;
+                    default:
+                        return (Stats.GetStat(Stat.Str) * 0.1f + Stats.GetStat(Stat.Agi) * 0.05f) * statMultiplier + 0.4f;
                 }
             }
 

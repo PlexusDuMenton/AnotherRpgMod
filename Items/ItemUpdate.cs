@@ -51,7 +51,7 @@ namespace AnotherRpgMod.Items
         int ascendedLevel = 0;
         int baseHealLife = 0;
         int baseHealMana = 0;
-
+        int baseValue = 0;
         int xp = 0;
         int level = 0;
 
@@ -153,6 +153,7 @@ namespace AnotherRpgMod.Items
             baseName = item.Name;
             baseUseTime = item.useTime;
             item.damage = getDamage(item);
+            baseValue = item.value;
             baseMana = item.mana;
             init = true;
             if (level > 0)
@@ -179,11 +180,7 @@ namespace AnotherRpgMod.Items
         
 
 
-        public int GetExpToNextLevel()
-        {
-            //return 5; // for debug
-            return Mathf.FloorInt((level+1) * 50 + Mathf.Pow(level * (baseDamage*0.5f), 2.2f));
-        }
+        
 
         public override void ModifyTooltips(Item item, List<TooltipLine> tooltips)
         {
@@ -220,7 +217,11 @@ namespace AnotherRpgMod.Items
             return _damage;
         }
 
-        
+        public int GetExpToNextLevel()
+        {
+            //return 5; // for debug
+            return Mathf.FloorInt((level + 1) * 50 + Mathf.Pow(level * (baseDamage * 0.5f), 2.2f));
+        }
 
         public void LevelUp(Player player)
         {
@@ -268,6 +269,7 @@ namespace AnotherRpgMod.Items
                 baseAutoReuse = item.autoReuse;
                 baseUseTime = item.useTime;
                 baseName = item.Name;
+                baseValue = item.value;
                 baseDamage = item.damage;
             }
             if (item.healLife > 0)
@@ -295,6 +297,7 @@ namespace AnotherRpgMod.Items
                 if (NeedsSaving(item) && (level > 0 || ascendedLevel > 0))
                 {
                     item.damage = getDamage(item);
+                    baseValue = (int)(item.value * (1 + Mathf.Pow(ascendedLevel,2f) + level*0.1f));
                     if (ascendedLevel > 0)
                     {
                         AscendToolTip.Add(new TooltipLine(mod, "Ascding", "Ascending Tier ." + ascendedLevel) { isModifier = true });

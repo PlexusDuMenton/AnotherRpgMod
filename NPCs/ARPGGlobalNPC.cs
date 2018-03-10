@@ -58,7 +58,28 @@ namespace AnotherRpgMod.RPGModule.Entities
         }
     }
 
-    
+    class ARPGGlobalProjectile : GlobalProjectile
+    {
+        bool init = false;
+        public override bool InstancePerEntity
+        {
+            get
+            {
+                return true;
+            }
+        }
+        public override void AI(Projectile projectile)
+        {
+
+            if (init)
+                return;
+            if (projectile.friendly)
+                return;
+            NPC owner = Main.npc[projectile.owner];
+            projectile.damage = (projectile.damage * owner.damage) / owner.GetGlobalNPC<ARPGGlobalNPC>().baseDamage;
+            init = true;
+        }
+    }
 
     class ARPGGlobalNPC : GlobalNPC
     {
@@ -67,6 +88,7 @@ namespace AnotherRpgMod.RPGModule.Entities
         private int level;
         private int tier;
         private int basehealth = 0;
+        public int baseDamage = 0;
         public override bool InstancePerEntity
         {
             get
@@ -91,15 +113,16 @@ namespace AnotherRpgMod.RPGModule.Entities
 
         public override void SetDefaults(NPC npc)
         {
-            if (npc.townNPC && Main.netMode != 1)
+            
+            if ((npc.townNPC||(npc.friendly&&npc.lifeMax>10) )&& Main.netMode != 1)
             {
+                baseDamage = npc.damage;
                 level = Mathf.CeilInt(Utils.GetBaseLevel(npc) * ConfigFile.GetConfig.NpclevelMultiplier);
                 tier = Mathf.CeilInt(Utils.GetTierAlly(npc, level) * ConfigFile.GetConfig.NpclevelMultiplier);
                 npc.lifeMax = Mathf.FloorInt(npc.lifeMax * (1 + level * 0.2f + tier * 0.25f));
                 npc.damage = Mathf.FloorInt(npc.damage * (1 + level * 0.05f + tier * 0.06f));
                 npc.defense = Mathf.FloorInt(npc.defense * (1 + level * 0.012f + tier * 0.02f));
             }
-            if (npc.friendly) return;
             if (Main.netMode != 1)
             {
                 level = Mathf.CeilInt(Utils.GetBaseLevel(npc) * ConfigFile.GetConfig.NpclevelMultiplier);

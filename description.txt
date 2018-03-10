@@ -11,6 +11,11 @@ Join Discord : https://discord.gg/UQueeQE ! (link also on webpage)
 
 Changelog : 
 
+0.13
+Support thorium Radiant and symphonic damage :D ! 
+
+
+
 0.12.4
 Cleanup Ui Code
 Allow Ui to Scale HealthBarScale in config file
@@ -41,7 +46,7 @@ second ascend will give : 50% chance not to use ammo , +50% summon damage (summo
 starting at second ascend,each ascend will give  : 
 100% base damage, +1 projectile, +1 minion(minion weapon),7.5% lifesteal (melee only), 7.5% mana regen (magic weaapon),
 Fix minor that allowed adding points even when stats windows was closed
-_____________________________________________________________________
+
 0.11.1
 Allow to move of the healthbar with (on the y axis) "HealthBarYoffSet" parametter in AnRPG_Setting.json in Documents\My Games\Terraria\ModLoader 
 

@@ -18,7 +18,10 @@ namespace AnotherRpgMod
         Ranged,
         Throw,
         Magic,
-        Summon
+        Summon,
+        Symphonic, //thorium
+        Radiant //thorium
+
     }
 
     public enum Message : byte {
@@ -52,16 +55,30 @@ namespace AnotherRpgMod
         }
     }
 
+    enum SupportedMod
+    {
+        Thorium //only suported mod for now
+    }
 
     class Arpg : Mod
 	{
-
+        public static Arpg Instance;
         public UserInterface customResources;
         public HealthBar healthBar;
         public UserInterface customstats;
         public UserInterface customOpenstats;
         public Stats statMenu;
         public OpenStatsButton openStatMenu;
+        public static ModHotKey StatsHotKey;
+        
+
+        public static Dictionary<SupportedMod, bool> LoadedMods = new Dictionary<SupportedMod, bool>()
+        {
+            {SupportedMod.Thorium,false },
+            //{SupportedMod.Calamity,false },
+            //{SupportedMod.Spirit,false }
+
+        };
 
         public static Dictionary<Message, List<DataTag>> dataTags = new Dictionary<Message, List<DataTag>>()
         {
@@ -113,10 +130,13 @@ namespace AnotherRpgMod
         }
         public override void Load()
         {
-            
+            Instance = this;
+            ConfigFile.Init();
+            LoadedMods[SupportedMod.Thorium] = ModLoader.GetMod("ThoriumMod") != null;
+            StatsHotKey = RegisterHotKey("Open Stats Menu", "C");
             if (!Main.dedServ)
             {
-                ConfigFile.Init();
+                
                 customResources = new UserInterface();
                 healthBar = new HealthBar();
                 HealthBar.visible = true;
