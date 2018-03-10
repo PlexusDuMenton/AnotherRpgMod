@@ -21,26 +21,33 @@ namespace AnotherRpgMod.UI
     {
         public static bool visible = true;
         public UIElement OpenStatsPanel;
-
+        public float scale = ConfigFile.GetConfig.HealthBarScale;
+        public float yOffSet = ConfigFile.GetConfig.HealthBarYoffSet;
         public override void OnInitialize()
         {
 
 
             OpenStatsPanel = new UIElement();
             OpenStatsPanel.SetPadding(0);
-            OpenStatsPanel.Left.Set(57, 0f);
-            OpenStatsPanel.Top.Set((Main.screenHeight - 275) + ConfigFile.GetConfig.HealthBarYoffSet, 0f);
-            OpenStatsPanel.Width.Set(32, 0f);
-            OpenStatsPanel.Height.Set(64, 0f);
+            OpenStatsPanel.Left.Set(57 * scale, 0f);
+            OpenStatsPanel.Top.Set((Main.screenHeight - 175* scale) - yOffSet, 0f);
+            OpenStatsPanel.Width.Set(32* scale, 0f);
+            OpenStatsPanel.Height.Set(64* scale, 0f);
+            OpenStatsPanel.HAlign = 0;
+            OpenStatsPanel.VAlign = 0;
 
             Texture2D Button = ModLoader.GetTexture("AnotherRpgMod/Textures/UI/character");
-            UIImageButton OpenButton = new UIImageButton(Button);
+            OpenStatButton OpenButton = new OpenStatButton(Button);
             OpenButton.Left.Set(0, 0f);
             OpenButton.Top.Set(0, 0f);
-            OpenButton.Width.Set(32, 0f);
-            OpenButton.Height.Set(64, 0f);
+            OpenButton.ImageScale = scale;
+            OpenButton.Width.Set(32* scale, 0f);
+            OpenButton.Height.Set(64* scale, 0f);
             OpenButton.OnClick += new MouseEvent(OpenStatMenu);
+            OpenButton.HAlign = 0;
+            OpenButton.VAlign = 0;
             OpenStatsPanel.Append(OpenButton);
+            Recalculate();
             base.Append(OpenStatsPanel);
         }
         public void OpenStatMenu(UIMouseEvent evt, UIElement listeningElement)
@@ -479,5 +486,36 @@ namespace AnotherRpgMod.UI
     }
 
 
+    class OpenStatButton : UIElement
+    {
+        private Texture2D _texture;
+        public float ImageScale = 1f;
+
+        public OpenStatButton(Texture2D texture)
+        {
+            _texture = texture;
+            Width.Set(_texture.Width, 0f);
+            Height.Set(_texture.Height, 0f);
+            Left.Set(0, 0f);
+            Top.Set(0, 0f);
+            VAlign = 0;
+            HAlign = 0;
+        }
+
+        public void SetImage(Texture2D texture)
+        {
+            _texture = texture;
+            Width.Set(_texture.Width, 0f);
+            Height.Set(_texture.Height, 0f);
+        }
+
+
+        protected override void DrawSelf(SpriteBatch spriteBatch)
+        {
+            CalculatedStyle dimensions = GetDimensions();
+
+            spriteBatch.Draw(_texture, dimensions.Position() , null, Color.White, 0f, Vector2.Zero, ImageScale, SpriteEffects.None, 0f);
+        }
+    }
 
 }

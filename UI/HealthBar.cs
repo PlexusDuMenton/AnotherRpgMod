@@ -6,6 +6,7 @@ using Terraria.UI;
 using Terraria.ID;
 using Terraria;
 using System;
+using System.Collections.Generic;
 using Terraria.ModLoader;
 using AnotherRpgMod.RPGModule.Entities;
 using System.Reflection;
@@ -19,31 +20,55 @@ namespace AnotherRpgMod.UI
         HP,
         MANA,
         XP,
-        Breath,
-        Weapon
+        Weapon,
+        Breath
+    }
+
+
+    class RessourceInfo
+    {
+        public Texture2D texture;
+        public Vector2 position;
+        private Vector2 baseSize;
+        public Vector2 size;
+
+        public RessourceInfo(Texture2D _texture, Vector2 _position,float scale = 1f)
+        {
+            texture = _texture;
+            position = _position;
+            baseSize = _texture.Size();
+            size = baseSize * scale;
+        }
+
+        public void ChangeSize(float scale)
+        {
+            size = baseSize * scale;
+        }
+
+
     }
 
     class HealthBar : UIState
     {
 
+        
+
         private Player player;
 
-        float YOffSet = -28;
-        float YDefaultOffSet = -100 + ConfigFile.GetConfig.HealthBarYoffSet;
+        float YDefaultOffSet = -ConfigFile.GetConfig.HealthBarYoffSet;
+        float scale = ConfigFile.GetConfig.HealthBarScale;
+        float baseUiHeight = 393f;
 
-        Ressource hp;
-        Ressource xp;
-        Ressource mana;
-        Ressource weapon;
+        Dictionary<Mode, RessourceInfo> RessourceTexture;
+
+        Ressource[] ressourcebar = new Ressource[4];
+
         RessourceBreath breath;
         UIOverlay Overlay;
 
-        public UIElement MainPanel1;
-        public UIElement MainPanel2;
-        public UIElement MainPanel3;
-        public UIElement MainPanel4;
-        public UIElement MainPanel5;
-        public UIElement MainPanel6;
+
+
+        public UIElement[] MainPanel = new UIElement[6];
 
         private UIText health;
         private UIText manatext;
@@ -76,108 +101,105 @@ namespace AnotherRpgMod.UI
         {
             player = Main.player[Main.myPlayer];
 
+            
+
+            float[] baseUiOffset =
+            {
+                (105*scale),
+                (69*scale ),
+                (46*scale ),
+                (33*scale ),
+                (357*scale )
+            };
+
+            RessourceTexture = new Dictionary<Mode, RessourceInfo>()
+            {
+                { Mode.HP, new RessourceInfo(ModLoader.GetTexture("AnotherRpgMod/Textures/UI/HealthBar"),new Vector2(14*scale,Main.screenHeight + YDefaultOffSet - baseUiOffset[0]),scale)},
+                { Mode.MANA, new RessourceInfo(ModLoader.GetTexture("AnotherRpgMod/Textures/UI/ManaBar"),new Vector2(31*scale,Main.screenHeight  + YDefaultOffSet - baseUiOffset[1]),scale)},
+                { Mode.XP, new RessourceInfo(ModLoader.GetTexture("AnotherRpgMod/Textures/UI/XPBar"),new Vector2(44*scale,Main.screenHeight + YDefaultOffSet -baseUiOffset[2]),scale)},
+                { Mode.Weapon, new RessourceInfo(ModLoader.GetTexture("AnotherRpgMod/Textures/UI/WeaponBar"),new Vector2(5*scale,Main.screenHeight + YDefaultOffSet - baseUiOffset[3]),scale)},
+                { Mode.Breath, new RessourceInfo(ModLoader.GetTexture("AnotherRpgMod/Textures/UI/BreathBar"),new Vector2(5*scale,Main.screenHeight + YDefaultOffSet - baseUiOffset[4]),scale)}
+
+            };
 
 
-            MainPanel1 = new UIElement();
-            MainPanel1.SetPadding(0);
-            MainPanel1.Left.Set(0, 0f);
-            MainPanel1.Width.Set(840f, 0f);
-            MainPanel1.Height.Set(393f, 0f);
+            MainPanel[0] = new UIElement();
+            MainPanel[0].SetPadding(0);
+            MainPanel[0].Width.Set(840f, 0f);
+            MainPanel[0].Height.Set(baseUiHeight, 0f);
+            MainPanel[0].HAlign = 0;
+            MainPanel[0].VAlign = 0;
+            MainPanel[0].Left.Set(0, 0f);
+            MainPanel[0].Top.Set(Main.screenHeight - baseUiHeight + YDefaultOffSet, 0f);
 
-
-            MainPanel1.Top.Set(Main.screenHeight - MainPanel1.Height.Pixels + YDefaultOffSet, 0f);
-
-            MainPanel2 = new PanelBar(Mode.HP, ModLoader.GetTexture("AnotherRpgMod/Textures/UI/HealthBar"));
-            MainPanel2.SetPadding(0);
-            MainPanel2.Left.Set(14, 0f);
-            MainPanel2.Width.Set(ModLoader.GetTexture("AnotherRpgMod/Textures/UI/HealthBar").Width, 0f);
-            MainPanel2.Height.Set(ModLoader.GetTexture("AnotherRpgMod/Textures/UI/HealthBar").Height, 0f);
-            MainPanel2.Top.Set(Main.screenHeight - MainPanel1.Height.Pixels + 54 + 262 + YDefaultOffSet+ YOffSet, 0f);
-
-            MainPanel3 = new PanelBar(Mode.MANA, ModLoader.GetTexture("AnotherRpgMod/Textures/UI/ManaBar"));
-            MainPanel3.SetPadding(0);
-            MainPanel3.Left.Set(31, 0f);
-            MainPanel3.Width.Set(ModLoader.GetTexture("AnotherRpgMod/Textures/UI/ManaBar").Width, 0f);
-            MainPanel3.Height.Set(ModLoader.GetTexture("AnotherRpgMod/Textures/UI/ManaBar").Height, 0f);
-            MainPanel3.Top.Set(Main.screenHeight - MainPanel1.Height.Pixels + 90 + 262 + YDefaultOffSet+ YOffSet, 0f);
-
-            MainPanel4 = new PanelBar(Mode.XP, ModLoader.GetTexture("AnotherRpgMod/Textures/UI/XPBar"));
-            MainPanel4.SetPadding(0);
-            MainPanel4.Left.Set(44, 0f);
-            MainPanel4.Width.Set(ModLoader.GetTexture("AnotherRpgMod/Textures/UI/XPBar").Width, 0f);
-            MainPanel4.Height.Set(ModLoader.GetTexture("AnotherRpgMod/Textures/UI/XPBar").Height, 0f);
-            MainPanel4.Top.Set(Main.screenHeight - MainPanel1.Height.Pixels + 113 + 262 + YDefaultOffSet+ YOffSet, 0f);
-
-
-            MainPanel5 = new PanelBar(Mode.Breath, ModLoader.GetTexture("AnotherRpgMod/Textures/UI/BreathBar"));
-            MainPanel5.SetPadding(0);
-            MainPanel5.Left.Set(5, 0f);
-            MainPanel5.Width.Set(ModLoader.GetTexture("AnotherRpgMod/Textures/UI/BreathBar").Width, 0f);
-            MainPanel5.Height.Set(ModLoader.GetTexture("AnotherRpgMod/Textures/UI/BreathBar").Height, 0f);
-            MainPanel5.Top.Set(Main.screenHeight - MainPanel1.Height.Pixels + 64 + YDefaultOffSet+ YOffSet, 0f);
-
-            MainPanel6 = new PanelBar(Mode.Breath, ModLoader.GetTexture("AnotherRpgMod/Textures/UI/WeaponBar"));
-            MainPanel6.SetPadding(0);
-            MainPanel6.Left.Set(5, 0f);
-            MainPanel6.Width.Set(ModLoader.GetTexture("AnotherRpgMod/Textures/UI/WeaponBar").Width, 0f);
-            MainPanel6.Height.Set(ModLoader.GetTexture("AnotherRpgMod/Textures/UI/WeaponBar").Height, 0f);
-            MainPanel6.Top.Set(Main.screenHeight - MainPanel1.Height.Pixels + 360 + YDefaultOffSet, 0f);
 
             Overlay = new UIOverlay(ModLoader.GetTexture("AnotherRpgMod/Textures/UI/OverlayHealthBar"));
-            MainPanel1.Append(Overlay);
+            Overlay.ImageScale = scale;
+            Overlay.HAlign = 0;
+            Overlay.VAlign = 0;
+            MainPanel[0].Append(Overlay);
 
-            hp = new Ressource(Mode.HP, ModLoader.GetTexture("AnotherRpgMod/Textures/UI/HealthBar"));
-            MainPanel2.Append(hp);
+            for (int i = 0; i < 5; i++)
+            {
+                MainPanel[i + 1] = new PanelBar((Mode)i, RessourceTexture[(Mode)i].texture);
+                if (i > 3) {
+                    breath = new RessourceBreath((Mode)i, RessourceTexture[(Mode)i].texture);
+                }
+                else
+                {
+                    ErrorLogger.Log(ressourcebar.Length);
+                    ressourcebar[i] = new Ressource((Mode)i, RessourceTexture[(Mode)i].texture);
+                }
+                MainPanel[i + 1].HAlign = 0;
+                MainPanel[i + 1].VAlign = 0;
+                MainPanel[i + 1].SetPadding(0);
+                
+                MainPanel[i + 1].Width.Set(RessourceTexture[(Mode)i].size.X, 0f);
+                MainPanel[i + 1].Height.Set(RessourceTexture[(Mode)i].size.Y, 0f);
+                MainPanel[i + 1].Left.Set(RessourceTexture[(Mode)i].position.X, 0f);
+                MainPanel[i + 1].Top.Set(RessourceTexture[(Mode)i].position.Y, 0f);
 
-            mana = new Ressource(Mode.MANA, ModLoader.GetTexture("AnotherRpgMod/Textures/UI/ManaBar"));
-            MainPanel3.Append(mana);
+                if (i > 3)
+                {
+                    breath.ImageScale = scale;
+                    MainPanel[i + 1].Append(breath);
+                }
+                else
+                {
+                    ressourcebar[i].ImageScale = scale;
+                    MainPanel[i + 1].Append(ressourcebar[i]);
+                }
 
-            xp = new Ressource(Mode.XP, ModLoader.GetTexture("AnotherRpgMod/Textures/UI/XPBar"));
-            MainPanel4.Append(xp);
-
-            breath = new RessourceBreath(Mode.Breath, ModLoader.GetTexture("AnotherRpgMod/Textures/UI/BreathBar"));
-            MainPanel5.Append(breath);
-            weapon = new Ressource(Mode.Weapon, ModLoader.GetTexture("AnotherRpgMod/Textures/UI/WeaponBar"));
-            MainPanel6.Append(weapon);
+                base.Append(MainPanel[i + 1]);
 
 
-            base.Append(MainPanel2);
-            base.Append(MainPanel3);
-            base.Append(MainPanel4);
-            base.Append(MainPanel5);
-            base.Append(MainPanel6);
-            base.Append(MainPanel1);
+            }
 
-            health = new UIText("0|0", 1.2f);
-            manatext = new UIText("0|0");
-            xptext = new UIText("0|0");
-            Level = new UIText("Lvl. 1", 0.6f, true);
+            base.Append(MainPanel[0]);
 
-            health.Width.Set(840f, 0f);
-            health.Height.Set(131f, 0f);
-            manatext.Width.Set(840f, 0f);
-            manatext.Height.Set(131f, 0f);
-            xptext.Width.Set(840f, 0f);
-            xptext.Height.Set(131f, 0f);
-            Level.Width.Set(840f, 0f);
-            Level.Height.Set(131f, 0f);
+            health = new UIText("0|0", 1.3f* scale);
+            manatext = new UIText("0|0", scale);
+            xptext = new UIText("0|0", scale);
+            Level = new UIText("Lvl. 1", 0.7f* scale, true);
 
-            health.Left.Set(0, 0f);
-            health.Top.Set(60 + 262+ YOffSet, 0f);
-            manatext.Left.Set(0, 0f);
-            manatext.Top.Set(90 + 262 + YOffSet, 0f);
-            xptext.Left.Set(0, 0f);
-            xptext.Top.Set(112 + 262 + YOffSet, 0f);
 
-            Level.Left.Set(-290, 0f);
+            health.Left.Set( 500 * scale, 0f);
+            health.Top.Set(MainPanel[0].Height.Pixels  - 99 * scale, 0f);
+            manatext.Left.Set(420* scale, 0f);
+            manatext.Top.Set(MainPanel[0].Height.Pixels  - 69 * scale, 0f);
+            xptext.Left.Set(420* scale, 0f);
+            xptext.Top.Set(MainPanel[0].Height.Pixels  - 47 * scale, 0f);
+
+            Level.Left.Set(100 * scale, 0f);
             Level.HAlign = 0;
-            Level.Top.Set(285+ YOffSet, 0f);
+            Level.Top.Set(MainPanel[0].Height.Pixels  - 136 * scale, 0f);
 
-            MainPanel1.Append(health);
-            MainPanel1.Append(manatext);
-            MainPanel1.Append(xptext);
-            MainPanel1.Append(Level);
+            MainPanel[0].Append(health);
+            MainPanel[0].Append(manatext);
+            MainPanel[0].Append(xptext);
+            MainPanel[0].Append(Level);
 
+            Recalculate();
             //Texture2D OverlayTexture = ModLoader.GetTexture("AnotherRpgMod/Assets/UI/OverlayHealthBar");
 
         }
@@ -206,6 +228,9 @@ namespace AnotherRpgMod.UI
             Top.Set(0, 0f);
             this.color = Color.White;
             this.stat = stat;
+            VAlign = 0;
+            HAlign = 0;
+
         }
 
         public void SetImage(Texture2D texture)
@@ -225,8 +250,8 @@ namespace AnotherRpgMod.UI
 
             quotient = (float)player.breath / (float)player.breathMax;
 
-            this.Height.Set(quotient * height, 0f);
-            Top.Set((1 - quotient) * height, 0);
+            this.Height.Set(quotient * height*ImageScale, 0f);
+            Top.Set((1 - quotient) * height * ImageScale, 0);
             Recalculate(); // recalculate the position and size
 
             base.Draw(spriteBatch);
@@ -235,11 +260,11 @@ namespace AnotherRpgMod.UI
         protected override void DrawSelf(SpriteBatch spriteBatch)
         {
             CalculatedStyle dimensions = GetDimensions();
-            Point point1 = new Point((int)dimensions.X, (int)dimensions.Y);
-            int width = (int)Math.Ceiling(dimensions.Width);
-            int height = (int)Math.Ceiling(dimensions.Height);
+            Vector2 point1 = new Vector2((float)dimensions.X, (float)dimensions.Y);
+            int width = (int)Math.Ceiling(dimensions.Width * 1 / ImageScale) ;
+            int height = (int)Math.Ceiling(dimensions.Height * 1 / ImageScale) ;
 
-            spriteBatch.Draw(_texture, dimensions.Position() + _texture.Size() * (1f - ImageScale) / 2f, new Rectangle(point1.X, point1.Y, width, height), color, 0f, Vector2.Zero, ImageScale, SpriteEffects.None, 0f);
+            spriteBatch.Draw(_texture, dimensions.Position() , new Rectangle((int)point1.X, (int)point1.Y, width, height), color, 0f, Vector2.Zero, ImageScale, SpriteEffects.None, 0f);
         }
     }
 
@@ -263,6 +288,8 @@ namespace AnotherRpgMod.UI
             Top.Set(0, 0f);
             this.color = Color.White;
             this.stat = stat;
+            VAlign = 0;
+            HAlign = 0;
         }
 
         public void SetImage(Texture2D texture)
@@ -299,7 +326,7 @@ namespace AnotherRpgMod.UI
                     break;
             }
 
-            this.Left.Set(-(1 - quotient) * width, 0f);
+            this.Left.Set(-(1 - quotient) * width * ImageScale, 0f);
             Recalculate(); // recalculate the position and size
 
             base.Draw(spriteBatch);
@@ -310,7 +337,7 @@ namespace AnotherRpgMod.UI
             CalculatedStyle dimensions = GetDimensions();
 
 
-            spriteBatch.Draw(_texture, dimensions.Position() + _texture.Size() * (1f - ImageScale) / 2f, null, color, 0f, Vector2.Zero, ImageScale, SpriteEffects.None, 0f);
+            spriteBatch.Draw(_texture, dimensions.Position() , null, color, 0f, Vector2.Zero, ImageScale, SpriteEffects.None, 0f);
         }
     }
 
@@ -326,6 +353,8 @@ namespace AnotherRpgMod.UI
             Height.Set(_texture.Height, 0f);
             Left.Set(0, 0f);
             Top.Set(0, 0f);
+            VAlign = 0;
+            HAlign = 0;
         }
 
         public void SetImage(Texture2D texture)
@@ -340,7 +369,7 @@ namespace AnotherRpgMod.UI
         {
             CalculatedStyle dimensions = GetDimensions();
 
-            spriteBatch.Draw(_texture, dimensions.Position() + _texture.Size() * (1f - ImageScale) / 2f, null, Color.White, 0f, Vector2.Zero, ImageScale, SpriteEffects.None, 0f);
+            spriteBatch.Draw(_texture, dimensions.Position() + new Vector2(0, _texture.Size().Y) * (1f - ImageScale), null, Color.White, 0f, Vector2.Zero, ImageScale, SpriteEffects.None, 0f);
         }
     }
 
@@ -355,7 +384,8 @@ namespace AnotherRpgMod.UI
         {
             this.stat = stat;
             width = texture.Width;
-
+            VAlign = 0;
+            HAlign = 0;
         }
 
 

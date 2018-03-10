@@ -11,9 +11,13 @@ Join Discord : https://discord.gg/UQueeQE ! (link also on webpage)
 
 Changelog : 
 
+0.12.4
+Cleanup Ui Code
+Allow Ui to Scale HealthBarScale in config file
+
 0.12.3
 fix bug when having item with a ascending over 4 
-
+Npc grow in power as you kil lbosxs (like ennemies)
 
 0.12.2
 Ascencion level reset on join is fixed 
