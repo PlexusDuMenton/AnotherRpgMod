@@ -16,14 +16,14 @@ namespace AnotherRpgMod.RPGModule.Entities
             {
                 float health = npc.lifeMax;
                 if (npc.aiStyle == 6)
-                    health = health * 0.4f;
+                    health = health * 0.2f;
                 if (Main.expertMode)
                 {
-                    baselevel = (int)(npc.lifeMax / 140 + Mathf.Pow(npc.damage * 0.31f, 1.05f) + Mathf.Pow(npc.defense * 0.8f, 1.07f));
+                    baselevel = (int)(health / 140 + Mathf.Pow(npc.damage * 0.31f, 1.05f) + Mathf.Pow(npc.defense * 0.8f, 1.07f));
                 }
                 else
                 {
-                    baselevel = (int)(npc.lifeMax / 100 + Mathf.Pow(npc.damage * 0.30f, 1.04f) + Mathf.Pow(npc.defense * 0.7f, 1.05f));
+                    baselevel = (int)(health / 100 + Mathf.Pow(npc.damage * 0.30f, 1.04f) + Mathf.Pow(npc.defense * 0.7f, 1.05f));
                 }
                 
             }
@@ -58,9 +58,11 @@ namespace AnotherRpgMod.RPGModule.Entities
         }
     }
 
+
     class ARPGGlobalProjectile : GlobalProjectile
     {
         bool init = false;
+        
         public override bool InstancePerEntity
         {
             get
@@ -68,6 +70,7 @@ namespace AnotherRpgMod.RPGModule.Entities
                 return true;
             }
         }
+
         public override void AI(Projectile projectile)
         {
 
@@ -75,8 +78,16 @@ namespace AnotherRpgMod.RPGModule.Entities
                 return;
             if (projectile.friendly)
                 return;
+            if (projectile.owner > Main.npc.Length)
+                return;
             NPC owner = Main.npc[projectile.owner];
-            projectile.damage = (projectile.damage * owner.damage) / owner.GetGlobalNPC<ARPGGlobalNPC>().baseDamage;
+            if (owner.GivenName == "")
+                return;
+            ARPGGlobalNPC ownerGlobal = owner.GetGlobalNPC<ARPGGlobalNPC>();
+            if (owner.boss)
+                projectile.damage = Mathf.FloorInt(projectile.damage * 0.75f * Mathf.Pow(1 + ownerGlobal.getLevel * 0.08f + ownerGlobal.getTier * 0.1f, 0.93f));
+            else
+                projectile.damage = Mathf.FloorInt(projectile.damage *0.75f * Mathf.Pow(1 + ownerGlobal.getLevel * 0.09f + ownerGlobal.getTier * 0.11f, 0.93f));
             init = true;
         }
     }
@@ -86,9 +97,12 @@ namespace AnotherRpgMod.RPGModule.Entities
 
         private bool StatsCreated = false;
         private int level;
+        public int getLevel { get { return level; } }
         private int tier;
+        public int getTier { get { return tier; } }
         private int basehealth = 0;
         public int baseDamage = 0;
+        int damage;
         public override bool InstancePerEntity
         {
             get
@@ -96,6 +110,7 @@ namespace AnotherRpgMod.RPGModule.Entities
                 return true;
             }
         }
+
         private void SyncNpc(NPC npc) // only sync tier since it's the only random value, rest is calculed on client
         {
             if (Main.netMode == 2)
@@ -119,11 +134,12 @@ namespace AnotherRpgMod.RPGModule.Entities
                 baseDamage = npc.damage;
                 level = Mathf.CeilInt(Utils.GetBaseLevel(npc) * ConfigFile.GetConfig.NpclevelMultiplier);
                 tier = Mathf.CeilInt(Utils.GetTierAlly(npc, level) * ConfigFile.GetConfig.NpclevelMultiplier);
-                npc.lifeMax = Mathf.FloorInt(npc.lifeMax * (1 + level * 0.2f + tier * 0.25f));
-                npc.damage = Mathf.FloorInt(npc.damage * (1 + level * 0.05f + tier * 0.06f));
-                npc.defense = Mathf.FloorInt(npc.defense * (1 + level * 0.012f + tier * 0.02f));
+                npc.lifeMax = Mathf.Clamp( Mathf.FloorInt(npc.lifeMax * (1 + (tier + level) * 0.1f)),0,int.MaxValue);
+                damage = Mathf.Clamp(Mathf.FloorInt(npc.damage * Mathf.Pow(1 + level * 0.08f + tier * 0.1f,0.93f)), 0, int.MaxValue);
+                npc.defense = Mathf.Clamp(Mathf.FloorInt(npc.defense * (1 + level * 0.012f + tier * 0.02f)), 0, int.MaxValue);
+                npc.life = Mathf.Clamp(Mathf.FloorInt(npc.lifeMax * (1 + (tier + level) * 0.1f)), 0, int.MaxValue);
             }
-            if (Main.netMode != 1)
+            else if (Main.netMode != 1)
             {
                 level = Mathf.CeilInt(Utils.GetBaseLevel(npc) * ConfigFile.GetConfig.NpclevelMultiplier);
                 if (ConfigFile.GetConfig.NpcProgress)
@@ -131,18 +147,36 @@ namespace AnotherRpgMod.RPGModule.Entities
 
                 if (npc.boss)
                 {
-                    npc.lifeMax = Mathf.FloorInt(npc.lifeMax * (1 + level * 0.5f + tier * 0.6f));
+                    damage = Mathf.FloorInt(npc.damage * Mathf.Pow(1 + level * 0.08f + tier * 0.2f, 0.93f));
+                    npc.lifeMax = Mathf.FloorInt(npc.lifeMax * (1 + Mathf.Pow(level * 0.5f + tier * 0.7f,1.05f)));
                 }
                 else
-                    npc.lifeMax = Mathf.FloorInt(npc.lifeMax * (1 + level * 0.2f + tier * 0.25f));
-
-                npc.damage = Mathf.FloorInt(npc.damage * (1 + level * 0.05f + tier * 0.06f));
+                {
+                    damage = Mathf.FloorInt(npc.damage * Mathf.Pow(1 + level * 0.09f + tier * 0.2f, 0.93f));
+                    npc.lifeMax = Mathf.FloorInt(npc.lifeMax * (1 + Mathf.Pow(level * 0.1f,1.1f) + Mathf.Pow(tier * 0.25f,1.1f)));
+                }
+                npc.value = npc.value * (1 + (level + tier) * 0.01f);
                 npc.defense = Mathf.FloorInt(npc.defense * (1 + level * 0.012f + tier * 0.02f));
             }
             base.SetDefaults(npc);
         }
+
         public override void PostAI(NPC npc)
         {
+            
+            if(npc.onFire)
+            {
+                npc.life -= Mathf.CeilInt(npc.lifeMax * 0.0002);
+            }
+            if (npc.onFire2)
+            {
+                npc.life -= Mathf.CeilInt(npc.lifeMax * 0.0005);
+            }
+            if (npc.onFrostBurn)
+            {
+                npc.life -= Mathf.CeilInt(npc.lifeMax * 0.001);
+            }
+            npc.damage = damage;
             if (npc.friendly) return;
             if (Main.netMode != 1) { 
                 if (StatsCreated == false) {

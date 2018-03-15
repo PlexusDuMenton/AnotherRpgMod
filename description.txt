@@ -11,8 +11,76 @@ Join Discord : https://discord.gg/UQueeQE ! (link also on webpage)
 
 Changelog : 
 
+next
+
+SkillTree ! 
+
+On Fire & FrostBurn now damage ennemy on a small potion of their max health 
+TODO : do same for player
+Ui base scale is now 0.75, you can still change that in config file
+
+
+0.14.2
+fix some weapon not gaining exp
+
+0.14.1
+
+Health from equipement will now stack !
+Fix dungeon guardian exploit to levelup armor (boi !)
+MoonLord projectile should deal damage now (I Hope !)
+Nerfed destroyer (and all snake type boss (sorry Eater of world , you're a sacrifice))
+Increase level gain on npc when killing boss (from 8 per boss to 13)
+Nerf Level gain on entering hardmode (for + 35 to + 15, and reduce multiplier from 1.2 to 1.1)
+Nerf base level on stats , but buff additional level from boss to stats (should make rescaled ennemy a bit more inline)
+Now use int64 for item xp (instead of int32) which mean new max value is WAY GREATER
+
+
+0.14 
+Armor now have experience (and ascend)
+Each level increase armor by 0.5 (so one armor points every 2 level)
+Each ascend increase armor by 30% but reset armor gain by level
+Xp is gained each time you take damage
+
+Penetration now reduce exp gained on weapon
+Shift + click will now upgrade the whole level for the stats (right click = 5 , middle = 25)
+Control + Shift + Click will now spend ALL your points into the stats
+Prevent npc to have negative health
+very slight nerf to ennemy health
+Fix some bosses having huge damage nerf when changing 
+Armor & weapon now display base stat
+
+
+0.13.5
+Ascended weapon now require more experience to level up
+
+0.13.4
+Fix crash when hovering items
+
+0.13.3
+"Nerf is love , Nerf is life"
+Fix healing scale again
+Nerf damage gain from stats
+nerf critical damage from stats, but add a flat +40% at base
+Weapon Exp requirement also based on speed (quick weapon was way too fast to level up)
+nerf ascending lifeleech
+Huge Buff to Life gain with Vit and Con
+
+0.13.2
+Fix Healing item Scalign Way too much
+
+0.13.1
+Reduce Boss Damage (skeltron nerf fianly)
+Nerf projectile damage a bit
+Normal ennemy health scale is higly increase on higger level
+Fixed TownNpc Health Scale being WAY too high
+Nerf Ascended Weapon
+
 0.13
-Support thorium Radiant and symphonic damage :D ! 
+Added an hotKey for stats menu "C"
+Stats now have affect Crit Damage , Crit chance, HpRegen and Mp Regen
+Ennemy projectiles damage now scale !
+Skeleton Marchant and Bound NPC should now scale too
+Dummy Target can no longer be used to farm Weapons xp (ho boi :p)
 
 
 

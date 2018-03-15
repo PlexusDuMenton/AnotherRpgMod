@@ -147,7 +147,6 @@ namespace AnotherRpgMod.UI
                 }
                 else
                 {
-                    ErrorLogger.Log(ressourcebar.Length);
                     ressourcebar[i] = new Ressource((Mode)i, RessourceTexture[(Mode)i].texture);
                 }
                 MainPanel[i + 1].HAlign = 0;

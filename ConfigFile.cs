@@ -15,7 +15,7 @@ namespace AnotherRpgMod
     public class Config
     {
         public float HealthBarYoffSet = 0;
-        public float HealthBarScale = 1f;
+        public float HealthBarScale = 0.75f;
         public bool NpcProgress = true;
         public bool XPReduction = true;
         public float XpMultiplier = 1;

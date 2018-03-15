@@ -11,6 +11,7 @@ using AnotherRpgMod.RPGModule.Entities;
 using System.Reflection;
 using Terraria.GameInput;
 using Terraria.Localization;
+using System.Windows.Forms;
 using AnotherRpgMod.RPGModule;
 
 
@@ -260,16 +261,16 @@ namespace AnotherRpgMod.UI
             switch (stat)
             {
                 case (Stat.Vit):
-                    UpgradeStatOver[0].SetText("+ " + ((Char.player.statLifeMax / 20) * 0.5f * Char.statMultiplier) + " Hp");
+                    UpgradeStatOver[0].SetText("+ " + (((float)Char.player.statLifeMax / 20f) * 1.25f * Char.statMultiplier) + " Hp");
                     UpgradeStatOver[0].TextColor = MainColor;
                     UpgradeStatOver[2].SetText("+ " + (Char.BaseArmor*0.02f) + " Armor");
                     UpgradeStatOver[2].TextColor = SecondaryColor;
                     UpgradeStatOver[10].SetText("+ 0.1 HP/Sec");
                     break;
                 case (Stat.Foc):
-                    UpgradeStatOver[1].SetText("+ " + ((Char.player.statManaMax / 20) * 0.5f * Char.statMultiplier) + " Mana");
+                    UpgradeStatOver[1].SetText("+ " + (((float)Char.player.statManaMax / 20f) * 0.2f * Char.statMultiplier) + " Mana");
                     UpgradeStatOver[1].TextColor = MainColor;
-                    UpgradeStatOver[7].SetText("+ " + (0.05 * Char.statMultiplier) + " Multiplier");
+                    UpgradeStatOver[7].SetText("+ " + (0.03 * Char.statMultiplier) + " Multiplier");
                     UpgradeStatOver[7].TextColor = SecondaryColor;
                     UpgradeStatOver[8].SetText("+ 0.05 %");
 
@@ -277,42 +278,42 @@ namespace AnotherRpgMod.UI
                 case (Stat.Con):
                     UpgradeStatOver[2].SetText("+ " + (Char.BaseArmor * 0.04f) + " Armor");
                     UpgradeStatOver[2].TextColor = MainColor;
-                    UpgradeStatOver[0].SetText("+ " + ((Char.player.statLifeMax / 20) * 0.25f * Char.statMultiplier) + " Hp");
+                    UpgradeStatOver[0].SetText("+ " + (((float)Char.player.statLifeMax / 20f) * 0.625f * Char.statMultiplier) + " Hp");
                     UpgradeStatOver[0].TextColor = SecondaryColor;
                     UpgradeStatOver[10].SetText("+ 0.1 HP/Sec");
                     break;
                 case (Stat.Str):
-                    UpgradeStatOver[3].SetText("+ " +(0.1*Char.statMultiplier)+ " Multiplier");
+                    UpgradeStatOver[3].SetText("+ " +(0.05f*Char.statMultiplier)+ " Multiplier");
                     UpgradeStatOver[3].TextColor = MainColor;
-                    UpgradeStatOver[5].SetText("+ " + (0.05 * Char.statMultiplier) + " Multiplier");
+                    UpgradeStatOver[5].SetText("+ " + (0.03f * Char.statMultiplier) + " Multiplier");
                     UpgradeStatOver[5].TextColor = SecondaryColor;
-                    UpgradeStatOver[6].SetText("+ 2 %");
+                    UpgradeStatOver[9].SetText("+ 0.5 %");
                     break;
                 case (Stat.Agi):
-                    UpgradeStatOver[4].SetText("+ " + (0.1 * Char.statMultiplier) + " Multiplier");
+                    UpgradeStatOver[4].SetText("+ " + (0.05f * Char.statMultiplier) + " Multiplier");
                     UpgradeStatOver[4].TextColor = MainColor;
-                    UpgradeStatOver[3].SetText("+ " + (0.05 * Char.statMultiplier) + " Multiplier");
+                    UpgradeStatOver[3].SetText("+ " + (0.03f * Char.statMultiplier) + " Multiplier");
                     UpgradeStatOver[3].TextColor = SecondaryColor;
-                    UpgradeStatOver[6].SetText("+ 2 %");
+                    UpgradeStatOver[9].SetText("+ 0.5 %");
                     break;
                 case (Stat.Dex):
-                    UpgradeStatOver[5].SetText("+ " + (0.1 * Char.statMultiplier) + " Multiplier");
+                    UpgradeStatOver[5].SetText("+ " + (0.05f * Char.statMultiplier) + " Multiplier");
                     UpgradeStatOver[5].TextColor = MainColor;
-                    UpgradeStatOver[4].SetText("+ " + (0.05 * Char.statMultiplier) + " Multiplier");
+                    UpgradeStatOver[4].SetText("+ " + (0.03f * Char.statMultiplier) + " Multiplier");
                     UpgradeStatOver[4].TextColor = SecondaryColor;
                     UpgradeStatOver[8].SetText("+ 0.05 %");
                     break;
                 case (Stat.Int):
-                    UpgradeStatOver[6].SetText("+ " + (0.1 * Char.statMultiplier) + " Multiplier");
+                    UpgradeStatOver[6].SetText("+ " + (0.05f * Char.statMultiplier) + " Multiplier");
                     UpgradeStatOver[6].TextColor = MainColor;
-                    UpgradeStatOver[1].SetText("+ " + ((Char.player.statManaMax / 20) * 0.25f * Char.statMultiplier) + " Mana");
+                    UpgradeStatOver[1].SetText("+ " + (((float)Char.player.statManaMax / 20f) * 0.1f * Char.statMultiplier) + " Mana");
                     UpgradeStatOver[1].TextColor = SecondaryColor;
                     UpgradeStatOver[11].SetText("+ 0.1 MP/Sec");
                     break;
                 case (Stat.Spr):
-                    UpgradeStatOver[7].SetText("+ " + (0.1 * Char.statMultiplier) + " Multiplier");
+                    UpgradeStatOver[7].SetText("+ " + (0.05f * Char.statMultiplier) + " Multiplier");
                     UpgradeStatOver[7].TextColor = MainColor;
-                    UpgradeStatOver[6].SetText("+ " + (0.05 * Char.statMultiplier) + " Multiplier");
+                    UpgradeStatOver[6].SetText("+ " + (0.03f * Char.statMultiplier) + " Multiplier");
                     UpgradeStatOver[6].TextColor = SecondaryColor;
                     UpgradeStatOver[11].SetText("+ 0.1 MP/Sec");
                     break;
@@ -339,6 +340,18 @@ namespace AnotherRpgMod.UI
             if (!visible)
                 return;
             Main.PlaySound(SoundID.MenuOpen);
+            if (Control.ModifierKeys == Keys.Shift)
+            {
+                for (int i = 0; i< amount;i++)
+                    Char.SpendPoints(stat, Char.GetStatXPMax(stat) - Char.GetStatXP(stat));
+                return;
+            }
+            if ((Control.ModifierKeys & Keys.Shift) != 0)
+            {
+                while (Char.FreePtns > 0)
+                    Char.SpendPoints(stat, Char.GetStatXPMax(stat) - Char.GetStatXP(stat));
+                return;
+            }
             Char.SpendPoints(stat, amount);
             
         }

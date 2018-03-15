@@ -137,5 +137,31 @@ namespace AnotherRpgMod.Utils
         {
             return (int)Math.Floor((double)number);
         }
+
+        public static long Floorlong(double number)
+        {
+            return (long)Math.Floor(number);
+        }
+        public static long Floorlong(float number)
+        {
+            return (long)Math.Floor((double)number);
+        }
+        public static long Floorlong(long number)
+        {
+            return (long)Math.Floor((double)number);
+        }
+
+        public static long Ceillong(double number)
+        {
+            return (long)Math.Ceiling(number);
+        }
+        public static long Ceillong(float number)
+        {
+            return (long)Math.Ceiling((double)number);
+        }
+        public static long Ceillong(long number)
+        {
+            return (long)Math.Ceiling((double)number);
+        }
     }
 }
