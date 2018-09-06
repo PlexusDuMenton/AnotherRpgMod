@@ -1,6 +1,6 @@
 author = Plexus
-version = 0.14.2
-displayName = Another RPG Mod
+version = 1.2.0
+displayName = [c/4cff9c:Another RPG Mod]
 homepage = https://forums.terraria.org/index.php?threads/another-rpg-mod.67218/
 hideCode = false
 hideResources = false

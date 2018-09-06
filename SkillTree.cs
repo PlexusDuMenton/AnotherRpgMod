@@ -4,6 +4,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Microsoft.Xna.Framework;
+using AnotherRpgMod.RPGModule;
+using Terraria;
+using AnotherRpgMod.RPGModule.Entities;
 
 namespace AnotherRpgMod.RPGModule
 {
@@ -25,28 +28,47 @@ namespace AnotherRpgMod.RPGModule
 
     public enum ClassType
     {
-        Tourist, // base class + 5% all damage
-        Ranger, // +100% ranged , 20% chance not to consume ammo -25% others
-        Duelist, // + 100% melee , + 20% health - 25% others
-        Summoner, // + 100% summon , + 2 summon , - 25% other class
-        Magus, // +100% magic , 20% manacost reduction - 25% other
-        Ninja, //+100% throw , 20% not to consume ammo - 25%other
-        OneManArmy, // +5 summon , + 200% summon damage, all other damage type are reset to 1
+        //Tier 0 
+        Tourist, // base class + 5% all damage 
+        //Tier 1 -lvl 15+ (should be arround EoC)
+        Apprentice, // upgrade to tourist , + 15% all damage , +5% health
+        Archer, // +20% ranged damage , 5% dodge + 30% bow damage
+        Gunner, // +20% ranged damage , 20% chance not to consume ammo + 30% gun damage
+        SwordMan, // + 75% melee damage , + 10% melee speed , -20% health
+        Spiritualist, // + 50% summon damage , + 1 summon 
+        Mage, // +50% magic damage , 20% manacost reduction - 25% health
+        Ninja, //+50% throw damage , 20% not to consume ammo 
+        Acolyte, // 30% damage to mana (10(+int/50) damage per mana) + 25% magic damage + 10% health
+        Cavalier, //+ 20% melee damage , + 50% health ,+ 20% armor , -5% movement speed
+        //Tier 1 -lvl 15+ (should be arround EoC)
+        Regular, // upgrade to tourist , + 15% all damage , +5% health
+        Hunter, // +20% ranged damage , 5% dodge + 30% bow damage
+        Gunslinger, // +20% ranged damage , 20% chance not to consume ammo + 30% gun damage
+        Mercenary, // + 75% melee damage , + 10% melee speed , -20% health
+        Invoker, // + 50% summon damage , + 1 summon 
+        ArchMage, // +50% magic damage , 20% manacost reduction - 25% health
+        Shinobi, //+50% throw damage , 20% not to consume ammo 
+        Templar, // 30% damage to mana (10(+int/50) damage per mana) + 25% magic damage + 10% health
+        Knight, //+ 20% melee damage , + 50% health ,+ 20% armor , -5% movement speed
+
+
 
     }
-
+    [Flags]
     public enum Perk // all togleable
     {
-        Imortalisis, // on death keep health at 1, give 1 second of damage immunity, and enter cd (600/450/300/150 seconds)
-        BloodMage, // 50/75/90% manacost reduction , lose health on manaUse
-        Vampire, //0.5/0.75/0.1% lifesteal , +50/75/100% stats at night, 50/75/100% stats at day)
-        DemonEater, //Each kill regen 5/10/15% of your max health
-        Cupidon, //each attack have 5/10/15/20 % chance to drop an heart, increase pick range of heart
-        StarGatherer, //each attack have 5/10/15/20 % chance to drop an mana star, increase pick range of stars
-        Biologist, // potion heal 20/40/60/80/100% more heal/mana
-        Berserk, //each percent of health missing increase your damage by 1/2/3% 
-        Masochist, //Set armor to 0, each points of armor increase you damage dealt by 1/2/3
-        Survivalist, // Reduce Damage by 50% to gain 15/30/45% of defense
+        None = 0x0,
+        ArchPriest=0x1, // on death keep restore 1/25%/50%/75% health, give 1 second of damage immunity, and enter cd (600/450/300/150 seconds)
+        BloodMage=0x2, // 50/75/90% manacost reduction , lose health on manaUse
+        Vampire = 0x4, //0.05/0.075/0.1% lifesteal , +50/75/100% stats at night, -50/25/0% stats at day)
+        DemonEater = 0x8, //Each kill regen 5/10/15% of your max health
+        Cupidon = 0x10, //each attack have 5/10/15/20 % chance to drop an heart, increase pick range of heart
+        StarGatherer = 0x20, //each attack have 5/10/15/20 % chance to drop an mana star, increase pick range of stars
+        Biologist = 0x40, // potion heal 20/40/60/80/100% more heal/mana
+        Berserk = 0x80, //each percent of health missing increase your damage by 1/2/3% 
+        Masochist = 0x100, //Set armor to 0, each points of armor increase you damage dealt by 1/2/3
+        Survivalist = 0x200, // Reduce Damage by 50% to gain 15/30/45% of defense
+        TheGambler = 0x400, // 50% chance for damage to heal , 50% chance for heal to damage
     }
 
     public enum LeechType
@@ -60,17 +82,26 @@ namespace AnotherRpgMod.RPGModule
     {
         Speed,
         Damage,
-        LifeLeech,
-        MagicLeech,
+        Leech,
         Immunity,
         Class,
-        Perk
+        Perk,
+        Stats
     }
 
 
 
 
 
+        //Agility       Tanking
+    //          MELEE
+
+                   //
+
+    // RANGED           MAGIC
+    //          
+
+    
 
 
 
@@ -90,7 +121,7 @@ namespace AnotherRpgMod.RPGModule
 
         
         protected int level = 0;
-
+        protected NodeParent Parent;
 
         protected int maxLevel = 1;
         protected int pointsPerLevel = 1;
@@ -98,27 +129,87 @@ namespace AnotherRpgMod.RPGModule
         protected int levelRequirement = 0;
         protected bool unlocked = false;
 
-        public NodeType GetNodeType => Type;
-        public int GetLevel => level;
-        public float GetValue => value;
-        public int GetMaxLevel => maxLevel;
-        public int GetCostPerLevel => pointsPerLevel;
-        public int GetLevelRequirement => levelRequirement;
-        public bool GetUnlock => unlocked;
-        public bool GetActivate => activate;
-        public bool GetEnable => enable;
+        public NodeType GetNodeType
+        {
+            get
+            {
+                return Type;
+            }
+        }
+        public NodeParent GetParent { get { return Parent; } }
+        public void SetParrent(NodeParent Parent)
+        {
+            this.Parent = Parent;
+        }
+        public int GetLevel
+        {
+            get
+            {
+                return level;
+            }
+        }
+        public float GetValue
+        {
+            get
+            {
+                return value;
+            }
+        }
+        public int GetMaxLevel
+        {
+            get
+            {
+                return maxLevel;
+            }
+        }
+        public int GetCostPerLevel
+        {
+            get
+            {
+                return pointsPerLevel;
+            }
+        }
+        public int GetLevelRequirement
+        {
+            get
+            {
+                return levelRequirement;
+            }
+        }
+        public bool GetUnlock
+        {
+            get
+            {
+                return unlocked;
+            }
+        }
+        public bool GetActivate
+        {
+            get
+            {
+                return activate;
+            }
+        }
+        public bool GetEnable
+        {
+            get
+            {
+                return enable;
+            }
+        }
 
+        
 
         protected bool activate = false;
 
-        protected bool enable = true;
+        protected bool enable = false;
 
-        public void ToggleEnable()
+        public virtual void ToggleEnable()
         {
             enable = !enable;
         }
 
-        public Node(NodeType _type, bool _unlocked = false, int _levelrequirement = 0, int _value = 1, int _maxLevel = 1, int _pointsPerLevel = 1)
+        public Node(NodeType _type, bool _unlocked = false, float _value = 1, int _levelrequirement = 0,  int _maxLevel = 1, int _pointsPerLevel = 1)
         {
             
             Type = _type;
@@ -137,17 +228,23 @@ namespace AnotherRpgMod.RPGModule
                 return Reason.NoEnoughtPoints;
             if (level >= maxLevel)
                 return Reason.MaxLevelReach;
+            if (!unlocked)
+                return Reason.NotUnlocked;
             return Reason.CanUpgrade;
         }
 
-        public void Upgrade()
+        public virtual void Upgrade()
         {
             if (!activate)
+            {
                 activate = true;
+                enable = true;
+            }
+            
             level++;
         }
 
-        public void Unlock()
+        public virtual void Unlock()
         {
             unlocked = true;
         }
@@ -167,8 +264,14 @@ namespace AnotherRpgMod.RPGModule
     class PerkNode : Node
     {
         Perk perk;
-        public Perk GetPerk => perk;
-        public PerkNode(Perk _perk,NodeType _type, bool _unlocked = false, int _levelrequirement = 0, int _value = 1, int _maxLevel = 1, int _pointsPerLevel = 1) : base(_type,_unlocked,_levelrequirement,_value,_maxLevel,_pointsPerLevel)
+        public Perk GetPerk
+        {
+            get
+            {
+                return perk;
+            }
+        }
+        public PerkNode(Perk _perk,NodeType _type, bool _unlocked = false, float _value = 1, int _levelrequirement = 0, int _maxLevel = 1, int _pointsPerLevel = 1) : base(_type,_unlocked,_value,_levelrequirement,_maxLevel,_pointsPerLevel)
         {
             perk = _perk;
         }
@@ -178,11 +281,54 @@ namespace AnotherRpgMod.RPGModule
     {
         DamageType damageType;
         bool flat;
-        public bool GetFlat => flat;
-        public DamageType GetDamageType => damageType;
-        public DamageNode(DamageType _damageType,bool _flat, NodeType _type, bool _unlocked = false, int _levelrequirement = 0, int _value = 1, int _maxLevel = 1, int _pointsPerLevel = 1) : base(_type, _unlocked, _levelrequirement, _value, _maxLevel, _pointsPerLevel)
+        public bool GetFlat
+            {
+                get
+                {
+                    return flat;
+                }
+            }
+        public DamageType GetDamageType
+            {
+                get
+                {
+                    return damageType;
+                }
+            }
+        public DamageNode(DamageType _damageType,bool _flat, NodeType _type, bool _unlocked = false, float _value = 1, int _levelrequirement = 0, int _maxLevel = 1, int _pointsPerLevel = 1) : base(_type, _unlocked, _value, _levelrequirement,  _maxLevel, _pointsPerLevel)
         {
             damageType = _damageType;
+            flat = _flat;
+        }
+
+        public float GetDamage()
+        {
+            return value * level;
+        }
+    }
+
+    class StatNode : Node
+    {
+        Stat StatType;
+        bool flat;
+        public bool GetFlat
+        {
+            get
+            {
+                return flat;
+            }
+        }
+        public Stat GetStatType
+        {
+            get
+            {
+                return StatType;
+            }
+        }
+        public StatNode(Stat _statType, bool _flat, NodeType _type, bool _unlocked = false, float _value = 1, int _levelrequirement = 0, int _maxLevel = 1, int _pointsPerLevel = 1) : base(_type, _unlocked, _value, _levelrequirement, _maxLevel, _pointsPerLevel)
+        {
+            StatType = _statType;
+            flat = _flat;
         }
 
         public float GetDamage()
@@ -194,18 +340,91 @@ namespace AnotherRpgMod.RPGModule
     class ClassNode : Node
     {
         ClassType classType;
-        public ClassType GetClassType => classType;
-        public ClassNode(ClassType _classType, NodeType _type, bool _unlocked = false, int _levelrequirement = 0, int _value = 1, int _maxLevel = 1, int _pointsPerLevel = 1) : base(_type, _unlocked, _levelrequirement, _value, _maxLevel, _pointsPerLevel)
+        public ClassType GetClassType
+                {
+                    get
+                    {
+                        return classType;
+                    }
+                }
+        public ClassNode(ClassType _classType, NodeType _type, bool _unlocked = false, float _value = 1, int _levelrequirement = 0,int _maxLevel = 1, int _pointsPerLevel = 1) : base(_type, _unlocked, _value, _levelrequirement,  _maxLevel, _pointsPerLevel)
         {
             classType = _classType;
+        }
+
+        public void loadingUpgrade()
+        {
+            base.Upgrade();
+        }
+
+        public override void Upgrade()
+        {
+            base.Upgrade();
+
+            NodeParent _node;
+            if (Main.myPlayer >= Main.player.Length)
+                return;
+            RPGPlayer player = Main.player[Main.myPlayer].GetModPlayer<RPGPlayer>();
+            player.GetskillTree.ActiveClass = this;
+
+            for (int i = 0; i < player.GetskillTree.nodeList.nodeList.Count; i++)
+            {
+                _node = player.GetskillTree.nodeList.nodeList[i];
+                if (_node.GetNodeType == NodeType.Class)
+                {
+                    ClassNode classNode = (ClassNode)_node.GetNode;
+                    if (classNode.GetClassType != classType && classNode.GetActivate)
+                    {
+                        classNode.Disable();
+                    }
+                }
+            }
+        }
+
+        public void Disable()
+        {
+            if (Main.player[Main.myPlayer].GetModPlayer<RPGPlayer>().GetskillTree.ActiveClass == this)
+                Main.player[Main.myPlayer].GetModPlayer<RPGPlayer>().GetskillTree.ActiveClass = null;
+            enable = false;
+        }
+
+        public override void ToggleEnable()
+        {
+            base.ToggleEnable();
+            NodeParent _node;
+            if (enable)
+                Main.player[Main.myPlayer].GetModPlayer<RPGPlayer>().GetskillTree.ActiveClass = this;
+            else
+            {
+                Main.player[Main.myPlayer].GetModPlayer<RPGPlayer>().GetskillTree.ActiveClass = null;
+            }
+            for (int i = 0; i < Main.player[Main.myPlayer].GetModPlayer<RPGPlayer>().GetskillTree.nodeList.nodeList.Count; i++)
+            {
+                _node = Main.player[Main.myPlayer].GetModPlayer<RPGPlayer>().GetskillTree.nodeList.nodeList[i];
+                if (_node.GetNodeType == NodeType.Class)
+                {
+                    ClassNode classNode = (ClassNode)_node.GetNode;
+                    if (classNode.GetClassType != classType && classNode.GetActivate)
+                    {
+                        classNode.Disable();
+                    }
+
+                }
+            }
         }
     }
 
     class SpeedNode : Node
     {
         DamageType damageType;
-        public DamageType GetDamageType => damageType;
-        public SpeedNode(DamageType _damageType, NodeType _type, bool _unlocked = false, int _levelrequirement = 0, int _value = 1, int _maxLevel = 1, int _pointsPerLevel = 1) : base(_type, _unlocked, _levelrequirement, _value, _maxLevel, _pointsPerLevel)
+        public DamageType GetDamageType
+                {
+                    get
+                    {
+                        return damageType;
+                    }
+                }
+        public SpeedNode(DamageType _damageType, NodeType _type, bool _unlocked = false, float _value = 1, int _levelrequirement = 0,int _maxLevel = 1, int _pointsPerLevel = 1) : base(_type, _unlocked, _value, _levelrequirement,  _maxLevel, _pointsPerLevel)
         {
             damageType = _damageType;
         }
@@ -219,8 +438,14 @@ namespace AnotherRpgMod.RPGModule
     class LeechNode : Node
     {
         LeechType leechType;
-        public LeechType GetLeechType => leechType;
-        public LeechNode(LeechType _leechType, NodeType _type, bool _unlocked = false, int _levelrequirement = 0, int _value = 1, int _maxLevel = 1, int _pointsPerLevel = 1) : base(_type, _unlocked, _levelrequirement, _value, _maxLevel, _pointsPerLevel)
+        public LeechType GetLeechType
+                    {
+                        get
+                        {
+                            return leechType;
+                        }
+                    }
+        public LeechNode(LeechType _leechType, NodeType _type, bool _unlocked = false, float _value = 1, int _levelrequirement = 0, int _maxLevel = 1, int _pointsPerLevel = 1) : base(_type, _unlocked, _value, _levelrequirement,  _maxLevel, _pointsPerLevel)
         {
             leechType = _leechType;
         }
@@ -234,8 +459,14 @@ namespace AnotherRpgMod.RPGModule
     class ImmunityNode : Node
     {
         Immunity immunity;
-        public Immunity GetImmunity => immunity;
-        public ImmunityNode(Immunity _immunity, NodeType _type, bool _unlocked = false, int _levelrequirement = 0, int _value = 1, int _maxLevel = 1, int _pointsPerLevel = 1) : base(_type, _unlocked, _levelrequirement, _value, _maxLevel, _pointsPerLevel)
+        public Immunity GetImmunity
+                        {
+                            get
+                            {
+                                return immunity;
+                            }
+                        }
+        public ImmunityNode(Immunity _immunity, NodeType _type, bool _unlocked = false, float _value = 1, int _levelrequirement = 0,  int _maxLevel = 1, int _pointsPerLevel = 1) : base(_type, _unlocked, _value, _levelrequirement,  _maxLevel, _pointsPerLevel)
         {
             immunity = _immunity;
         }
@@ -248,35 +479,99 @@ namespace AnotherRpgMod.RPGModule
     {
         Node actualNode;
         List<NodeParent> neighboorNode;
+        public List<NodeParent> connectedNeighboor; //used to check for drawing connection lines between neighboor
+        public List<NodeParent> GetNeightboor
+        {
+            get
+            {
+                return neighboorNode;
+            }
+        }
+        public Node GetNode
+        {
+            get
+            {
+                return actualNode;
+            }
+        }
 
+        public Reason CanUpgrade(int points,int level)
+        {
+            if (level < actualNode.GetLevelRequirement)
+                return Reason.LevelRequirement;
+            return actualNode.CanUpgrade( points);
+        }
+        public bool GetEnable { get { return actualNode.GetEnable; } }
         static ushort TotalID = 0;
-        public static List<NodeParent> NodeList;
 
         public readonly ushort ID;
 
-        public List<NodeParent> connectedNeighboor; //used to check for drawing connection lines between neighboor
+        
 
         public Vector2 menuPos;
         //comment to my future self as I will surely forget it : 
         // type var => var
         // is equal to 
         // type var {get{return var;}}
-        public NodeType GetNodeType => actualNode.GetNodeType;
-        public int GetLevel => actualNode.GetLevel; 
-        public int GetMaxLevel => actualNode.GetMaxLevel; 
-        public int GetCostPerLevel => actualNode.GetCostPerLevel; 
-        public int GetLevelRequirement => actualNode.GetLevelRequirement;
-        public bool GetUnlock => actualNode.GetUnlock;
-        public bool GetActivate => actualNode.GetActivate;
+        public NodeType GetNodeType
+        {
+            get
+            {
+                return actualNode.GetNodeType;
+            }
+        }
+        public int GetLevel
+        {
+            get
+            {
+                return actualNode.GetLevel;
+            }
+        }
+        public int GetMaxLevel
+        {
+            get
+            {
+                return actualNode.GetMaxLevel;
+            }
+        }
+        public int GetCostPerLevel
+        {
+            get
+            {
+                return actualNode.GetCostPerLevel;
+            }
+        }
+        public int GetLevelRequirement
+        {
+            get
+            {
+                return actualNode.GetLevelRequirement;
+            }
+        }
+        public bool GetUnlock
+        {
+            get
+            {
+                return actualNode.GetUnlock;
+            }
+        }
+        public bool GetActivate
+        {
+            get
+            {
+                return actualNode.GetActivate;
+            }
+        }
 
 
         public NodeParent(Node node,Vector2 pos)
         {
+            neighboorNode = new List<NodeParent>();
+            connectedNeighboor = new List<NodeParent>();
             actualNode = node;
             menuPos = pos;
             ID = TotalID;
             TotalID++;
-            NodeList.Add(this);
         }
 
         public bool CanBeDisable()
@@ -291,10 +586,6 @@ namespace AnotherRpgMod.RPGModule
             actualNode.ToggleEnable();
         }
 
-        public Reason CanUpgrade(int points)
-        {
-            return actualNode.CanUpgrade(points);
-        }
 
         public void Unlock()
         {
@@ -304,11 +595,23 @@ namespace AnotherRpgMod.RPGModule
         public void AddNeighboor(NodeParent neighboor)
         {
             neighboorNode.Add(neighboor);
+            neighboor.AddNeighboorSimple(this);
         }
 
-        public void Upgrade()
+        public void AddNeighboorSimple(NodeParent neighboor)
         {
-            actualNode.Upgrade();
+            neighboorNode.Add(neighboor);
+        }
+
+        public void Upgrade(bool loading = false)
+        {
+            if (loading && actualNode.GetNodeType == NodeType.Class)
+            {
+                (actualNode as ClassNode).loadingUpgrade();
+            }
+            else
+                actualNode.Upgrade(); 
+            
             for (int i = 0; i< neighboorNode.Count; i++)
             {
                 neighboorNode[i].Unlock();
@@ -319,27 +622,85 @@ namespace AnotherRpgMod.RPGModule
     class NodeList //prefer to make this class to stock in different set each type of node to speedup
         //looking for the entire tree would take lot of time
     {
+        public List<NodeParent> nodeList;
+
         private List<DamageNode> meleeDamage;
         private List<DamageNode> rangedDamage;
         private List<DamageNode> magicDamage;
         private List<DamageNode> summonDamage;
         private List<DamageNode> throwDamage;
 
+        private List<StatNode> StatsNodes;
+
         private List<SpeedNode> meleeSpeed;
         private List<SpeedNode> rangedSpeed;
         private List<SpeedNode> magicSpeed;
 
         private List<LeechNode> leechs;
-        public List<LeechNode> GetLeech => leechs;
-
+        public List<LeechNode> GetLeech
+        {
+            get
+            {
+                return leechs;
+            }
+        }
 
         private List<ClassNode> classes;
         private List<PerkNode> perks;
         private List<ImmunityNode> immunities;
 
-        public List<ClassNode> GetClasses => classes;
-        public List<PerkNode> GetPerks => perks;
-        public List<ImmunityNode> GetImmunities => immunities;
+        public NodeList()
+        {
+            nodeList = new List<NodeParent>();
+
+            meleeDamage = new List<DamageNode>();
+            rangedDamage = new List<DamageNode>();
+            magicDamage = new List<DamageNode>();
+            summonDamage = new List<DamageNode>();
+            throwDamage = new List<DamageNode>();
+
+            meleeSpeed = new List<SpeedNode>();
+            rangedSpeed = new List<SpeedNode>();
+            magicSpeed = new List<SpeedNode>();
+            leechs = new List<LeechNode>();
+
+            StatsNodes = new List<StatNode>();
+
+            classes = new List<ClassNode>();
+            perks = new List<PerkNode>();
+            immunities = new List<ImmunityNode>();
+
+        }
+
+        public List<StatNode> GetStatsList
+        {
+            get
+            {
+                return StatsNodes;
+            }
+        }
+
+        public List<ClassNode> GetClasses
+        {
+            get
+            {
+                return classes;
+            }
+        }
+        public List<PerkNode> GetPerks
+        {
+            get
+            {
+                return perks;
+            }
+        }
+        public List<ImmunityNode> GetImmunities
+        {
+            get
+            {
+                return immunities;
+            }
+        }
 
         public List<DamageNode> GetDamageList(DamageType _type)
         {
@@ -360,6 +721,9 @@ namespace AnotherRpgMod.RPGModule
 
         public void AddNode(DamageNode node)
         {
+            NodeParent nodeParent = new NodeParent(node, Vector2.Zero);
+            nodeParent.GetNode.SetParrent(nodeParent);
+            nodeList.Add(nodeParent);
             switch (node.GetDamageType)
             {
                 case DamageType.Magic:
@@ -382,6 +746,9 @@ namespace AnotherRpgMod.RPGModule
 
         public void AddNode(SpeedNode node)
         {
+            NodeParent nodeParent = new NodeParent(node, Vector2.Zero);
+            nodeParent.GetNode.SetParrent(nodeParent);
+            nodeList.Add(nodeParent);
             switch (node.GetDamageType)
             {
                 case DamageType.Magic:
@@ -400,37 +767,68 @@ namespace AnotherRpgMod.RPGModule
 
         public void AddNode(PerkNode perk)
         {
+            NodeParent nodeParent = new NodeParent(perk, Vector2.Zero);
+            nodeParent.GetNode.SetParrent(nodeParent);
+            nodeList.Add(nodeParent);
             perks.Add(perk);
         }
 
         public void AddNode(LeechNode leech)
         {
+            NodeParent nodeParent = new NodeParent(leech, Vector2.Zero);
+            nodeParent.GetNode.SetParrent(nodeParent);
+            nodeList.Add(nodeParent);
             leechs.Add(leech);
         }
 
         public void AddNode(ImmunityNode immunity)
         {
+            NodeParent nodeParent = new NodeParent(immunity, Vector2.Zero);
+            nodeParent.GetNode.SetParrent(nodeParent);
+            nodeList.Add(nodeParent);
             immunities.Add(immunity);
         }
 
         public void AddNode(ClassNode classnode)
         {
+            NodeParent nodeParent = new NodeParent(classnode, Vector2.Zero);
+            nodeParent.GetNode.SetParrent(nodeParent);
+            nodeList.Add(nodeParent);
             classes.Add(classnode);
         }
-
+        public void AddNode(StatNode statnode)
+        {
+            NodeParent nodeParent = new NodeParent(statnode, Vector2.Zero);
+            nodeParent.GetNode.SetParrent(nodeParent);
+            nodeList.Add(nodeParent);
+            StatsNodes.Add(statnode);
+        }
 
     }
 
     class SkillTree
     {
-        NodeList nodeList;
+        public ClassNode ActiveClass;
+        public NodeList nodeList;
+
+        public int GetStats(Stat stat)
+        {
+            int value = 0;
+            foreach (StatNode node in nodeList.GetStatsList)
+            {
+                if (node.GetStatType == stat)
+                    value += (int)(node.GetValue * node.GetLevel);
+            }
+            return value;
+        }
+
         private float CalcDamage(List<DamageNode> _list, bool flat)
         {
             float value = 0;
             foreach (DamageNode node in _list)
             {
                 if (node.GetFlat == flat)
-                    value += node.GetValue;
+                    value += node.GetValue* node.GetLevel;
             }
             return value;
         }
@@ -440,7 +838,7 @@ namespace AnotherRpgMod.RPGModule
             float value = 0;
             foreach (SpeedNode node in _list)
             {
-                value += node.GetValue;
+                value += node.GetValue * node.GetLevel;
             }
             return value;
         }
@@ -451,21 +849,55 @@ namespace AnotherRpgMod.RPGModule
             foreach (LeechNode node in _list)
             {
                 if (node.GetLeechType == LeechType.Both || node.GetLeechType == _type)
-                    value += node.GetValue;
+                    value += node.GetValue * node.GetLevel;
             }
             return value;
         }
 
-
-        public float GetDamageMult(DamageType _type)
+       public int GetSummonSlot()
         {
-            float value = 1;
-
-            value += CalcDamage(nodeList.GetDamageList(_type), false);
-
-            return value;
+            int slot = 0;
+            if (ActiveClass == null)
+                return 0;
+            switch (ActiveClass.GetClassType)
+            {
+                case (ClassType.Spiritualist):
+                    slot = 1;
+                    break;
+                case (ClassType.Invoker):
+                    slot = 2;
+                    break;
+            }
+            return slot;
         }
 
+        private float GetClassDamage(DamageType _type)
+        {
+            float value = 1;
+            RPGPlayer pEntity = Main.player[Main.myPlayer].GetModPlayer<RPGPlayer>();
+            if (ActiveClass == null)
+            {
+                return 1;
+            }
+            JsonChrClass actualClass = JsonCharacterClass.GetJsonCharList.GetClass(ActiveClass.GetClassType);
+            value += actualClass.Damage[(int)_type];
+            if (_type == DamageType.Ranged)
+            {
+                if (pEntity.HaveBow())
+                    value += actualClass.Damage[5];
+                if(pEntity.HaveRangedWeapon() && !pEntity.HaveBow())
+                    value += actualClass.Damage[6];
+            }
+            return value;
+        }
+        public float GetDamageMult(DamageType _type)
+        {
+            float value = 0;
+
+            value += CalcDamage(nodeList.GetDamageList(_type), false);
+            value += GetClassDamage(_type);
+            return value;
+        }
         public int GetDamageFlat(DamageType _type)
         {
             float value = 0;
@@ -483,11 +915,11 @@ namespace AnotherRpgMod.RPGModule
             return value;
         }
 
-        public float GetLeech(LeechType _Leechtype)
+        public float GetLeech(LeechType _leechType)
         {
             float value = 0;
 
-            value += CalcLeech(nodeList.GetLeech, _Leechtype);
+            value += CalcLeech(nodeList.GetLeech, _leechType);
 
             return value;
         }
@@ -514,18 +946,86 @@ namespace AnotherRpgMod.RPGModule
             return false;
         }
 
-        public Node GetSkillByID(int ID)
+        public void  ResetConnection()
         {
-            if (ID > Node.Nodes.Count)
-                return null;
-
-            return Node.Nodes[ID];
+            int count = nodeList.nodeList.Count;
+            for (int i = 0;i< count; i++)
+            {
+                nodeList.nodeList[i].connectedNeighboor = new List<NodeParent>();
+            }
         }
-
         public SkillTree()
         {
 
             nodeList = new NodeList();
+            JsonNodeList NodeSaved = JsonSkilLTree.GetJsonNodeList;
+
+            NodeType nodeT;
+            ClassType classT;
+            DamageType damageT;
+            LeechType leechT;
+            Immunity immunityT;
+            Stat StatT;
+            Perk perkT;
+
+            int i = 0;
+            foreach (JsonNode actualNode in NodeSaved.jsonList)
+            {
+                nodeT = (NodeType)Enum.Parse(typeof(NodeType), actualNode.baseType);
+                switch (nodeT)
+                {
+                    case (NodeType.Damage):
+                        damageT = (DamageType)Enum.Parse(typeof(DamageType), actualNode.specificType);
+                        nodeList.AddNode(new DamageNode(damageT, actualNode.flatDamage, NodeType.Damage, actualNode.unlocked, actualNode.valuePerLevel, actualNode.levelRequirement, actualNode.maxLevel, actualNode.pointsPerLevel));
+                        break;
+                    case (NodeType.Class):
+                        classT = (ClassType)Enum.Parse(typeof(ClassType), actualNode.specificType);
+                        nodeList.AddNode(new ClassNode(classT, NodeType.Class, actualNode.unlocked, actualNode.valuePerLevel, actualNode.levelRequirement, 1, actualNode.pointsPerLevel));
+                        break;
+                    case (NodeType.Speed):
+                        damageT = (DamageType)Enum.Parse(typeof(DamageType), actualNode.specificType);
+                        nodeList.AddNode(new SpeedNode(damageT, NodeType.Speed, actualNode.unlocked, actualNode.valuePerLevel, actualNode.levelRequirement, actualNode.maxLevel, actualNode.pointsPerLevel));
+                        break;
+                    case (NodeType.Immunity):
+                        immunityT = (Immunity)Enum.Parse(typeof(Immunity), actualNode.specificType);
+                        nodeList.AddNode(new ImmunityNode(immunityT, NodeType.Immunity, actualNode.unlocked, actualNode.valuePerLevel, actualNode.levelRequirement, actualNode.maxLevel, actualNode.pointsPerLevel));
+                        break;
+                    case (NodeType.Leech):
+                        leechT = (LeechType)Enum.Parse(typeof(LeechType), actualNode.specificType);
+                        nodeList.AddNode(new LeechNode(leechT, NodeType.Leech, actualNode.unlocked, actualNode.valuePerLevel, actualNode.levelRequirement, actualNode.maxLevel, actualNode.pointsPerLevel));
+                        break;
+                    case (NodeType.Perk):
+                        perkT = (Perk)Enum.Parse(typeof(Perk), actualNode.specificType);
+                        nodeList.AddNode(new PerkNode(perkT, NodeType.Perk, actualNode.unlocked, actualNode.valuePerLevel, actualNode.levelRequirement, actualNode.maxLevel, actualNode.pointsPerLevel));
+                        break;
+                    case (NodeType.Stats):
+                        StatT = (Stat)Enum.Parse(typeof(Stat), actualNode.specificType);
+                        nodeList.AddNode(new StatNode(StatT, actualNode.flatDamage, NodeType.Stats, actualNode.unlocked, actualNode.valuePerLevel, actualNode.levelRequirement, actualNode.maxLevel, actualNode.pointsPerLevel));
+                        break;
+                }
+
+                nodeList.nodeList[i].menuPos = new Vector2(actualNode.posX, actualNode.posY);
+                i++;
+            }
+            i = 0;
+            foreach (JsonNode actualNode in NodeSaved.jsonList)
+            {
+                
+                foreach (int nbID in actualNode.neigthboorlist)
+                {
+                    nodeList.nodeList[i].AddNeighboor(nodeList.nodeList[nbID]);
+
+                }
+
+                i++;
+            }
+        }
+
+
+        public readonly static int SKILLTREEVERSION = 1;
+        public void Init()
+        {
+            nodeList.nodeList[0].Upgrade();
         }
     }
 }

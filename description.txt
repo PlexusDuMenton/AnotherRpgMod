@@ -9,16 +9,137 @@ Rpg mod that add Level, Stats , and even weapon upgrade !
 Join Discord : https://discord.gg/UQueeQE ! (link also on webpage)
 
 
+
+
+
 Changelog : 
 
-next
+[c/ff0737:-1.2.0] - [c/efc737:ITEM UPDATE !]
 
-SkillTree ! 
+[c/efc737:Added Rarity and Modifier on weapon, armor and]
+[c/efc737:accesories]
+[c/efc737:Armor and accesories will give different stats based]
+[c/efc737:on rarity]
+[c/efc737:Modifier ammount and power depend on item rarity]
+[c/efc737:level and ascenscion ]
+[c/efc737:Rarity affect base damage of a weapon]
+[c/efc737:Rarity and modifier can be reroll on Reforge]
 
-On Fire & FrostBurn now damage ennemy on a small potion of their max health 
-TODO : do same for player
-Ui base scale is now 0.75, you can still change that in config file
+[c/efc737:Added NPC name display when not hovering them]
+[c/efc737:(along with some color depending on their level)]
+[c/efc737:Added NPC detail when hovering them]
 
+[c/efc737:Tries at making game more compatible with calamity]
+[c/efc737:(Huge nerf when calamity is loaded and gamemode is]
+[c/efc737:expert ]
+[c/efc737:(I have no way to detect if revengeance or death mode ]
+[c/efc737:is active ]
+[c/efc737:but it should make the game a bit more balanced))]
+[c/efc737:New Ascencion Name ]
+
+[c/efc737:Nerf to weapon xp past first ascension]
+[c/efc737:Small expand to SkillTree ]
+[c/efc737:New Node Type in skill tree ! ]
+[c/efc737:SkillTree loading should be fixed ! (OMG YES !)]
+[c/efc737:Posibility to rescale skill tree]
+[c/efc737:Posibility to ZOOM in and out in skilltree]
+[c/efc737:Some bug fix with no class selected]
+
+[c/efc737:Nerf Damage Stats]
+[c/efc737:Buff armor and Health Stats !]
+
+[c/efc737:Huge Improvement to Config files]
+[c/efc737:Added Level cap on NPC max level based on players]
+[c/efc737:(config file to enable/disable this ! ) ]
+[c/efc737:(actual value is Player level X 1.5 + 100)]
+[c/efc737:Monster rarity and Modifier can be toggled on and off]
+[c/efc737:Boss Modifier can be toggled on and off]
+[c/efc737:Clustered boss modifier can be toggled on and off]
+[c/efc737:(for the cool kid) (base is off)]
+[c/efc737:RPG part of the mod can be disactivated]
+[c/efc737:(no player level, stats and skilltree)]
+[c/efc737:and many more , just check it out]
+
+[c/efc737:Nerf for size modifier and rarity on npc]
+
+[c/ff0737:YES WORM BUG IS FIXED !]
+[c/ff0737:MOAR MP DESYNC FIX ! YEAY !!!!]
+
+
+-1.1.2
+-Fix projectiles bug with weapons
+
+-1.1.1
+-Fix Weapon Xp Gain (fell like an idiot atm)
+-Scale between Giant,Colossus and Titan are fixed (1.5,1.7,1.9)
+-fixed Giant NPC ai (thank game for making some IA bug when scale is over 2 :D)
+
+
+
+-1.1.0
+-Added Rank to NPC : Weak, (None) , Alpha, Elite , Legendary, Mythical, Godly , (AND AN HIDEN ONE !)
+-Added modifier to NPC
+-Fixed Huge bug on Server that made the level scale very high
+-Increase Expert Level increase per day
+-Fixed Server Desync
+-Ascended Ranged weapon now have correct  ammont of projectile shoot when ... shoot (or not still not fixed :E)
+-Fixed Summon Weapon Summoning per ascend
+-Fixed World Tier Not displaying in Multiplayer 
+
+
+1.0.1
+-non-boss Npc start lower level for the first day and slowly increase until one week so it reached base value (would make first night and day a bit less hard and unbalanced)
+-On expert world the npc grow per day have no limit but it slowed down after first week (arround 5% stronger per day (additively))
+-Damage boost from class is now Stacked additively with other damage boost from skill tree instead of being multiplicative
+-Higly Increase non-boss NPC Health in mid-late game (it was a one-Shot Fest)
+-slight reduction on non-npc damage in mid-late game
+-Increase of Xp gain for early and mid game
+
+
+1.0
+-MULTIPLAYER IS FIXED !
+-Server will automaticaly send server config
+-Config changed location to "D:\Documents\My Games\Terraria\ModLoader\Mod Configs\AnRPG"
+-Added more value in Setting (don't realy rememver if I use them, gonna check later)
+
+-Skill tree upgrade, now bigged, a new tier of class (sorry icon are not updated)
+-Added Reset Button for skill Tree
+-Fixed Class not having the correct damage mult or wrong value
+
+-Fixed armor formula error making armor multiplier being squared 
+
+-TownNPC no longer have op Health
+-NPC no longer have negativ hp
+-Life Leech is now based on player's health
+
+-Bonus Level from "World" is now correctly displayed
+-Changed Boss First Kill Sentence
+
+-Tool now gain bonus attack speed per level instead of damage (2% multiplicativ per leve, 10% multiplicative on ascend)
+
+
+0.99.3
+Fixed some bug/glitch with Poison,Fire and other Damage on Time debuff both on player and ennemy
+Added Tier One classes on skill tree
+Increase MaxLevel of allready existing node from 5 to 100 (should be ok until level 500 now)
+
+0.99.2
+Fix Crash when loading character
+
+0.99.1
+Fix a bug that make imposssible to load character.
+
+0.99.0.1
+just fixing description and mod image >.>
+
+0.99 (1.0 beta)
+Added skill tree (small one, more of a preview than anything)
+Addec class (for now there is only 2 simple class)
+Fixed bug with worms
+You no longer can gain more than 5 level at the same time
+Reduced exp gain on weapon when used on ennemy with too low or too high level (down to 10% at minimum)
+Reduced Melee Weapon LifeLeech (again)
+Slightly reduced Boss health scale but very slighty increased their damage scale
 
 0.14.2
 fix some weapon not gaining exp

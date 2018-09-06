@@ -11,7 +11,13 @@ namespace AnotherRpgMod.Utils
 {
     class WorldManager : ModWorld
     {
+        
+
         public static int BossDefeated = 0;
+        public static int Day = 1;
+        private static bool lastDayTime = true;
+
+        
         public static List<int> BossDefeatedList;
 
         public static void OnBossDefeated(NPC npc)
@@ -22,7 +28,7 @@ namespace AnotherRpgMod.Utils
             }
             BossDefeatedList.Add(npc.type);
             BossDefeated++;
-            Main.NewText("A Boss has been defeated for the first time, The world growth in power", 144, 32, 185);
+            Main.NewText("The world grow stronger..", 144, 32, 185);
         }
 
         public override void Initialize()
@@ -31,16 +37,47 @@ namespace AnotherRpgMod.Utils
             BossDefeatedList = new List<int>();
         }
 
+        public static int GetWorldLevelMultiplier(int Level)
+        {
+            float baseLevelMult = 0.35f;
+            if (Main.hardMode)
+                baseLevelMult = 1;
+            baseLevelMult += Day * 0.1f;
+            if (!Main.expertMode)
+            {
+                 Mathf.Clamp(baseLevelMult, 0, 1);
+            }
+            return Mathf.FloorInt(baseLevelMult * Level);
+        }
+
+
+
+
+
+
+
+
+
+        public override void PostUpdate()
+        {
+            if (Main.dayTime != lastDayTime) {
+                lastDayTime = Main.dayTime;
+                if (Main.dayTime)
+                    Day++;
+            }
+            base.PostUpdate();
+        }
+
         public static int GetWorldAdditionalLevel()
         {
             int bonuslevel = 0;
 
-            bonuslevel = BossDefeated * 13;
+            bonuslevel = BossDefeated * 10;
 
             if (Main.hardMode)
             {
                 bonuslevel = Mathf.CeilInt(bonuslevel * 1.1f);
-                bonuslevel += 15;
+                bonuslevel += 20;
             }
             
             return bonuslevel;
@@ -54,7 +91,8 @@ namespace AnotherRpgMod.Utils
             }
             return new TagCompound {
                     {"BossDefeated", BossDefeated},
-                    {"BossDefeatedList", ConvertToInt(BossDefeatedList)}
+                    {"BossDefeatedList", ConvertToInt(BossDefeatedList)},
+                    {"day", Day},
                 };
         }
 
@@ -79,9 +117,10 @@ namespace AnotherRpgMod.Utils
         public override void Load(TagCompound tag)
         {
             BossDefeatedList = new List<int>();
-
             BossDefeated = tag.GetInt("BossDefeated");
+            Day = tag.GetInt("day");
             ConvertToList(tag.GetIntArray("BossDefeatedList"));
+            Arpg.PlayerLevel = 0;
         }
 
     }

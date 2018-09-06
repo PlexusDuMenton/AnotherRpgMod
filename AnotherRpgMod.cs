@@ -10,6 +10,7 @@ using AnotherRpgMod.UI;
 using AnotherRpgMod.RPGModule.Entities;
 using AnotherRpgMod.Utils;
 
+
 namespace AnotherRpgMod
 {
     public enum DamageType : byte
@@ -27,37 +28,20 @@ namespace AnotherRpgMod
     public enum Message : byte {
         AddXP,
         SyncLevel,
-        SyncNPC,
-        SyncWeapon
+        SyncNPCSpawn,
+        SyncNPCUpdate,
+        SyncWeapon,
+        SyncConfig,
+        AskNpc,
+        Log
     };
 
-    public class DataTag
-    {
-        public static DataTag amount = new DataTag(reader => reader.ReadInt32());
-        
-        public static DataTag amount_single = new DataTag(reader => reader.ReadSingle());
-        public static DataTag playerId = new DataTag(reader => reader.ReadInt32());
-        public static DataTag npcId = new DataTag(reader => reader.ReadInt32());
-        public static DataTag itemId = new DataTag(reader => reader.ReadInt32());
-
-
-        public static DataTag level = new DataTag(reader => reader.ReadInt32());
-        public static DataTag damage = new DataTag(reader => reader.ReadInt32());
-        public static DataTag life = new DataTag(reader => reader.ReadInt32());
-        public static DataTag defense = new DataTag(reader => reader.ReadInt32());
-
-
-        public Func<BinaryReader, object> read;
-
-        public DataTag(Func<BinaryReader, object> read)
-        {
-            this.read = read;
-        }
-    }
+    
 
     enum SupportedMod
     {
-        Thorium //only suported mod for now
+        Thorium, //only suported mod for now
+        Calamity
     }
 
     class Arpg : Mod
@@ -65,63 +49,33 @@ namespace AnotherRpgMod
         public static Arpg Instance;
         public UserInterface customResources;
         public HealthBar healthBar;
+        public UserInterface customNPCInfo;
         public UserInterface customstats;
         public UserInterface customOpenstats;
+        public UserInterface customOpenST;
         public Stats statMenu;
         public OpenStatsButton openStatMenu;
+        public OpenSTButton OpenST;
+        public UserInterface customSkillTree;
+        public SkillTreeUi skillTreeUI;
+        public ReworkMouseOver NPCInfo;
         public static ModHotKey StatsHotKey;
-        
+        public static ModHotKey SkillTreeHotKey;
 
+        public static int PlayerLevel = 0;
         public static Dictionary<SupportedMod, bool> LoadedMods = new Dictionary<SupportedMod, bool>()
         {
             {SupportedMod.Thorium,false },
-            //{SupportedMod.Calamity,false },
+            {SupportedMod.Calamity,false },
             //{SupportedMod.Spirit,false }
 
         };
 
-        public static Dictionary<Message, List<DataTag>> dataTags = new Dictionary<Message, List<DataTag>>()
-        {
-            { Message.AddXP, new List<DataTag>(){ DataTag.amount, DataTag.level } },
-            { Message.SyncLevel, new List<DataTag>(){ DataTag.playerId, DataTag.amount } },
-            { Message.SyncNPC, new List<DataTag>(){ DataTag.npcId, DataTag.level, DataTag.life, DataTag.damage, DataTag.defense } },
-        };
-
-
+    
         public override void HandlePacket(BinaryReader reader, int whoAmI)
         {
 
-            Message msg = (Message)reader.ReadByte();
-            Dictionary<DataTag, object> tags = new Dictionary<DataTag, object>();
-            foreach (DataTag tag in dataTags[msg])
-                tags.Add(tag, tag.read(reader));
-            switch (msg)
-            {
-                case Message.SyncLevel:
-                    if (Main.netMode == 2)
-                        Main.player[(int)tags[DataTag.playerId]].GetModPlayer<RPGPlayer>().SyncLevel((int)tags[DataTag.amount]);
-                    break;
-                case Message.AddXP:
-                    if (Main.netMode == 1)
-                    {
-                        Main.LocalPlayer.GetModPlayer<RPGPlayer>().AddXp((int)tags[DataTag.amount], (int)tags[DataTag.level]);
-                    }
-                    break;
-                case Message.SyncNPC:
-                        NPC npc = Main.npc[(int)tags[DataTag.npcId]];
-
-                        npc.lifeMax = (int)tags[DataTag.life];
-                        npc.life = (int)tags[DataTag.life];
-                        npc.damage = (int)tags[DataTag.damage];
-                        npc.defense = (int)tags[DataTag.defense];
-                        if (npc.GivenName == "")
-                        {
-                            npc.GivenName = ("Lvl. " + ((int)tags[DataTag.level]) + " " + npc.TypeName);
-                        }
-                        else
-                            npc.GivenName = ("Lvl. " + ((int)tags[DataTag.level]) + " " + npc.GivenName);
-                    break;
-            }
+            MPPacketHandler.HandlePacket(reader, whoAmI);
         }
         public override void PreSaveAndQuit()
         {
@@ -130,13 +84,23 @@ namespace AnotherRpgMod
         }
         public override void Load()
         {
+            ErrorLogger.Log("Another Rpg Mod " + Version + " Correctly loaded !");
             Instance = this;
             ConfigFile.Init();
+            JsonSkilLTree.Init();
+            JsonCharacterClass.Init();
             LoadedMods[SupportedMod.Thorium] = ModLoader.GetMod("ThoriumMod") != null;
+            LoadedMods[SupportedMod.Calamity] = ModLoader.GetMod("CalamityMod") != null;
             StatsHotKey = RegisterHotKey("Open Stats Menu", "C");
+            SkillTreeHotKey = RegisterHotKey("Open SkillTree", "X");
             if (!Main.dedServ)
             {
-                
+
+                customNPCInfo = new UserInterface();
+                NPCInfo = new ReworkMouseOver();
+                ReworkMouseOver.visible = true;
+                customNPCInfo.SetState(NPCInfo);
+
                 customResources = new UserInterface();
                 healthBar = new HealthBar();
                 HealthBar.visible = true;
@@ -152,6 +116,15 @@ namespace AnotherRpgMod
                 OpenStatsButton.visible = true;
                 customOpenstats.SetState(openStatMenu);
 
+                customOpenST = new UserInterface();
+                OpenST = new OpenSTButton();
+                OpenSTButton.visible = true;
+                customOpenST.SetState(OpenST);
+
+                customSkillTree = new UserInterface();
+                skillTreeUI = new SkillTreeUi();
+                OpenStatsButton.visible = true;
+                customSkillTree.SetState(skillTreeUI);
 
                 /*
                 
@@ -183,6 +156,53 @@ namespace AnotherRpgMod
         {
             if (Main.netMode == 2)
                 return;
+
+            //Vanilla: Emote Bubbles
+            int mouseid = layers.FindIndex(layer => layer.Name.Equals("Vanilla: Mouse Over"));
+            if (mouseid != -1)
+            {
+                layers.Insert(mouseid, new LegacyGameInterfaceLayer(
+                    "AnotherRpgMod: NPC Info detail",
+                    delegate
+                    {
+                        if (HealthBar.visible) { 
+                            customNPCInfo.Update(Main._drawInterfaceGameTime);
+                            NPCInfo.Draw(Main.spriteBatch);
+                        }
+                        return true;
+                    },
+                    InterfaceScaleType.UI)
+                );
+            }
+
+
+            int skilltreeid = layers.FindIndex(layer => layer.Name.Equals("Vanilla: Map / Minimap"));
+            if (skilltreeid != -1)
+            {
+                //layers.RemoveAt(id);
+
+                //Add you own layer
+                layers.Insert(skilltreeid, new LegacyGameInterfaceLayer(
+                    "AnotherRpgMod: Skill Tree",
+                    delegate
+                    {
+                        if (SkillTreeUi.visible)
+                        {
+                                //Update CustomBars
+                                customSkillTree.Update(Main._drawInterfaceGameTime);
+                                skillTreeUI.Draw(Main.spriteBatch);
+
+                        }
+                        if (OpenSTButton.visible)
+                        {
+                            customOpenST.Update(Main._drawInterfaceGameTime);
+                            OpenST.Draw(Main.spriteBatch);
+                        }
+                        return true;
+                    }, InterfaceScaleType.UI)
+                );
+            }
+            
 
             int id = layers.FindIndex(layer => layer.Name.Equals("Vanilla: Inventory"));
             if (id != -1)
@@ -224,11 +244,13 @@ namespace AnotherRpgMod
                             customOpenstats.Update(Main._drawInterfaceGameTime);
                             openStatMenu.Draw(Main.spriteBatch);
                         }
+
                         return true;
                     },
                     InterfaceScaleType.UI)
                 );
             }
+
         }
     }
 

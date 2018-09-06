@@ -1,0 +1,95 @@
+Files:
+Textures/SkillTree/Class/Acolyte.png
+Textures/SkillTree/Class/Apprentice.png
+Textures/SkillTree/Class/Archer.png
+Textures/SkillTree/Class/Gunner.png
+Textures/SkillTree/Class/Knight.png
+Textures/SkillTree/Class/Mage.png
+Textures/SkillTree/Class/Ninja.png
+Textures/SkillTree/Class/Spiritualist.png
+Textures/SkillTree/Class/SwordMan.png
+Textures/SkillTree/Class/Tourist.png
+Textures/SkillTree/Damage/Magic.png
+Textures/SkillTree/Damage/Melee.png
+Textures/SkillTree/Damage/Ranged.png
+Textures/SkillTree/Damage/Summon.png
+Textures/SkillTree/Damage/Throw.png
+Textures/SkillTree/Leech/Both.png
+Textures/SkillTree/Leech/Life.png
+Textures/SkillTree/Leech/Magic.png
+Textures/SkillTree/Speed/Magic.png
+Textures/SkillTree/Speed/Melee.png
+Textures/SkillTree/Speed/Ranged.png
+Textures/UI/Blank.png
+Textures/UI/BreathBar.png
+Textures/UI/character.png
+Textures/UI/HealthBar.png
+Textures/UI/ManaBar.png
+Textures/UI/OverlayHealthBar.png
+Textures/UI/skill_blank.png
+Textures/UI/WeaponBar.png
+Textures/UI/XPBar.png
+Info
+icon.png
+Windows.dll
+Mono.dll
+Windows.pdb
+packages/Newtonsoft.Json.11.0.2/lib/net20/Newtonsoft.Json.dll
+packages/Newtonsoft.Json.11.0.2/lib/net35/Newtonsoft.Json.dll
+packages/Newtonsoft.Json.11.0.2/lib/net40/Newtonsoft.Json.dll
+packages/Newtonsoft.Json.11.0.2/lib/net45/Newtonsoft.Json.dll
+packages/Newtonsoft.Json.11.0.2/lib/netstandard1.0/Newtonsoft.Json.dll
+packages/Newtonsoft.Json.11.0.2/lib/netstandard1.3/Newtonsoft.Json.dll
+packages/Newtonsoft.Json.11.0.2/lib/netstandard2.0/Newtonsoft.Json.dll
+packages/Newtonsoft.Json.11.0.2/lib/portable-net40+sl5+win8+wp8+wpa81/Newtonsoft.Json.dll
+packages/Newtonsoft.Json.11.0.2/lib/portable-net45+win8+wp8+wpa81/Newtonsoft.Json.dll
+AnotherRpgMod.cs
+AnRPG.sln
+App.config
+ConfigFile.cs
+description.txt
+JsonCharacterClass.cs
+JsonSkilLTree.cs
+packages.config
+RPGModule.cs
+SkillTree.cs
+Assets/UI/HealthBar.PSD
+Assets/UI/HealthBar (AutoSave)/HealthBar_1.psd
+Command/GeneralCommand.cs
+Items/ItemUpdate.cs
+NPCs/ARPGGlobalNPC.cs
+packages/Newtonsoft.Json.11.0.2/LICENSE.md
+packages/Newtonsoft.Json.11.0.2/Newtonsoft.Json.11.0.2.nupkg
+packages/Newtonsoft.Json.11.0.2/lib/net20/Newtonsoft.Json.xml
+packages/Newtonsoft.Json.11.0.2/lib/net35/Newtonsoft.Json.xml
+packages/Newtonsoft.Json.11.0.2/lib/net40/Newtonsoft.Json.xml
+packages/Newtonsoft.Json.11.0.2/lib/net45/Newtonsoft.Json.xml
+packages/Newtonsoft.Json.11.0.2/lib/netstandard1.0/Newtonsoft.Json.xml
+packages/Newtonsoft.Json.11.0.2/lib/netstandard1.3/Newtonsoft.Json.xml
+packages/Newtonsoft.Json.11.0.2/lib/netstandard2.0/Newtonsoft.Json.xml
+packages/Newtonsoft.Json.11.0.2/lib/portable-net40+sl5+win8+wp8+wpa81/Newtonsoft.Json.xml
+packages/Newtonsoft.Json.11.0.2/lib/portable-net45+win8+wp8+wpa81/Newtonsoft.Json.xml
+Textures/UI/OverlayHealthBar.psd
+Textures/UI/OverlayHealthBar.TGA
+Textures/UI/skill_tree_icon.psd
+Textures/UI/BreathBar (AutoSave)/BreathBar_1.psd
+Textures/UI/BreathBar (AutoSave)/BreathBar_2.psd
+Textures/UI/HealthBar (AutoSave)/HealthBar_1.psd
+Textures/UI/ManaBar (AutoSave)/ManaBar_1.psd
+Textures/UI/OverlayHealthBar (AutoSave)/OverlayHealthBar_10.psd
+Textures/UI/OverlayHealthBar (AutoSave)/OverlayHealthBar_11.psd
+Textures/UI/OverlayHealthBar (AutoSave)/OverlayHealthBar_7.psd
+Textures/UI/OverlayHealthBar (AutoSave)/OverlayHealthBar_8.psd
+Textures/UI/OverlayHealthBar (AutoSave)/OverlayHealthBar_9.psd
+Textures/UI/skill_tree_icon (AutoSave)/skill_tree_icon_2.psd
+Textures/UI/skill_tree_icon (AutoSave)/skill_tree_icon_3.psd
+Textures/UI/skill_tree_icon (AutoSave)/skill_tree_icon_4.psd
+Textures/UI/skill_tree_icon (AutoSave)/skill_tree_icon_5.psd
+Textures/UI/skill_tree_icon (AutoSave)/skill_tree_icon_6.psd
+Textures/UI/XPBar (AutoSave)/XPBar_1.psd
+UI/HealthBar.cs
+UI/SkillTreeUi.cs
+UI/Stats.cs
+Utils/Mathf.cs
+Utils/SkillTextures.cs
+Utils/WorldManager.cs

@@ -10,7 +10,13 @@ namespace AnotherRpgMod.Utils
 {
     public static class Mathf // float math
     {
-        static Random Rdn = new Random();
+
+        public static int HugeCalc(int val,int original)
+        {
+            if (val < original)
+                return int.MaxValue;
+            return val;
+        }
 
         public static T Clamp<T>(this T val, T min, T max) where T : IComparable<T>
         {
@@ -19,9 +25,39 @@ namespace AnotherRpgMod.Utils
             else return val;
         }
 
+        public static int GenNewSeed()
+        {
+            int seed = Terraria.Main.rand.Next();
+            Terraria.Main.rand = new Terraria.Utilities.UnifiedRandom(seed);
+            return seed;
+        }
+
+        public static void NewSeed(int seed)
+        {
+            Terraria.Main.rand = new Terraria.Utilities.UnifiedRandom(seed);
+        }
+
+        public static float Log2(float x)
+        {
+            return (float)(Math.Log(x, 2));
+        }
+
+        public static float Logx(float x,float b)
+        {
+            return (float)(Math.Log(x, b));
+        }
+
         public static int RandomInt(int a,int b)
         {
-            return Rdn.Next(a, b);
+            if (Terraria.Main.rand == null)
+                return a;
+            return Terraria.Main.rand.Next(a, b);
+        }
+        public static float Random(float a, float b)
+        {
+            if (Terraria.Main.rand == null)
+                return a;
+            return a + (float)Terraria.Main.rand.NextDouble() * b;
         }
 
         public static float Pow(double number,double power)

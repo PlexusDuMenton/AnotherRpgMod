@@ -11,22 +11,68 @@ using AnotherRpgMod.RPGModule.Entities;
 using System.Reflection;
 using Terraria.GameInput;
 using Terraria.Localization;
-using System.Windows.Forms;
 using AnotherRpgMod.RPGModule;
 
 
 namespace AnotherRpgMod.UI
 {
+    class OpenSTButton : UIState
+    {
+        public static bool visible = true;
+        public UIElement OpenSTPanel;
+        public float scale = ConfigFile.GetConfig.vConfig.HealthBarScale;
+        public float yOffSet = ConfigFile.GetConfig.vConfig.HealthBarYoffSet;
+        public override void OnInitialize()
+        {
+            if (!ConfigFile.GetConfig.gpConfig.RPGPlayer)
+            {
+                return;
+            }
 
+            OpenSTPanel = new UIElement();
+            OpenSTPanel.SetPadding(0);
+            OpenSTPanel.Left.Set(90 * scale, 0f);
+            OpenSTPanel.Top.Set((Main.screenHeight - 175 * scale) - yOffSet, 0f);
+            OpenSTPanel.Width.Set(32 * scale, 0f);
+            OpenSTPanel.Height.Set(64 * scale, 0f);
+            OpenSTPanel.HAlign = 0;
+            OpenSTPanel.VAlign = 0;
+
+            Texture2D Button = ModLoader.GetTexture("AnotherRpgMod/Textures/UI/skill_tree");
+            OpenStatButton OpenButton = new OpenStatButton(Button);
+            OpenButton.Left.Set(0, 0f);
+            OpenButton.Top.Set(0, 0f);
+            OpenButton.ImageScale = scale;
+            OpenButton.Width.Set(32 * scale, 0f);
+            OpenButton.Height.Set(64 * scale, 0f);
+            OpenButton.OnClick += new MouseEvent(OpenSTMenu);
+            OpenButton.HAlign = 0;
+            OpenButton.VAlign = 0;
+            OpenSTPanel.Append(OpenButton);
+            Recalculate();
+            base.Append(OpenSTPanel);
+        }
+        public void OpenSTMenu(UIMouseEvent evt, UIElement listeningElement)
+        {
+            Main.PlaySound(SoundID.MenuOpen);
+
+            SkillTreeUi.visible = !SkillTreeUi.visible;
+            if (SkillTreeUi.visible)
+                SkillTreeUi.Instance.LoadSkillTree();
+        }
+    }
     class OpenStatsButton : UIState
     {
         public static bool visible = true;
         public UIElement OpenStatsPanel;
-        public float scale = ConfigFile.GetConfig.HealthBarScale;
-        public float yOffSet = ConfigFile.GetConfig.HealthBarYoffSet;
+        public float scale = ConfigFile.GetConfig.vConfig.HealthBarScale;
+        public float yOffSet = ConfigFile.GetConfig.vConfig.HealthBarYoffSet;
         public override void OnInitialize()
         {
-
+            if (!ConfigFile.GetConfig.gpConfig.RPGPlayer)
+            {
+                return;
+            }
 
             OpenStatsPanel = new UIElement();
             OpenStatsPanel.SetPadding(0);
@@ -67,10 +113,6 @@ namespace AnotherRpgMod.UI
         private RPGPlayer Char;
         public static bool visible = false;
 
-        
-
-        private int Amount = 1;
-
         public void LoadChar()
         {
             Char = Main.player[Main.myPlayer].GetModPlayer<RPGPlayer>();
@@ -90,7 +132,7 @@ namespace AnotherRpgMod.UI
         UIText ResetText;
 
         private float baseYOffset = 100;
-        private float baseXOffset = 50;
+        private float baseXOffset = 100;
         private float YOffset = 35;
         private float XOffset = 120;
 
@@ -105,6 +147,12 @@ namespace AnotherRpgMod.UI
 
         public override void OnInitialize()
         {
+
+            if (!ConfigFile.GetConfig.gpConfig.RPGPlayer)
+            {
+                return;
+            }
+
             SizeMultiplier = (Main.screenHeight / 1080f);
             baseYOffset *= SizeMultiplier;
             baseXOffset *= SizeMultiplier;
@@ -162,11 +210,12 @@ namespace AnotherRpgMod.UI
                     UpgradeStatButton.OnClick += new MouseEvent((UIMouseEvent, UIElement) => UpgradeStat(UIMouseEvent, UIElement, Statused,1));
                     UpgradeStatButton.OnRightClick += new MouseEvent((UIMouseEvent, UIElement) => UpgradeStat(UIMouseEvent, UIElement, Statused, 5));
                     UpgradeStatButton.OnMiddleClick += new MouseEvent((UIMouseEvent, UIElement) => UpgradeStat(UIMouseEvent, UIElement, Statused, 25));
+                    UpgradeStatButton.OnScrollWheel += new ScrollWheelEvent((UIMouseEvent, UIElement) => UpgradeStatWheel(UIMouseEvent, UIElement, Statused));
                     statsPanel.Append(UpgradeStatButton);
 
 
                     progressStatsBar[i] = new StatProgress((Stat)i, ModLoader.GetTexture("AnotherRpgMod/Textures/UI/Blank"));
-                    progressStatsBar[i].Left.Set(baseXOffset + XOffset*1.1f, 0f);
+                    progressStatsBar[i].Left.Set(baseXOffset + XOffset*1.0f, 0f);
                     progressStatsBar[i].Top.Set(baseYOffset + (YOffset * i)+6, 0f);
                     progressStatsBar[i].Width.Set(105, 0);
                     progressStatsBar[i].HAlign = 0;
@@ -176,7 +225,7 @@ namespace AnotherRpgMod.UI
                     statsPanel.Append(progressStatsBar[i]);
 
                     progressStatsBarBG[i] = new ProgressBG(ModLoader.GetTexture("AnotherRpgMod/Textures/UI/Blank"));
-                    progressStatsBarBG[i].Left.Set(baseXOffset + XOffset * 1.1f, 0f);
+                    progressStatsBarBG[i].Left.Set(baseXOffset + XOffset * 1.0f, 0f);
                     progressStatsBarBG[i].Top.Set(baseYOffset + (YOffset * i)+6, 0f);
                     progressStatsBarBG[i].Width.Set(105, 0);
                     progressStatsBarBG[i].HAlign = 0;
@@ -200,7 +249,7 @@ namespace AnotherRpgMod.UI
 
                     UpgradeStatText[i] = new UIText("0", SizeMultiplier);
                     UpgradeStatText[i].SetText("Mana : 10 + 10");
-                    UpgradeStatText[i].Left.Set(baseXOffset, 0f);
+                    UpgradeStatText[i].Left.Set(baseXOffset-75, 0f);
                     UpgradeStatText[i].Top.Set(baseYOffset + (YOffset * i), 0f);
                     UpgradeStatText[i].HAlign = 0f;
                     UpgradeStatText[i].VAlign = 0f;
@@ -261,59 +310,59 @@ namespace AnotherRpgMod.UI
             switch (stat)
             {
                 case (Stat.Vit):
-                    UpgradeStatOver[0].SetText("+ " + (((float)Char.player.statLifeMax / 20f) * 1.25f * Char.statMultiplier) + " Hp");
+                    UpgradeStatOver[0].SetText("+ " + (((float)Char.player.statLifeMax / 20f) * 1.5f * Char.statMultiplier) + " Hp");
                     UpgradeStatOver[0].TextColor = MainColor;
-                    UpgradeStatOver[2].SetText("+ " + (Char.BaseArmor*0.02f) + " Armor");
+                    UpgradeStatOver[2].SetText("+ " + (Char.BaseArmor*0.03f) + " Armor");
                     UpgradeStatOver[2].TextColor = SecondaryColor;
                     UpgradeStatOver[10].SetText("+ 0.1 HP/Sec");
                     break;
                 case (Stat.Foc):
                     UpgradeStatOver[1].SetText("+ " + (((float)Char.player.statManaMax / 20f) * 0.2f * Char.statMultiplier) + " Mana");
                     UpgradeStatOver[1].TextColor = MainColor;
-                    UpgradeStatOver[7].SetText("+ " + (0.03 * Char.statMultiplier) + " Multiplier");
+                    UpgradeStatOver[7].SetText("+ " + (RPGPlayer.SECONDARYTATSMULT * Char.statMultiplier) + " Multiplier");
                     UpgradeStatOver[7].TextColor = SecondaryColor;
                     UpgradeStatOver[8].SetText("+ 0.05 %");
 
                     break;
-                case (Stat.Con):
-                    UpgradeStatOver[2].SetText("+ " + (Char.BaseArmor * 0.04f) + " Armor");
+                case (Stat.Cons):
+                    UpgradeStatOver[2].SetText("+ " + (Char.BaseArmor * 0.09f) + " Armor");
                     UpgradeStatOver[2].TextColor = MainColor;
-                    UpgradeStatOver[0].SetText("+ " + (((float)Char.player.statLifeMax / 20f) * 0.625f * Char.statMultiplier) + " Hp");
+                    UpgradeStatOver[0].SetText("+ " + (((float)Char.player.statLifeMax / 20f) * 0.75f * Char.statMultiplier) + " Hp");
                     UpgradeStatOver[0].TextColor = SecondaryColor;
                     UpgradeStatOver[10].SetText("+ 0.1 HP/Sec");
                     break;
                 case (Stat.Str):
-                    UpgradeStatOver[3].SetText("+ " +(0.05f*Char.statMultiplier)+ " Multiplier");
+                    UpgradeStatOver[3].SetText("+ " +(RPGPlayer.MAINSTATSMULT * Char.statMultiplier)+ " Multiplier");
                     UpgradeStatOver[3].TextColor = MainColor;
-                    UpgradeStatOver[5].SetText("+ " + (0.03f * Char.statMultiplier) + " Multiplier");
+                    UpgradeStatOver[5].SetText("+ " + (RPGPlayer.SECONDARYTATSMULT * Char.statMultiplier) + " Multiplier");
                     UpgradeStatOver[5].TextColor = SecondaryColor;
                     UpgradeStatOver[9].SetText("+ 0.5 %");
                     break;
                 case (Stat.Agi):
-                    UpgradeStatOver[4].SetText("+ " + (0.05f * Char.statMultiplier) + " Multiplier");
+                    UpgradeStatOver[4].SetText("+ " + (RPGPlayer.MAINSTATSMULT * Char.statMultiplier) + " Multiplier");
                     UpgradeStatOver[4].TextColor = MainColor;
-                    UpgradeStatOver[3].SetText("+ " + (0.03f * Char.statMultiplier) + " Multiplier");
+                    UpgradeStatOver[3].SetText("+ " + (RPGPlayer.SECONDARYTATSMULT * Char.statMultiplier) + " Multiplier");
                     UpgradeStatOver[3].TextColor = SecondaryColor;
                     UpgradeStatOver[9].SetText("+ 0.5 %");
                     break;
                 case (Stat.Dex):
-                    UpgradeStatOver[5].SetText("+ " + (0.05f * Char.statMultiplier) + " Multiplier");
+                    UpgradeStatOver[5].SetText("+ " + (RPGPlayer.MAINSTATSMULT * Char.statMultiplier) + " Multiplier");
                     UpgradeStatOver[5].TextColor = MainColor;
-                    UpgradeStatOver[4].SetText("+ " + (0.03f * Char.statMultiplier) + " Multiplier");
+                    UpgradeStatOver[4].SetText("+ " + (RPGPlayer.SECONDARYTATSMULT * Char.statMultiplier) + " Multiplier");
                     UpgradeStatOver[4].TextColor = SecondaryColor;
                     UpgradeStatOver[8].SetText("+ 0.05 %");
                     break;
                 case (Stat.Int):
-                    UpgradeStatOver[6].SetText("+ " + (0.05f * Char.statMultiplier) + " Multiplier");
+                    UpgradeStatOver[6].SetText("+ " + (RPGPlayer.MAINSTATSMULT * Char.statMultiplier) + " Multiplier");
                     UpgradeStatOver[6].TextColor = MainColor;
                     UpgradeStatOver[1].SetText("+ " + (((float)Char.player.statManaMax / 20f) * 0.1f * Char.statMultiplier) + " Mana");
                     UpgradeStatOver[1].TextColor = SecondaryColor;
                     UpgradeStatOver[11].SetText("+ 0.1 MP/Sec");
                     break;
                 case (Stat.Spr):
-                    UpgradeStatOver[7].SetText("+ " + (0.05f * Char.statMultiplier) + " Multiplier");
+                    UpgradeStatOver[7].SetText("+ " + (RPGPlayer.MAINSTATSMULT * Char.statMultiplier) + " Multiplier");
                     UpgradeStatOver[7].TextColor = MainColor;
-                    UpgradeStatOver[6].SetText("+ " + (0.03f * Char.statMultiplier) + " Multiplier");
+                    UpgradeStatOver[6].SetText("+ " + (RPGPlayer.SECONDARYTATSMULT * Char.statMultiplier) + " Multiplier");
                     UpgradeStatOver[6].TextColor = SecondaryColor;
                     UpgradeStatOver[11].SetText("+ 0.1 MP/Sec");
                     break;
@@ -340,20 +389,45 @@ namespace AnotherRpgMod.UI
             if (!visible)
                 return;
             Main.PlaySound(SoundID.MenuOpen);
-            if (Control.ModifierKeys == Keys.Shift)
+            if (Main.keyState.PressingShift())
             {
-                for (int i = 0; i< amount;i++)
-                    Char.SpendPoints(stat, Char.GetStatXPMax(stat) - Char.GetStatXP(stat));
-                return;
-            }
-            if ((Control.ModifierKeys & Keys.Shift) != 0)
-            {
-                while (Char.FreePtns > 0)
+                if ((Main.keyState.IsKeyDown(Microsoft.Xna.Framework.Input.Keys.LeftControl)))
+                {
+                    while (Char.FreePtns > 0)
+                        Char.SpendPoints(stat, Char.GetStatXPMax(stat) - Char.GetStatXP(stat));
+                    return;
+                }
+
+                for (int i = 0; i < amount; i++)
                     Char.SpendPoints(stat, Char.GetStatXPMax(stat) - Char.GetStatXP(stat));
                 return;
             }
             Char.SpendPoints(stat, amount);
-            
+        }
+        private void UpgradeStatWheel(UIScrollWheelEvent evt, UIElement listeningElement, Stat stat)
+        {
+            if (!visible)
+                return;
+            int amount = 0;
+            if (evt.ScrollWheelValue > 0)
+                amount = 20;
+            if (evt.ScrollWheelValue < 0)
+                amount = 150;
+            Main.PlaySound(SoundID.MenuOpen);
+            if (Main.keyState.PressingShift())
+            {
+                if ((Main.keyState.IsKeyDown(Microsoft.Xna.Framework.Input.Keys.LeftControl)))
+                {
+                    while (Char.FreePtns > 0)
+                        Char.SpendPoints(stat, Char.GetStatXPMax(stat) - Char.GetStatXP(stat));
+                    return;
+                }
+
+                for (int i = 0; i < amount; i++)
+                    Char.SpendPoints(stat, Char.GetStatXPMax(stat) - Char.GetStatXP(stat));
+                return;
+            }
+            Char.SpendPoints(stat, amount);
         }
 
         public override void Update(GameTime gameTime)
@@ -369,7 +443,10 @@ namespace AnotherRpgMod.UI
             float statprogresscolor = 0;
             for (int i = 0; i < 8; i++)
             {
-                UpgradeStatText[i].SetText((Stat)i + " : " + Char.GetNaturalStat((Stat)i) + " + " + Char.GetAddStat((Stat)i));
+                string pre = "";
+                if ((Char.GetStatImproved((Stat)i) > Char.GetStat((Stat)i)))
+                    pre = "+";
+                UpgradeStatText[i].SetText((Stat)i + " : " + Char.GetNaturalStat((Stat)i) + " + " + Char.GetAddStat((Stat)i) + " (" + pre+ (Char.GetStatImproved((Stat)i) - Char.GetStat((Stat)i)) + ")");
                 statprogresscolor = (float)Char.GetStatXP((Stat)i) / (float)Char.GetStatXPMax((Stat)i);
                 StatProgress[i].TextColor = new Color(127, (int)(280 * statprogresscolor), (int)(243 * statprogresscolor));
                 StatProgress[i].SetText(Char.GetStatXP((Stat)i) + " / " + Char.GetStatXPMax((Stat)i));
@@ -377,11 +454,11 @@ namespace AnotherRpgMod.UI
             }
             for (int i = 0; i < 5; i++)
             {
-                UpgradeStatDetails[i+3].SetText((DamageType)i + " Damage Multiplier : " + Char.GetDamageMult((DamageType)i));
+                UpgradeStatDetails[i+3].SetText((DamageType)i + " Damage Multiplier : " + Char.GetDamageMult((DamageType)i, 2)+" - " + Char.GetDamageMult((DamageType)i) + " x " + Char.GetDamageMult((DamageType)i,1));
             }
-            UpgradeStatDetails[0].SetText("Health : "+ Char.player.statLifeMax2 + " - " +(Char.player.statLifeMax / 20) + " Heart x " + Char.GetHealthPerHeart() + " Health Per Heart + 10");
+            UpgradeStatDetails[0].SetText("Health : "+ Char.player.statLifeMax2 + " - " +(Char.player.statLifeMax / 20) + " Heart x "  + Char.GetHealthMult() + " x " + Char.GetHealthPerHeart() + " Health Per Heart + 10");
             UpgradeStatDetails[1].SetText("Mana : " + Char.player.statManaMax2 + " - " + (Char.player.statManaMax / 20) + " Crystal x " +Utils.Mathf.Clamp( Char.GetManaPerStar(),0,20) + " Mana per crystal + 4");
-            UpgradeStatDetails[2].SetText("Defense : " + Char.player.statDefense + " - " + Char.BaseArmor + " Armor x " + Char.GetDefenceMult() + " Defense Per Armor");
+            UpgradeStatDetails[2].SetText("Defense : " + Char.player.statDefense + " - " + Char.BaseArmor + " Armor x " + Char.GetDefenceMult()+ " x " + Char.GetArmorMult() + " Defense Per Armor");
 
             UpgradeStatDetails[8].SetText("Crit Chance : + " + Char.GetCriticalChanceBonus() + "%" );
             UpgradeStatDetails[9].SetText("Crit Damage : " + (Char.GetCriticalDamage()*100) +"%");

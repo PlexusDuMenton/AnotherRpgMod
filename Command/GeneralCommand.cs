@@ -38,7 +38,7 @@ namespace AnotherRpgMod.Command
         {
             RPGPlayer character = caller.Player.GetModPlayer<RPGPlayer>(mod);
             int level = Int32.Parse(args[0]);
-            level = Utils.Mathf.Clamp(level, 0, 2500);
+            level = NPCUtils.Mathf.Clamp(level, 0, 2500);
             for (int i = 0; i< level; i++)
             {
                 character.commandLevelup();
