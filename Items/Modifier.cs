@@ -35,8 +35,8 @@ namespace AnotherRpgMod.Items
         None = 0x0, //None
         MoonLight = 0x1, //Increase Damage NightTime
         SunLight = 0x2, //Increase Damage DayTime
-        Berserker = 0x4, //Increase Damage As Health Is Down
-        MagicConnection = 0x8, //Increase Damage with Bigger Mana
+        Berserker = 0x4, //Increases Damage As Health decreases
+        MagicConnection = 0x8, //Increase Damage with higher Mana
         Sniper = 0x10, //Increase Damage with Distance
         Brawler = 0x20, //Increase Damage with how close you are
         Piercing = 0x40, //Ignore Part of defense (flat amounts of defense is ignored, increase with level)
