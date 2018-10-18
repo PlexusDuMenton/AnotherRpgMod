@@ -340,8 +340,8 @@ namespace AnotherRpgMod.RPGModule.Entities
 
         public static NPC SetSizeStat(NPC npc, string size)
         {
-            if (size == "Growther")
-                size = (string)npc.GetGlobalNPC<ARPGGlobalNPC>().GetBufferProperty("GrowtherStep");
+            if (size == "Growth")
+                size = (string)npc.GetGlobalNPC<ARPGGlobalNPC>().GetBufferProperty("GrowthStep");
 
             if (size == "Normal")
                 return npc;

@@ -229,7 +229,7 @@ namespace AnotherRpgMod.RPGModule.Entities
             
             if (Main.netMode == 2)
             {
-                Main.npcLifeBytes[npc.type] = 4; //Sadly have to UN-optimise Health of ennemy, because it caused npc to dispear if health was over 128 (for small )
+                Main.npcLifeBytes[npc.type] = 4; //Sadly have to UN-optimise Health of enemy, because it caused npc to dispear if health was over 128 (for small )
             }
             if (!ConfigFile.GetConfig.gpConfig.NPCProgress)
             {
@@ -257,8 +257,8 @@ namespace AnotherRpgMod.RPGModule.Entities
                                 rn+=1;
                             if (rn < 1)
                             {
-                                SetBufferProperty("size", "Growther");
-                                SetBufferProperty("GrowtherStep", "Mini");
+                                SetBufferProperty("size", "Growth");
+                                SetBufferProperty("GrowthStep", "Mini");
                             }
                             else if (rn < 3)
                                 SetBufferProperty("size", "Titan");
@@ -385,26 +385,26 @@ namespace AnotherRpgMod.RPGModule.Entities
 
         public override bool CheckDead(NPC npc)
         {
-            if (HaveBufferProperty("GrowtherStep"))
+            if (HaveBufferProperty("GrowthStep"))
             {
-                switch (GetBufferProperty("GrowtherStep"))
+                switch (GetBufferProperty("GrowthStep"))
                 {
                     case "Mini":
-                        SetBufferProperty("GrowtherStep", "Normal");
+                        SetBufferProperty("GrowthStep", "Normal");
                         break;
                     case "Normal":
-                        SetBufferProperty("GrowtherStep", "Giant");
+                        SetBufferProperty("GrowthStep", "Giant");
                         break;
                     case "Giant":
-                        SetBufferProperty("GrowtherStep", "Colossus");
+                        SetBufferProperty("GrowthStep", "Colossus");
                         break;
                     case "Colossus":
-                        SetBufferProperty("GrowtherStep", "Titan");
+                        SetBufferProperty("GrowthStep", "Titan");
                         break;
                     case "Titan":
                         return false;
                 }
-                npc = NPCUtils.SizeShiftMult(npc, GetBufferProperty("GrowtherStep"));
+                npc = NPCUtils.SizeShiftMult(npc, GetBufferProperty("GrowthStep"));
                 npc.life = npc.lifeMax;
                 MPPacketHandler.SendNpcUpdate(mod, npc);
                 NetMessage.SendData(23, -1, -1, null, npc.whoAmI);

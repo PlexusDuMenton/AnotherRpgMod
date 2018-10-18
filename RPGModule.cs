@@ -19,15 +19,15 @@ namespace AnotherRpgMod.RPGModule
 
     public enum Stat : byte
     {
-        Vit, //Vitality : Increase Health Points, Increase Health Regen, Increase defence (light)
-        Foc, //Focus : Increase Mana, Increase Critical Rate, Increase Sumon Damage (light)
-        Cons, //Constitution : Increase Defences, Increase Health Regen, increase health (light)
+        Vit, //Vitality : Increase Health Points, Increase Health Regen, Increase Defence (light)
+        Foc, //Focus : Increase Mana, Increase Critical Rate, Increase Summon Damage (light)
+        Cons, //Constitution : Increase Defence, Increase Health Regen, increase health (light)
 
 
         Str, //Strength : Increase Melee Damage, Increase Critical Damage, Increase Throw Damage (light)
         Agi, //Agility : Increase Ranged Damage, Increase Critical Damage, Increase Melee Damage (light)
         Dex, //Dexterity : Increase Throw Damage, Increase Critical Rate, Increase Ranged Damage (light)
-        Int, //Intelect : Increase Magic Damage, Increase Mana Regen, Increase Mana (light)
+        Int, //Intellect : Increase Magic Damage, Increase Mana Regen, Increase Mana (light)
         Spr //Spirit : Increase Summon Damage,  Increase Mana Regen, Increase Magic Damage (light)
     }
 
@@ -252,7 +252,7 @@ namespace AnotherRpgMod.RPGModule
                 }
             }
 
-            int GetBuffAmmount(int[] bufftime)
+            int GetBuffAmount(int[] bufftime)
             {
                 int count =0;
                 for (int i = 0; i < bufftime.Length; i++)
@@ -360,11 +360,11 @@ namespace AnotherRpgMod.RPGModule
                         }
                         if (ItemUtils.HaveModifier(Modifier.Chaotic, instance.modifier) )
                         {
-                            value += ItemUtils.GetModifierBonus(Modifier.Chaotic, instance) * 0.01f * GetBuffAmmount(player.buffTime);
+                            value += ItemUtils.GetModifierBonus(Modifier.Chaotic, instance) * 0.01f * GetBuffAmount(player.buffTime);
                         }
                         if (ItemUtils.HaveModifier(Modifier.Cunning, instance.modifier))
                         {
-                            value += ItemUtils.GetModifierBonus(Modifier.Chaotic, instance) * 0.01f * GetBuffAmmount(target.buffTime);
+                            value += ItemUtils.GetModifierBonus(Modifier.Chaotic, instance) * 0.01f * GetBuffAmount(target.buffTime);
                         }
                         
 
@@ -760,25 +760,25 @@ namespace AnotherRpgMod.RPGModule
                             player.moveSpeed *= (1 + JsonCharacterClass.GetJsonCharList.GetClass(skilltree.ActiveClass.GetClassType).MovementSpeed);
                             player.maxRunSpeed *= (1 + JsonCharacterClass.GetJsonCharList.GetClass(skilltree.ActiveClass.GetClassType).MovementSpeed);
                             player.meleeSpeed *= 1 + JsonCharacterClass.GetJsonCharList.GetClass(skilltree.ActiveClass.GetClassType).Speed;
-                            player.manaCost *= 1 - JsonCharacterClass.GetJsonCharList.GetClass(skilltree.ActiveClass.GetClassType).ManaCost;
+                            player.manaCost *= 1 + JsonCharacterClass.GetJsonCharList.GetClass(skilltree.ActiveClass.GetClassType).ManaCost;
                         }
                     }
                     player.lifeRegen *= Mathf.FloorInt(GetHealthRegen());
                     player.manaRegenBonus *= Mathf.FloorInt(GetManaRegen());
                 }
                 UpdateModifier();
-                //Issue : After one use of item , player can no longer do anything wiht item&inventory
+                //Issue : After one use of item , player can no longer do anything with item&inventory
                 //ErrorLogger.Log(player.can);
             }
 
 
 
 
-            public void SpendPoints(Stat _stat,int ammount)
+            public void SpendPoints(Stat _stat,int amount)
             {
-                ammount = Mathf.Clamp(ammount, 1, freePoints);
-                Stats.UpgradeStat(_stat, ammount);
-                freePoints -= ammount;
+                amount = Mathf.Clamp(amount, 1, freePoints);
+                Stats.UpgradeStat(_stat, amount);
+                freePoints -= amount;
             }
 
             public void ResetStats()

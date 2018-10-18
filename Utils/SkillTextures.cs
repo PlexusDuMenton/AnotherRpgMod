@@ -163,9 +163,9 @@ namespace AnotherRpgMod.Utils
 
             if (ClassInfo.ManaShield > 0 &&(ClassInfo.ManaEfficiency > 0 || ClassInfo.ManaBaseEfficiency > 0))
             {
-                int intelect = Main.player[Main.myPlayer].GetModPlayer<RPGPlayer>().GetStat(Stat.Int);
+                int intellect = Main.player[Main.myPlayer].GetModPlayer<RPGPlayer>().GetStat(Stat.Int);
                 desc += "Grand Mana Shield : "+ (ClassInfo.ManaShield *100)+
-                    "% damage are absorbed by mana (" + (ClassInfo.ManaBaseEfficiency + (intelect * ClassInfo.ManaEfficiency)) + " Damage per mana)";
+                    "% damage are absorbed by mana (" + (ClassInfo.ManaBaseEfficiency + (intellect * ClassInfo.ManaEfficiency)) + " Damage per mana)";
             }
 
             return desc;
