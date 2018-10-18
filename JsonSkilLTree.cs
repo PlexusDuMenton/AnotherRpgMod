@@ -24,7 +24,7 @@ namespace AnotherRpgMod
      public class JsonNodeList
     {
         public JsonNode[] jsonList = {
-            // BASE TYPE , POSX, POSY, NEIGHTBOORLIST, SPECIFIC TYPE, ISFLATDAMAGE?, VALUEPERLEVEL, LEVEL REQUIREMENT, MAXLEVEL , POINTS PER LEVEL
+            // BASE TYPE , POSX, POSY, NEIGHBOURLIST, SPECIFIC TYPE, ISFLATDAMAGE?, VALUEPERLEVEL, LEVEL REQUIREMENT, MAXLEVEL , POINTS PER LEVEL
             new JsonNode("Class",0,0,true,new int[6]{ 1,2,3,4,5,6},"Tourist",false,0.1f,5,1,1), //0
             new JsonNode("Class",0,250,false,new int[1]{0},"Apprentice",false,0.1f,10,1,1), //1
             new JsonNode("Damage",-100,75,false,new int[4]{0,3,7,8},"Melee",false,0.03f,1,20,1), //2
@@ -92,13 +92,13 @@ namespace AnotherRpgMod
         public int pointsPerLevel = 1;
         public bool unlocked = false;
 
-        public JsonNode(string baseType,float posX,float posY,bool unlocked, int[] neightboorlist,string specificType,bool flatDamage,float valuePerLevel,int levelRequirement,int maxLevel, int pointsPerLevel)
+        public JsonNode(string baseType,float posX,float posY,bool unlocked, int[] neighbourlist,string specificType,bool flatDamage,float valuePerLevel,int levelRequirement,int maxLevel, int pointsPerLevel)
         {
             this.baseType = baseType;
             this.posX = posX;
             this.posY = posY;
             this.unlocked = unlocked;
-            this.neigthboorlist = neightboorlist;
+            this.neigthboorlist = neighbourlist;
             this.specificType = specificType;
             this.flatDamage = flatDamage;
             this.valuePerLevel = valuePerLevel;

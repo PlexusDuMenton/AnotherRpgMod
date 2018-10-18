@@ -72,9 +72,9 @@ namespace AnotherRpgMod.Items
             "Raging ",
             "Unleashed ",
             "Rampageous ",
-            "Ascended ",
-            "transcendental ",
-            "Trans-Universal ",
+            "Ascendent ",
+            "Transcendent ",
+            "Intergalactic ",
             "Trans-Dimensional "
         };
 

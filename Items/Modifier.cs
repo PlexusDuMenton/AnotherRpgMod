@@ -35,24 +35,24 @@ namespace AnotherRpgMod.Items
         None = 0x0, //None
         MoonLight = 0x1, //Increase Damage NightTime
         SunLight = 0x2, //Increase Damage DayTime
-        Berserker = 0x4, //Increase Damage As Health Is Down
-        MagicConnection = 0x8, //Increase Damage with Higger Mana
+        Berserker = 0x4, //Increases Damage As Health decreases
+        MagicConnection = 0x8, //Increase Damage with higher Mana
         Sniper = 0x10, //Increase Damage with Distance
         Brawler = 0x20, //Increase Damage with how close you are
-        Piercing = 0x40, //Ignore Part of defense (flat ammounts of defense is ignored, increase with level)
+        Piercing = 0x40, //Ignore Part of defense (flat amounts of defense is ignored, increase with level)
         Savior = 0x80, //Save you when you are about to die (CD reduce with level)
-        FireLord = 0x100, //Ennemies Arround you turn on fire (range increase with level)
+        FireLord = 0x100, //Enemies around you turn on fire (range increase with level)
         Thorny = 0x200, //Reflect Damages Percent
         Smart = 0x400, //Increase XP Gain
         SelfLearning = 0x800, //Increase Weapon XP Gain
         VampiricAura = 0x1000, //Passively steal Health from nearby enemies
-        Executor = 0x2000, //Increase Damage as Ennemy is wounder
-        Confusion = 0x4000, //Chance to Confuse Ennemy on hit
-        Poisones = 0x8000, //Chance to Poison Ennemy on hit
-        Venom = 0x10000, //Increase Damage Against poisoned ennemies
+        Executor = 0x2000, //Increase Damage as Enemy is wounder
+        Confusion = 0x4000, //Chance to Confuse Enemy on hit
+        Poisones = 0x8000, //Chance to Poison Enemy on hit
+        Venom = 0x10000, //Increase Damage Against poisoned enemies
         Chaotic = 0x20000, //Damage Per Player Debuff
-        Cunning = 0x40000, //Damage Per ennemy Debuff
-        BloodSeeker = 0x80000, //Increase Damage and lifeSteal against wounder ennemies
+        Cunning = 0x40000, //Damage Per enemy Debuff
+        BloodSeeker = 0x80000, //Increase Damage and lifeSteal against wounder enemies
         Cleave = 0x100000, //AOE damage
         Random = 0x200000, //Random Projectile every shoot
     }
@@ -361,7 +361,7 @@ namespace AnotherRpgMod.Items
             info.modifier = GetModifier(item, info.rarity);
 
             if (item.accessory)
-                info.stats = GetStatsAccesories(info.rarity);
+                info.stats = GetStatsAccessories(info.rarity);
             else if (item.bodySlot > 0 || item.legSlot > 0 || item.headSlot > 0)
                 info.stats = GetStatsArmor(info.rarity);
 
@@ -418,7 +418,7 @@ namespace AnotherRpgMod.Items
         
        
 
-        private static ItemStat GenRandomStat(Rarity rarity,bool accesories = false)
+        private static ItemStat GenRandomStat(Rarity rarity,bool accessories = false)
         {
             float value = 0;
             int rn = Utils.Mathf.RandomInt(0, 7);
@@ -453,7 +453,7 @@ namespace AnotherRpgMod.Items
                     value = Mathf.Random(9, 20);
                     break;
             }
-            if (accesories)
+            if (accessories)
                 value *= Mathf.Random(0.4f, 0.7f);
             value = (float)Math.Round(value, 2);
             return new ItemStat(stat, value);
@@ -535,7 +535,7 @@ namespace AnotherRpgMod.Items
             return value;
         }
 
-        public static ItemStats GetStatsAccesories(Rarity rarity)
+        public static ItemStats GetStatsAccessories(Rarity rarity)
         {
             ItemStats itemStat = new ItemStats()
             {
@@ -681,7 +681,7 @@ namespace AnotherRpgMod.Items
                     Modifier.SelfLearning |
                     Modifier.BloodSeeker;
             }
-            if (type == 1) // accesories
+            if (type == 1) // accessories
             {
                 return Modifier.Berserker |
                     Modifier.MoonLight |
@@ -839,16 +839,16 @@ namespace AnotherRpgMod.Items
                     desc = "Increase damage by " + GetModifierBonus(mod, itemU) + " % per units of distance";
                     break;
                 case (Modifier.Brawler):
-                    desc = "Increase damage by " + GetModifierBonus(mod, itemU) + " % when close to ennemy";
+                    desc = "Increase damage by " + GetModifierBonus(mod, itemU) + " % when close to enemy";
                     break;
                 case (Modifier.Piercing):
-                    desc = "Pierce " + GetModifierBonus(mod, itemU) + " % of ennemy armor";
+                    desc = "Pierce " + GetModifierBonus(mod, itemU) + " % of enemy armor";
                     break;
                 case (Modifier.Savior):
                     desc = "" + GetModifierBonus(mod, itemU) + " % Chance to survive a deadly wound";
                     break;
                 case (Modifier.FireLord):
-                    desc = "Inflict burn debuff to ennemies in a range of " + GetModifierBonus(mod, itemU) + " units";
+                    desc = "Inflict burn debuff to enemies in a range of " + GetModifierBonus(mod, itemU) + " units";
                     break;
                 case (Modifier.Thorny):
                     desc = "reflect " + GetModifierBonus(mod, itemU) + " % of damage receive";
@@ -860,25 +860,25 @@ namespace AnotherRpgMod.Items
                     desc = "Increase Item XP gain by " + GetModifierBonus(mod, itemU) + " %";
                     break;
                 case (Modifier.VampiricAura):
-                    desc = "Drain " + GetModifierBonus(mod, itemU) + " Health Per Seconds to ennemies arround you";
+                    desc = "Drain " + GetModifierBonus(mod, itemU) + " Health Per Seconds to enemies around you";
                     break;
                 case (Modifier.Executor):
-                    desc = "Increase damage by " + GetModifierBonus(mod, itemU) + " % per missing % of ennemies health";
+                    desc = "Increase damage by " + GetModifierBonus(mod, itemU) + " % per missing % of enemies health";
                     break;
                 case (Modifier.Poisones):
                     desc = "" + GetModifierBonus(mod, itemU) + " % chance to inflict Poison debuff";
                     break;
                 case (Modifier.Venom):
-                    desc = "Increase damage by " + GetModifierBonus(mod, itemU) + " % against poisoned ennemies";
+                    desc = "Increase damage by " + GetModifierBonus(mod, itemU) + " % against poisoned enemies";
                     break;
                 case (Modifier.Chaotic):
                     desc = "Increase damage by " + GetModifierBonus(mod, itemU) + " % per debuff/buff on Player";
                     break;
                 case (Modifier.Cunning):
-                    desc = "Increase damage by " + GetModifierBonus(mod, itemU) + " % per debuff/buff on Ennemy";
+                    desc = "Increase damage by " + GetModifierBonus(mod, itemU) + " % per debuff/buff on Enemy";
                     break;
                 case (Modifier.BloodSeeker):
-                    desc = "lifesteal "+ GetModifierBonusAlt(mod, itemU) + " % against ennemies with less than " + GetModifierBonus(mod, itemU) + " % health";
+                    desc = "lifesteal "+ GetModifierBonusAlt(mod, itemU) + " % against enemies with less than " + GetModifierBonus(mod, itemU) + " % health";
                     break;
                 case (Modifier.Cleave):
                     desc = "" + GetModifierBonus(mod, itemU) + " % AOE damage";

@@ -88,11 +88,11 @@ namespace AnotherRpgMod.UI
             for (int i = 0; i < listSize; i++)
             {
                 if (!allConnection[i].bg)
-                    allConnection[i].color = (allConnection[i].neighboor.GetActivate || allConnection[i].node.GetActivate) ? Color.GreenYellow : Color.Gray;
+                    allConnection[i].color = (allConnection[i].neighbour.GetActivate || allConnection[i].node.GetActivate) ? Color.GreenYellow : Color.Gray;
             }
             listSize = allBasePanel.Count;
             NodeParent Node;
-            int state = 0; // disactivated and locked
+            int state = 0; // deactivated and locked
             for (int i = 0; i < listSize; i++)
             {
                 Node = allBasePanel[i].node;
@@ -236,15 +236,15 @@ namespace AnotherRpgMod.UI
 
             DrawSkill(node);
             
-            NodeParent neightboor;
-            for (int j = 0; j < node.GetNeightboor.Count; j++)
+            NodeParent neighbour;
+            for (int j = 0; j < node.GetNeighbour.Count; j++)
             {
-                neightboor = node.GetNeightboor[j];
-                if (node.GetNeightboor.Exists(x => x.ID == neightboor.ID) && !(node.connectedNeighboor.Exists(x => x.ID == neightboor.ID)) )
+                neighbour = node.GetNeighbour[j];
+                if (node.GetNeighbour.Exists(x => x.ID == neighbour.ID) && !(node.connectedNeighbour.Exists(x => x.ID == neighbour.ID)) )
                 {
-                    DrawConnection((neightboor.GetActivate || node.GetActivate) ? Color.GreenYellow : Color.Gray, node.menuPos, neightboor.menuPos,node,neightboor);
-                    node.connectedNeighboor.Add(neightboor);
-                    neightboor.connectedNeighboor.Add(node);
+                    DrawConnection((neighbour.GetActivate || node.GetActivate) ? Color.GreenYellow : Color.Gray, node.menuPos, neighbour.menuPos,node,neighbour);
+                    node.connectedNeighbour.Add(neighbour);
+                    neighbour.connectedNeighbour.Add(node);
                 }
             }
 
@@ -271,7 +271,7 @@ namespace AnotherRpgMod.UI
             skillIcon.Width.Set(SKILL_SIZE * sizeMultplier, 0f);
             skillIcon.Height.Set(SKILL_SIZE * sizeMultplier, 0f);
 
-            int state = 0; // disactivated and locked
+            int state = 0; // deactivated and locked
             if (node.GetEnable) //if the node is enabled
                 state = 3;
             else if (node.GetActivate && (node.GetNodeType == NodeType.Class || node.GetNodeType == NodeType.Perk))
@@ -314,7 +314,7 @@ namespace AnotherRpgMod.UI
             basePanel.Append(levelText);
         }
 
-        public void DrawConnection(Color _color, Vector2 point1, Vector2 point2,NodeParent node,NodeParent neighboor)
+        public void DrawConnection(Color _color, Vector2 point1, Vector2 point2,NodeParent node,NodeParent neighbour)
         {
             float angle = 0;
             float distance = 0;
@@ -334,9 +334,9 @@ namespace AnotherRpgMod.UI
             BG.basePos = new Vector2(point1.X + SKILL_SIZE * 0.5f, point1.Y + SKILL_SIZE * 0.5f);
             connection.basePos = new Vector2(point1.X+ SKILL_SIZE*0.5f, point1.Y+ SKILL_SIZE * 0.5f);
             BG.bg = true;
-            BG.neighboor = neighboor;
+            BG.neighbour = neighbour;
             BG.node = node;
-            connection.neighboor = neighboor;
+            connection.neighbour = neighbour;
             connection.node = node;
             allConnection.Add(BG);
             allConnection.Add(connection);
@@ -641,7 +641,7 @@ namespace AnotherRpgMod.UI
 class Connection : UIElement
     {
         public NodeParent node;
-        public NodeParent neighboor;
+        public NodeParent neighbour;
         private Texture2D texture = ModLoader.GetTexture("AnotherRpgMod/Textures/UI/Blank");
         public Color color;
         public Vector2 basePos;

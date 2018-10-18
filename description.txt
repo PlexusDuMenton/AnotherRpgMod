@@ -17,11 +17,11 @@ Changelog :
 [c/ff0737:-1.2.0] - [c/efc737:ITEM UPDATE !]
 
 [c/efc737:Added Rarity and Modifier on weapon, armor and]
-[c/efc737:accesories]
-[c/efc737:Armor and accesories will give different stats based]
+[c/efc737:accessories]
+[c/efc737:Armor and accessories will give different stats based]
 [c/efc737:on rarity]
-[c/efc737:Modifier ammount and power depend on item rarity]
-[c/efc737:level and ascenscion ]
+[c/efc737:Modifier amount and power depend on item rarity]
+[c/efc737:level and ascension ]
 [c/efc737:Rarity affect base damage of a weapon]
 [c/efc737:Rarity and modifier can be reroll on Reforge]
 
@@ -35,14 +35,14 @@ Changelog :
 [c/efc737:(I have no way to detect if revengeance or death mode ]
 [c/efc737:is active ]
 [c/efc737:but it should make the game a bit more balanced))]
-[c/efc737:New Ascencion Name ]
+[c/efc737:New Ascension Name ]
 
 [c/efc737:Nerf to weapon xp past first ascension]
 [c/efc737:Small expand to SkillTree ]
 [c/efc737:New Node Type in skill tree ! ]
 [c/efc737:SkillTree loading should be fixed ! (OMG YES !)]
-[c/efc737:Posibility to rescale skill tree]
-[c/efc737:Posibility to ZOOM in and out in skilltree]
+[c/efc737:Possibility to rescale skill tree]
+[c/efc737:Possibility to ZOOM in and out in skilltree]
 [c/efc737:Some bug fix with no class selected]
 
 [c/efc737:Nerf Damage Stats]
@@ -56,7 +56,7 @@ Changelog :
 [c/efc737:Boss Modifier can be toggled on and off]
 [c/efc737:Clustered boss modifier can be toggled on and off]
 [c/efc737:(for the cool kid) (base is off)]
-[c/efc737:RPG part of the mod can be disactivated]
+[c/efc737:RPG part of the mod can be deactivated]
 [c/efc737:(no player level, stats and skilltree)]
 [c/efc737:and many more , just check it out]
 
@@ -82,14 +82,14 @@ Changelog :
 -Fixed Huge bug on Server that made the level scale very high
 -Increase Expert Level increase per day
 -Fixed Server Desync
--Ascended Ranged weapon now have correct  ammont of projectile shoot when ... shoot (or not still not fixed :E)
+-Ascended Ranged weapon now have correct amount of projectile shoot when ... shoot (or not still not fixed :E)
 -Fixed Summon Weapon Summoning per ascend
 -Fixed World Tier Not displaying in Multiplayer 
 
 
 1.0.1
 -non-boss Npc start lower level for the first day and slowly increase until one week so it reached base value (would make first night and day a bit less hard and unbalanced)
--On expert world the npc grow per day have no limit but it slowed down after first week (arround 5% stronger per day (additively))
+-On expert world the npc grow per day have no limit but it slowed down after first week (around 5% stronger per day (additively))
 -Damage boost from class is now Stacked additively with other damage boost from skill tree instead of being multiplicative
 -Higly Increase non-boss NPC Health in mid-late game (it was a one-Shot Fest)
 -slight reduction on non-npc damage in mid-late game
@@ -98,9 +98,9 @@ Changelog :
 
 1.0
 -MULTIPLAYER IS FIXED !
--Server will automaticaly send server config
+-Server will automatically send server config
 -Config changed location to "D:\Documents\My Games\Terraria\ModLoader\Mod Configs\AnRPG"
--Added more value in Setting (don't realy rememver if I use them, gonna check later)
+-Added more value in Setting (don't really remember if I use them, gonna check later)
 
 -Skill tree upgrade, now bigged, a new tier of class (sorry icon are not updated)
 -Added Reset Button for skill Tree
@@ -109,50 +109,50 @@ Changelog :
 -Fixed armor formula error making armor multiplier being squared 
 
 -TownNPC no longer have op Health
--NPC no longer have negativ hp
+-NPC no longer have negative hp
 -Life Leech is now based on player's health
 
 -Bonus Level from "World" is now correctly displayed
 -Changed Boss First Kill Sentence
 
--Tool now gain bonus attack speed per level instead of damage (2% multiplicativ per leve, 10% multiplicative on ascend)
+-Tool now gain bonus attack speed per level instead of damage (2% multiplicative per level, 10% multiplicative on ascend)
 
 
 0.99.3
-Fixed some bug/glitch with Poison,Fire and other Damage on Time debuff both on player and ennemy
+Fixed some bug/glitch with Poison,Fire and other Damage on Time debuff both on player and enemy
 Added Tier One classes on skill tree
-Increase MaxLevel of allready existing node from 5 to 100 (should be ok until level 500 now)
+Increase MaxLevel of already existing node from 5 to 100 (should be ok until level 500 now)
 
 0.99.2
 Fix Crash when loading character
 
 0.99.1
-Fix a bug that make imposssible to load character.
+Fix a bug that make impossible to load character.
 
 0.99.0.1
 just fixing description and mod image >.>
 
 0.99 (1.0 beta)
 Added skill tree (small one, more of a preview than anything)
-Addec class (for now there is only 2 simple class)
+Added class (for now there is only 2 simple class)
 Fixed bug with worms
 You no longer can gain more than 5 level at the same time
-Reduced exp gain on weapon when used on ennemy with too low or too high level (down to 10% at minimum)
+Reduced exp gain on weapon when used on enemy with too low or too high level (down to 10% at minimum)
 Reduced Melee Weapon LifeLeech (again)
-Slightly reduced Boss health scale but very slighty increased their damage scale
+Slightly reduced Boss health scale but very slightly increased their damage scale
 
 0.14.2
 fix some weapon not gaining exp
 
 0.14.1
 
-Health from equipement will now stack !
+Health from equipment will now stack !
 Fix dungeon guardian exploit to levelup armor (boi !)
 MoonLord projectile should deal damage now (I Hope !)
 Nerfed destroyer (and all snake type boss (sorry Eater of world , you're a sacrifice))
 Increase level gain on npc when killing boss (from 8 per boss to 13)
 Nerf Level gain on entering hardmode (for + 35 to + 15, and reduce multiplier from 1.2 to 1.1)
-Nerf base level on stats , but buff additional level from boss to stats (should make rescaled ennemy a bit more inline)
+Nerf base level on stats , but buff additional level from boss to stats (should make rescaled enemy a bit more inline)
 Now use int64 for item xp (instead of int32) which mean new max value is WAY GREATER
 
 
@@ -166,7 +166,7 @@ Penetration now reduce exp gained on weapon
 Shift + click will now upgrade the whole level for the stats (right click = 5 , middle = 25)
 Control + Shift + Click will now spend ALL your points into the stats
 Prevent npc to have negative health
-very slight nerf to ennemy health
+very slight nerf to enemy health
 Fix some bosses having huge damage nerf when changing 
 Armor & weapon now display base stat
 
@@ -187,20 +187,20 @@ nerf ascending lifeleech
 Huge Buff to Life gain with Vit and Con
 
 0.13.2
-Fix Healing item Scalign Way too much
+Fix Healing item scaling Way too much
 
 0.13.1
-Reduce Boss Damage (skeltron nerf fianly)
+Reduce Boss Damage (skeletron nerf finally)
 Nerf projectile damage a bit
-Normal ennemy health scale is higly increase on higger level
+Normal enemy health scale is highly increased on higher level
 Fixed TownNpc Health Scale being WAY too high
 Nerf Ascended Weapon
 
 0.13
 Added an hotKey for stats menu "C"
 Stats now have affect Crit Damage , Crit chance, HpRegen and Mp Regen
-Ennemy projectiles damage now scale !
-Skeleton Marchant and Bound NPC should now scale too
+Enemy projectiles damage now scale !
+Skeleton Merchant and Bound NPC should now scale too
 Dummy Target can no longer be used to farm Weapons xp (ho boi :p)
 
 
@@ -211,10 +211,10 @@ Allow Ui to Scale HealthBarScale in config file
 
 0.12.3
 fix bug when having item with a ascending over 4 
-Npc grow in power as you kil lbosxs (like ennemies)
+Npc grow in power as you kill bosses (like enemies)
 
 0.12.2
-Ascencion level reset on join is fixed 
+Ascension level reset on join is fixed 
 Ascension level to obtain ascension is fixed (was lvl 1 >.>)
 Fix reset on item being drop on mp servers
 removes autoUse on magic & summon weapon on ascension
@@ -224,36 +224,36 @@ quick fix on ascended weapon damage display
 
 0.12 -
 Extended weapon upgrade : 
-When reaching level 11, item will ascend , reset his level to 0 and gaining powerfull bonus : 
+When reaching level 11, item will ascend , reset his level to 0 and gaining powerful bonus : 
 	+100% base damage 
 	+1 projectile (if have projectile)
-	AutoUse (or 40% attack speed gain if allready have autouse)
+	AutoUse (or 40% attack speed gain if already have autouse)
 	50% mana reduction (if use mana)
 	+1 max minion (if create minion)
 then each new ascend will at (ascend level X 10) (20 for second ascend , 30 for third)
 second ascend will give : 50% chance not to use ammo , +50% summon damage (summon weapon only)
 starting at second ascend,each ascend will give  : 
-100% base damage, +1 projectile, +1 minion(minion weapon),7.5% lifesteal (melee only), 7.5% mana regen (magic weaapon),
+100% base damage, +1 projectile, +1 minion(minion weapon),7.5% lifesteal (melee only), 7.5% mana regen (magic weapon),
 Fix minor that allowed adding points even when stats windows was closed
 
 0.11.1
-Allow to move of the healthbar with (on the y axis) "HealthBarYoffSet" parametter in AnRPG_Setting.json in Documents\My Games\Terraria\ModLoader 
+Allow to move of the healthbar with (on the y axis) "HealthBarYoffSet" parameter in AnRPG_Setting.json in Documents\My Games\Terraria\ModLoader 
 
 0.11 - 
 Added Weapon Experience and level, each time you use a weapon, it gain experience and possibly level that will increase weapon's damage by 10% per level
-Changed a bit Healthbar, added Weapon XP bar, Moved healthbar up a bit to allow more compatiblities with chat and "Yet Another Boss Health Bar"
-fix Ocasional crash for no reason when not oppening stats menu
+Changed a bit Healthbar, added Weapon XP bar, Moved healthbar up a bit to allow more compatibilities with chat and "Yet Another Boss Health Bar"
+fix occasional crash for no reason when not opening stats menu
 Fix bug that make your character spawn with 3 missing stat on each stats
 
 
 0.10 - 
-Change how stats work , you now have to put multiple points into a stats before it goes up (and the number of points will icnrease every 25 points, poitns from level are not affected)
+Change how stats work , you now have to put multiple points into a stats before it goes up (and the number of points will increase every 25 points, points from level are not affected)
 Increase stats points per level (to balance) ----- Type "/reset" in chat to reset all your stat and get the points your should have
-Fixed level calculation for WormType monster (well ,especialy you, eater of world)
-Generaly lowered ennemy level
-Increased ennemy power by level
-Reduce ennmy level gain when killing a boss
-Reduced Slighty xp need to level up
+Fixed level calculation for WormType monster (well, especially you, eater of world)
+Generally lowered enemy level
+Increased enemy power by level
+Reduce enemy level gain when killing a boss
+Reduced slightly xp need to level up
 
 
 0.9.2 - 
@@ -261,7 +261,7 @@ Fix resolution bug where stats button would not be displayed
 Fix bug that when you level up, the congratulation text was one level off
 
 0.9.1 -
-Fix loading with allready existing character
+Fix loading with already existing character
 
 
 0.9 -
@@ -269,16 +269,16 @@ Fix loading with allready existing character
 Should no longer crash game at startup when having other mods
 Balancing a lot of stuff : 
 Health is now a more important way to calculate level (from one level every 30 hp to one every 20 hp)
-slight debuff to ennemy damage 
-slight debuff to ennemy defense
-Fixed Stats menu still being clicable even when invisible (reset without wanting to)
-Fix Defence upgrade display when overing vitality or constituion upgrade
+slight debuff to enemy damage 
+slight debuff to enemy defense
+Fixed Stats menu still being clickable even when invisible (reset without wanting to)
+Fix Defence upgrade display when overing vitality or constitution upgrade
 Buff to armor gain via constitution and vitality
 Buff to bosses, they were WAY too weak
 Increase Level gained on monster for each boss killed by 50%
 
 0.8 -
-Definetly fixed desync problem between client and server , no more monster dispearing and total multiplayer fixed (I hope there will not be any other problem)
+Definitely fixed desync problem between client and server , no more monster disappearing and total multiplayer fixed (I hope there will not be any other problem)
 
 0.7.3 - 
 Added transparency to the stats menu
@@ -296,7 +296,7 @@ Aligned texts
 Added Reset Button
 
 0.7.1 - 
-Don't erase other mods' rename on npcs (like prefixe or afixe)
+Don't erase other mods' rename on npcs (like prefixes or affixes)
 
 0.7 -
 Multiplayer support 
@@ -305,20 +305,20 @@ Multiplayer support
 Just added icon to mod browser
 
 0.6 -
-Tried to balance a bit the expert mode ( roughly halved Ennemy level and reduced boss level)
-Each time you kill a new boss, weakest ennemy will gain level , also when you enter hardmode (not tested)
+Tried to balance a bit the expert mode ( roughly halved Enemy level and reduced boss level)
+Each time you kill a new boss, weakest enemy will gain level , also when you enter hardmode (not tested)
 Healing item will heal more than displayed (will have to find a fix later on) based on your Health per Heart
-Added Stats windows where you can Attribute your stats to differents stats, actuals stats are : 
-Vit (Vitality) : Increase Health and Slighty Armor
-Foc (Focus) : Increase mana and Slighty Summon Damage
-Con (Constitution) : Increase Armor and Slighty Health
-Str (Strength) : Increase Melee damage and Slighty Throw Damage
-Agi (Agility) : Increase Ranged Damage and Slighty Melee Damage
-Dex (Dexterity) : Increase Trow Damage and Slighty Ranged Damage
-Int (Intelect) : Increase Magic Damage and Slighty Mana
-Spr (Spirit) : Increase Summon Damage and Slighty Magic Damage
+Added Stats windows where you can Attribute your stats to different stats, actuals stats are : 
+Vit (Vitality) : Increase Health and slightly Armor
+Foc (Focus) : Increase mana and slightly Summon Damage
+Con (Constitution) : Increase Armor and slightly Health
+Str (Strength) : Increase Melee damage and slightly Throw Damage
+Agi (Agility) : Increase Ranged Damage and slightly Melee Damage
+Dex (Dexterity) : Increase Trow Damage and slightly Ranged Damage
+Int (Intellect) : Increase Magic Damage and slightly Mana
+Spr (Spirit) : Increase Summon Damage and slightly Magic Damage
 
-Added a reset command "/reset" to reset your stat attribution, free, unlimited use, don't get used to it, gonna be costy later ^^
+Added a reset command "/reset" to reset your stat attribution, free, unlimited use, don't get used to it, gonna be costly later ^^
 Slight improvement to HealthBar
 Bring back old hud along with actual one so buff are displayed
 
@@ -332,9 +332,9 @@ balancing
 
 Longterm : 
 Having the possibilities to disable each component of mod via config file
-Display more Ennemy Info (having issue to make this atm)
+Display more Enemy Info (having issue to make this atm)
 Allowing Weapon level and upgrade (more you use a weapon , the more it gain strength)
 NewGame + ? 
 
 
-Ty to Kalciphoz & Infera for makign their mod opensource so people can learn from it ^^
+Ty to Kalciphoz & Infera for making their mod opensource so people can learn from it ^^

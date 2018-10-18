@@ -30,7 +30,7 @@ namespace AnotherRpgMod.RPGModule
     {
         //Tier 0 
         Tourist, // base class + 5% all damage 
-        //Tier 1 -lvl 15+ (should be arround EoC)
+        //Tier 1 -lvl 15+ (should be around EoC)
         Apprentice, // upgrade to tourist , + 15% all damage , +5% health
         Archer, // +20% ranged damage , 5% dodge + 30% bow damage
         Gunner, // +20% ranged damage , 20% chance not to consume ammo + 30% gun damage
@@ -40,7 +40,7 @@ namespace AnotherRpgMod.RPGModule
         Ninja, //+50% throw damage , 20% not to consume ammo 
         Acolyte, // 30% damage to mana (10(+int/50) damage per mana) + 25% magic damage + 10% health
         Cavalier, //+ 20% melee damage , + 50% health ,+ 20% armor , -5% movement speed
-        //Tier 1 -lvl 15+ (should be arround EoC)
+        //Tier 1 -lvl 15+ (should be around EoC)
         Regular, // upgrade to tourist , + 15% all damage , +5% health
         Hunter, // +20% ranged damage , 5% dodge + 30% bow damage
         Gunslinger, // +20% ranged damage , 20% chance not to consume ammo + 30% gun damage
@@ -55,7 +55,7 @@ namespace AnotherRpgMod.RPGModule
 
     }
     [Flags]
-    public enum Perk // all togleable
+    public enum Perk // all toggleable
     {
         None = 0x0,
         ArchPriest=0x1, // on death keep restore 1/25%/50%/75% health, give 1 second of damage immunity, and enter cd (600/450/300/150 seconds)
@@ -478,13 +478,13 @@ namespace AnotherRpgMod.RPGModule
     class NodeParent
     {
         Node actualNode;
-        List<NodeParent> neighboorNode;
-        public List<NodeParent> connectedNeighboor; //used to check for drawing connection lines between neighboor
-        public List<NodeParent> GetNeightboor
+        List<NodeParent> neighbourNode;
+        public List<NodeParent> connectedNeighbour; //used to check for drawing connection lines between neighbor
+        public List<NodeParent> GetNeighbour
         {
             get
             {
-                return neighboorNode;
+                return neighbourNode;
             }
         }
         public Node GetNode
@@ -566,8 +566,8 @@ namespace AnotherRpgMod.RPGModule
 
         public NodeParent(Node node,Vector2 pos)
         {
-            neighboorNode = new List<NodeParent>();
-            connectedNeighboor = new List<NodeParent>();
+            neighbourNode = new List<NodeParent>();
+            connectedNeighbour = new List<NodeParent>();
             actualNode = node;
             menuPos = pos;
             ID = TotalID;
@@ -592,15 +592,15 @@ namespace AnotherRpgMod.RPGModule
             actualNode.Unlock();
         }
 
-        public void AddNeighboor(NodeParent neighboor)
+        public void AddNeighbour(NodeParent neighbour)
         {
-            neighboorNode.Add(neighboor);
-            neighboor.AddNeighboorSimple(this);
+            neighbourNode.Add(neighbour);
+            neighbour.AddNeighbourSimple(this);
         }
 
-        public void AddNeighboorSimple(NodeParent neighboor)
+        public void AddNeighbourSimple(NodeParent neighbour)
         {
-            neighboorNode.Add(neighboor);
+            neighbourNode.Add(neighbour);
         }
 
         public void Upgrade(bool loading = false)
@@ -612,9 +612,9 @@ namespace AnotherRpgMod.RPGModule
             else
                 actualNode.Upgrade(); 
             
-            for (int i = 0; i< neighboorNode.Count; i++)
+            for (int i = 0; i< neighbourNode.Count; i++)
             {
-                neighboorNode[i].Unlock();
+                neighbourNode[i].Unlock();
             }
         }
     }
@@ -951,7 +951,7 @@ namespace AnotherRpgMod.RPGModule
             int count = nodeList.nodeList.Count;
             for (int i = 0;i< count; i++)
             {
-                nodeList.nodeList[i].connectedNeighboor = new List<NodeParent>();
+                nodeList.nodeList[i].connectedNeighbour = new List<NodeParent>();
             }
         }
         public SkillTree()
@@ -1013,7 +1013,7 @@ namespace AnotherRpgMod.RPGModule
                 
                 foreach (int nbID in actualNode.neigthboorlist)
                 {
-                    nodeList.nodeList[i].AddNeighboor(nodeList.nodeList[nbID]);
+                    nodeList.nodeList[i].AddNeighbour(nodeList.nodeList[nbID]);
 
                 }
 
