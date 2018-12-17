@@ -25,6 +25,7 @@ namespace AnotherRpgMod
         ITEMRARITY = 0x80,
         ITEMMODIFIER = 0x100,
         LIMITNPCGROWTH = 0x200,
+        DISPLAYNPCNAME = 0x400
     }
 
     public class VisualConfig
@@ -32,6 +33,7 @@ namespace AnotherRpgMod
         public float HealthBarYoffSet = 0;
         public float HealthBarScale = 0.75f;
         public float UI_Scale = 0.75f;
+        public bool DisplayNpcName = true;
     }
 
     static public class GPConfigExtension
@@ -99,8 +101,9 @@ namespace AnotherRpgMod
         public bool ItemRarity = true;
         public bool ItemModifier = true;
         public bool LimitNPCGrowth = true;
+        
 
-        public int XPReductionDelta = 5;
+        public int XPReductionDelta = 10;
         public float XpMultiplier = 1;
         public float NpclevelMultiplier = 1;
         public float ItemXpMultiplier = 1;

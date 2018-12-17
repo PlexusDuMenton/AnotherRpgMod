@@ -15,124 +15,39 @@ using AnotherRpgMod.Utils;
 
 namespace AnotherRpgMod.Items
 {
-    public enum Rarity
+    class ModifierManager
     {
-        NONE = 0x0,
-        Broken = 0x1,
-        Imperfect = 0x2,
-        Inferior = 0x4,
-        Superior = 0x8,
-        Rare = 0x10,
-        MasterPiece = 0x20,
-        Epic = 0x40,
-        Legendary = 0x80,
-        Mythical = 0x100
-    }
 
-    [Flags]
-    public enum Modifier : int
-    {
-        None = 0x0, //None
-        MoonLight = 0x1, //Increase Damage NightTime
-        SunLight = 0x2, //Increase Damage DayTime
-        Berserker = 0x4, //Increases Damage As Health decreases
-        MagicConnection = 0x8, //Increase Damage with higher Mana
-        Sniper = 0x10, //Increase Damage with Distance
-        Brawler = 0x20, //Increase Damage with how close you are
-        Piercing = 0x40, //Ignore Part of defense (flat amounts of defense is ignored, increase with level)
-        Savior = 0x80, //Save you when you are about to die (CD reduce with level)
-        FireLord = 0x100, //Enemies around you turn on fire (range increase with level)
-        Thorny = 0x200, //Reflect Damages Percent
-        Smart = 0x400, //Increase XP Gain
-        SelfLearning = 0x800, //Increase Weapon XP Gain
-        VampiricAura = 0x1000, //Passively steal Health from nearby enemies
-        Executor = 0x2000, //Increase Damage as Enemy is wounder
-        Confusion = 0x4000, //Chance to Confuse Enemy on hit
-        Poisones = 0x8000, //Chance to Poison Enemy on hit
-        Venom = 0x10000, //Increase Damage Against poisoned enemies
-        Chaotic = 0x20000, //Damage Per Player Debuff
-        Cunning = 0x40000, //Damage Per enemy Debuff
-        BloodSeeker = 0x80000, //Increase Damage and lifeSteal against wounder enemies
-        Cleave = 0x100000, //AOE damage
-        Random = 0x200000, //Random Projectile every shoot
-    }
-
-
-    struct RarityWeight
-    {
-        public Rarity rarity;
-        public float weight;
-
-        public RarityWeight(Rarity rarity,float weight)
+        public static WeaponType GetWeaponType (Item item)
         {
-            this.rarity = rarity;
-            this.weight = weight;
-        }
-    }
-
-    public struct RollInfo
-    {
-        public Rarity rarity;
-        public Modifier modifier;
-        public ItemStats stats;
-    }
-
-
-    public struct ItemStat
-    {
-        public Stat stat;
-        public float value;
-
-        public ItemStat(Stat stat, float value)
-        {
-            this.stat = stat;
-            this.value = value;
-        }
-    }
-
-    public struct ItemStats
-    {
-        public List<ItemStat> Stats;
-
-        public void CreateStat(ItemStat itemStat)
-        {
-            Stats.Add(itemStat);
-        }
-        public float GetStat(int key)
-        {
-            return Stats[key].value;
-        }
-    }
-
-    class RarityWeights
-    {
-        public RarityWeight[] weights;
-
-        public RarityWeights(RarityWeight[] weights)
-        {
-            this.weights = weights;
-        }
-
-        public Rarity DrawRarity()
-        {
-            float totalWeight = 0;
-            for (int i = 0; i < weights.Length; i++)
-                totalWeight += weights[i].weight;
-            float rn = Utils.Mathf.Random(0, totalWeight);
-            float actualWeight = 0;
-            for (int i = 0; i < weights.Length; i++)
+            if (item.summon)
+                return WeaponType.Summon;
+            if (item.magic)
+                return WeaponType.Magic;
+            if (item.ranged)
             {
-                if (rn < actualWeight + weights[i].weight)
-                    return weights[i].rarity;
-                actualWeight += weights[i].weight;
+                ErrorLogger.Log(item.useAmmo);
+                if (item.useAmmo == 40)
+                    return WeaponType.Bow;
+                if (item.useAmmo == 97)
+                    return WeaponType.Gun;
+                return WeaponType.OtherRanged;
             }
-            return weights[0].rarity;
-
-
+            if (item.melee)
+            {
+                if (item.useStyle == 5 && item.noMelee)
+                    return WeaponType.Spear;
+                if (item.noMelee)
+                    return WeaponType.OtherMelee;
+                if (item.useStyle == 3)
+                    return WeaponType.Stab;
+                if (item.useStyle == 1)
+                    return WeaponType.Swing;
+                return WeaponType.OtherMelee;
+            }
+            return WeaponType.Other;
         }
-    }   
-    class ItemUtils
-    {
+
         public static Dictionary<Modifier, float> ModifierWeight = new Dictionary<Modifier, float>()
         {
             {Modifier.None,0f },
@@ -162,10 +77,10 @@ namespace AnotherRpgMod.Items
         };
 
 
-        public static Dictionary<int, RarityWeights> rarityConversion = new Dictionary<int, RarityWeights>()
+        public static Dictionary<int, RarityWeightManager> rarityConversion = new Dictionary<int, RarityWeightManager>()
         {
             { -1 ,
-                new RarityWeights(new RarityWeight[6]{
+                new RarityWeightManager(new RarityWeight[6]{
                     new RarityWeight(Rarity.Broken,10),
                     new RarityWeight(Rarity.Imperfect,15),
                     new RarityWeight(Rarity.Inferior,5),
@@ -175,7 +90,7 @@ namespace AnotherRpgMod.Items
                 })
             },
             {0 ,
-                new RarityWeights(new RarityWeight[9]{
+                new RarityWeightManager(new RarityWeight[9]{
                     new RarityWeight(Rarity.Broken,5),
                     new RarityWeight(Rarity.Imperfect,15),
                     new RarityWeight(Rarity.Inferior,10),
@@ -188,7 +103,7 @@ namespace AnotherRpgMod.Items
                 })
             },
             { 1 ,
-                new RarityWeights(new RarityWeight[9]{
+                new RarityWeightManager(new RarityWeight[9]{
                     new RarityWeight(Rarity.Broken,2),
                     new RarityWeight(Rarity.Imperfect,10),
                     new RarityWeight(Rarity.Inferior,10),
@@ -201,7 +116,7 @@ namespace AnotherRpgMod.Items
                 })
             },
             { 2 ,
-                new RarityWeights(new RarityWeight[9]{
+                new RarityWeightManager(new RarityWeight[9]{
                     new RarityWeight(Rarity.Broken,0.5f),
                     new RarityWeight(Rarity.Imperfect,5),
                     new RarityWeight(Rarity.Inferior,10),
@@ -214,7 +129,7 @@ namespace AnotherRpgMod.Items
                 })
             },
             { 3 ,
-                new RarityWeights(new RarityWeight[9]{
+                new RarityWeightManager(new RarityWeight[9]{
                     new RarityWeight(Rarity.Broken,0.05f),
                     new RarityWeight(Rarity.Imperfect,3),
                     new RarityWeight(Rarity.Inferior,5),
@@ -227,7 +142,7 @@ namespace AnotherRpgMod.Items
                 })
             },
             { 4 ,
-                new RarityWeights(new RarityWeight[8]{
+                new RarityWeightManager(new RarityWeight[8]{
                     new RarityWeight(Rarity.Imperfect,1),
                     new RarityWeight(Rarity.Inferior,2),
                     new RarityWeight(Rarity.Superior,6),
@@ -239,7 +154,7 @@ namespace AnotherRpgMod.Items
                 })
             },
             { 5 ,
-                new RarityWeights(new RarityWeight[8]{
+                new RarityWeightManager(new RarityWeight[8]{
                     new RarityWeight(Rarity.Imperfect,0.2f),
                     new RarityWeight(Rarity.Inferior,3),
                     new RarityWeight(Rarity.Superior,10),
@@ -251,7 +166,7 @@ namespace AnotherRpgMod.Items
                 })
             },
             { 6 ,
-                new RarityWeights(new RarityWeight[8]{
+                new RarityWeightManager(new RarityWeight[8]{
                     new RarityWeight(Rarity.Imperfect,0.1f),
                     new RarityWeight(Rarity.Inferior,1),
                     new RarityWeight(Rarity.Superior,5),
@@ -263,7 +178,7 @@ namespace AnotherRpgMod.Items
                 })
             },
             { 7 ,
-                new RarityWeights(new RarityWeight[8]{
+                new RarityWeightManager(new RarityWeight[8]{
                     new RarityWeight(Rarity.Imperfect,0.1f),
                     new RarityWeight(Rarity.Inferior,0.3f),
                     new RarityWeight(Rarity.Superior,3),
@@ -275,7 +190,7 @@ namespace AnotherRpgMod.Items
                 })
             },
             { 8 ,
-                new RarityWeights(new RarityWeight[7]{
+                new RarityWeightManager(new RarityWeight[7]{
                     new RarityWeight(Rarity.Inferior,0.1f),
                     new RarityWeight(Rarity.Superior,1.5f),
                     new RarityWeight(Rarity.Rare,8),
@@ -286,7 +201,7 @@ namespace AnotherRpgMod.Items
                 })
             },
             { 9 ,
-                new RarityWeights(new RarityWeight[7]{
+                new RarityWeightManager(new RarityWeight[7]{
                     new RarityWeight(Rarity.Inferior,0.05f),
                     new RarityWeight(Rarity.Superior,1.0f),
                     new RarityWeight(Rarity.Rare,5),
@@ -297,7 +212,7 @@ namespace AnotherRpgMod.Items
                 })
             },
             { 10 ,
-                new RarityWeights(new RarityWeight[6]{
+                new RarityWeightManager(new RarityWeight[6]{
                     new RarityWeight(Rarity.Superior,0.5f),
                     new RarityWeight(Rarity.Rare,2),
                     new RarityWeight(Rarity.MasterPiece,6),
@@ -307,7 +222,7 @@ namespace AnotherRpgMod.Items
                 })
             },
             { 11 ,
-                new RarityWeights(new RarityWeight[5]{
+                new RarityWeightManager(new RarityWeight[5]{
                     new RarityWeight(Rarity.Rare,1),
                     new RarityWeight(Rarity.MasterPiece,3),
                     new RarityWeight(Rarity.Epic,8),
@@ -316,7 +231,7 @@ namespace AnotherRpgMod.Items
                 })
             },
             { 12 ,
-                new RarityWeights(new RarityWeight[4]{
+                new RarityWeightManager(new RarityWeight[4]{
                     new RarityWeight(Rarity.MasterPiece,2.1f),
                     new RarityWeight(Rarity.Epic,5),
                     new RarityWeight(Rarity.Legendary,2f),
@@ -324,14 +239,14 @@ namespace AnotherRpgMod.Items
                 })
             },
             { 13 ,
-                new RarityWeights(new RarityWeight[3]{
+                new RarityWeightManager(new RarityWeight[3]{
                     new RarityWeight(Rarity.Epic,2),
                     new RarityWeight(Rarity.Legendary,1.5f),
                     new RarityWeight(Rarity.Mythical,0.75f)
                 })
             },
             { -12 ,
-                new RarityWeights(new RarityWeight[4]{
+                new RarityWeightManager(new RarityWeight[4]{
                     new RarityWeight(Rarity.MasterPiece,2.1f),
                     new RarityWeight(Rarity.Epic,4),
                     new RarityWeight(Rarity.Legendary,2f),
@@ -339,7 +254,7 @@ namespace AnotherRpgMod.Items
                 })
             },
             { -11 ,
-                new RarityWeights(new RarityWeight[6]{
+                new RarityWeightManager(new RarityWeight[6]{
                     new RarityWeight(Rarity.Superior,0.5f),
                     new RarityWeight(Rarity.Rare,2),
                     new RarityWeight(Rarity.MasterPiece,6),
@@ -361,7 +276,7 @@ namespace AnotherRpgMod.Items
             info.modifier = GetModifier(item, info.rarity);
 
             if (item.accessory)
-                info.stats = GetStatsAccessories(info.rarity);
+                info.stats = GetStatsAccesories(info.rarity);
             else if (item.bodySlot > 0 || item.legSlot > 0 || item.headSlot > 0)
                 info.stats = GetStatsArmor(info.rarity);
 
@@ -418,7 +333,7 @@ namespace AnotherRpgMod.Items
         
        
 
-        private static ItemStat GenRandomStat(Rarity rarity,bool accessories = false)
+        private static ItemStat GenRandomStat(Rarity rarity,bool accesories = false)
         {
             float value = 0;
             int rn = Utils.Mathf.RandomInt(0, 7);
@@ -453,7 +368,7 @@ namespace AnotherRpgMod.Items
                     value = Mathf.Random(9, 20);
                     break;
             }
-            if (accessories)
+            if (accesories)
                 value *= Mathf.Random(0.4f, 0.7f);
             value = (float)Math.Round(value, 2);
             return new ItemStat(stat, value);
@@ -535,7 +450,7 @@ namespace AnotherRpgMod.Items
             return value;
         }
 
-        public static ItemStats GetStatsAccessories(Rarity rarity)
+        public static ItemStats GetStatsAccesories(Rarity rarity)
         {
             ItemStats itemStat = new ItemStats()
             {
@@ -681,7 +596,7 @@ namespace AnotherRpgMod.Items
                     Modifier.SelfLearning |
                     Modifier.BloodSeeker;
             }
-            if (type == 1) // accessories
+            if (type == 1) // accesories
             {
                 return Modifier.Berserker |
                     Modifier.MoonLight |
@@ -839,16 +754,16 @@ namespace AnotherRpgMod.Items
                     desc = "Increase damage by " + GetModifierBonus(mod, itemU) + " % per units of distance";
                     break;
                 case (Modifier.Brawler):
-                    desc = "Increase damage by " + GetModifierBonus(mod, itemU) + " % when close to enemy";
+                    desc = "Increase damage by " + GetModifierBonus(mod, itemU) + " % when close to ennemy";
                     break;
                 case (Modifier.Piercing):
-                    desc = "Pierce " + GetModifierBonus(mod, itemU) + " % of enemy armor";
+                    desc = "Pierce " + GetModifierBonus(mod, itemU) + " % of ennemy armor";
                     break;
                 case (Modifier.Savior):
                     desc = "" + GetModifierBonus(mod, itemU) + " % Chance to survive a deadly wound";
                     break;
                 case (Modifier.FireLord):
-                    desc = "Inflict burn debuff to enemies in a range of " + GetModifierBonus(mod, itemU) + " units";
+                    desc = "Inflict burn debuff to ennemies in a range of " + GetModifierBonus(mod, itemU) + " units";
                     break;
                 case (Modifier.Thorny):
                     desc = "reflect " + GetModifierBonus(mod, itemU) + " % of damage receive";
@@ -860,25 +775,25 @@ namespace AnotherRpgMod.Items
                     desc = "Increase Item XP gain by " + GetModifierBonus(mod, itemU) + " %";
                     break;
                 case (Modifier.VampiricAura):
-                    desc = "Drain " + GetModifierBonus(mod, itemU) + " Health Per Seconds to enemies around you";
+                    desc = "Drain " + GetModifierBonus(mod, itemU) + " Health Per Seconds to ennemies arround you";
                     break;
                 case (Modifier.Executor):
-                    desc = "Increase damage by " + GetModifierBonus(mod, itemU) + " % per missing % of enemies health";
+                    desc = "Increase damage by " + GetModifierBonus(mod, itemU) + " % per missing % of ennemies health";
                     break;
                 case (Modifier.Poisones):
                     desc = "" + GetModifierBonus(mod, itemU) + " % chance to inflict Poison debuff";
                     break;
                 case (Modifier.Venom):
-                    desc = "Increase damage by " + GetModifierBonus(mod, itemU) + " % against poisoned enemies";
+                    desc = "Increase damage by " + GetModifierBonus(mod, itemU) + " % against poisoned ennemies";
                     break;
                 case (Modifier.Chaotic):
                     desc = "Increase damage by " + GetModifierBonus(mod, itemU) + " % per debuff/buff on Player";
                     break;
                 case (Modifier.Cunning):
-                    desc = "Increase damage by " + GetModifierBonus(mod, itemU) + " % per debuff/buff on Enemy";
+                    desc = "Increase damage by " + GetModifierBonus(mod, itemU) + " % per debuff/buff on Ennemy";
                     break;
                 case (Modifier.BloodSeeker):
-                    desc = "lifesteal "+ GetModifierBonusAlt(mod, itemU) + " % against enemies with less than " + GetModifierBonus(mod, itemU) + " % health";
+                    desc = "lifesteal "+ GetModifierBonusAlt(mod, itemU) + " % against ennemies with less than " + GetModifierBonus(mod, itemU) + " % health";
                     break;
                 case (Modifier.Cleave):
                     desc = "" + GetModifierBonus(mod, itemU) + " % AOE damage";

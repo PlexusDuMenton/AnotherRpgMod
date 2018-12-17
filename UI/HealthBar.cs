@@ -87,7 +87,13 @@ namespace AnotherRpgMod.UI
 
             Player player = Main.player[Main.myPlayer]; //Get Player
 
-            health.SetText("" + player.statLife + " | " + player.statLifeMax2); //Set Life
+            if (player.GetModPlayer<RPGPlayer>().m_virtualRes > 0)
+            {
+                health.Left.Set(450 * scale, 0f);
+                health.SetText("" + player.statLife + " | " + player.statLifeMax2 + " (" + player.statLifeMax2/(1- player.GetModPlayer<RPGPlayer>().m_virtualRes)+")"); //Set Life
+            }
+            else
+                health.SetText("" + player.statLife + " | " + player.statLifeMax2); //Set Life
 
 
             manatext.SetText("" + player.statMana + " | " + player.statManaMax2); //Set Mana

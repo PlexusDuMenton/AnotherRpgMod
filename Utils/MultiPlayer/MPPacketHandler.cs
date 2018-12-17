@@ -1,79 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Terraria;
 using Terraria.ModLoader;
-using Terraria.ID;
 using System.IO;
-using Microsoft.Xna.Framework;
-using Terraria.UI;
-using AnotherRpgMod.UI;
 using AnotherRpgMod.RPGModule.Entities;
-using AnotherRpgMod.Utils;
-using AnotherRpgMod;
 
 namespace AnotherRpgMod.Utils
 {
-
-    public class DataTag
-    {
-        public static DataTag amount = new DataTag(reader => reader.ReadInt32());
-        
-        public static DataTag amount_single = new DataTag(reader => reader.ReadSingle());
-        public static DataTag playerId = new DataTag(reader => reader.ReadInt32());
-        public static DataTag npcId = new DataTag(reader => reader.ReadInt32());
-        public static DataTag itemId = new DataTag(reader => reader.ReadInt32());
-
-
-        public static DataTag level = new DataTag(reader => reader.ReadInt32());
-        public static DataTag tier = new DataTag(reader => reader.ReadInt32());
-        public static DataTag WorldTier = new DataTag(reader => reader.ReadInt32());
-        public static DataTag rank = new DataTag(reader => reader.ReadInt32());
-
-        public static DataTag modifiers = new DataTag(reader => reader.ReadInt32());
-        public static DataTag buffer = new DataTag(reader => reader.ReadString());
-
-
-        public static DataTag damage = new DataTag(reader => reader.ReadInt32());
-        public static DataTag life = new DataTag(reader => reader.ReadInt32());
-        public static DataTag maxLife = new DataTag(reader => reader.ReadInt32());
-
-
-        public static DataTag GPFlag = new DataTag(reader => reader.ReadInt32());
-
-        public static DataTag XPReductionDelta = new DataTag(reader => reader.ReadInt32());
-
-        public static DataTag XpMultiplier = new DataTag(reader => reader.ReadSingle());
-        public static DataTag NpclevelMultiplier = new DataTag(reader => reader.ReadSingle());
-        public static DataTag ItemXpMultiplier = new DataTag(reader => reader.ReadSingle());
-
-        public static DataTag Seed = new DataTag(reader => reader.ReadInt32());
-
-
-        public Func<BinaryReader, object> read;
-
-        public DataTag(Func<BinaryReader, object> read)
-        {
-            this.read = read;
-        }
-    }
-
-    class MPDebug
-    {
-        static public void Log(Mod mod, string message)
-        {
-            if (Main.netMode == 2)
-            {
-                ModPacket packet = mod.GetPacket();
-                packet.Write((byte)Message.Log);
-                packet.Write(message);
-                packet.Send();
-            }
-        }
-    }
-
     class MPPacketHandler
     {
         public static Dictionary<Message, List<DataTag>> dataTags = new Dictionary<Message, List<DataTag>>()
@@ -224,8 +157,8 @@ namespace AnotherRpgMod.Utils
                 case Message.SyncLevel:
                     if (Main.netMode != 0)
                         Main.player[(int)tags[DataTag.playerId]].GetModPlayer<RPGPlayer>().SyncLevel((int)tags[DataTag.amount]);
-                    if ((int)tags[DataTag.amount] > Arpg.PlayerLevel)
-                        Arpg.PlayerLevel = (int)tags[DataTag.amount];
+                    if ((int)tags[DataTag.amount] > AnotherRpgMod.PlayerLevel)
+                        AnotherRpgMod.PlayerLevel = (int)tags[DataTag.amount];
                     break;
                 case Message.AddXP:
                     Main.LocalPlayer.GetModPlayer<RPGPlayer>().AddXp((int)tags[DataTag.amount], (int)tags[DataTag.level]);
@@ -305,8 +238,8 @@ namespace AnotherRpgMod.Utils
                         int tier = npc.GetGlobalNPC<ARPGGlobalNPC>().getTier;
                         int level = npc.GetGlobalNPC<ARPGGlobalNPC>().getLevel;
                         int rank = npc.GetGlobalNPC<ARPGGlobalNPC>().getRank;
-                        Mod mod = Arpg.Instance;
-                        MPDebug.Log(mod, "Server Side : \n" + npc.GetGivenOrTypeNetName() + " ID : " + npc.whoAmI + "\nLvl." + (npc.GetGlobalNPC<ARPGGlobalNPC>().getLevel + npc.GetGlobalNPC<ARPGGlobalNPC>().getTier) + "\nHealth : " + npc.life + " / " + npc.lifeMax + "\nDamage : " + npc.damage + "\nDef : " + npc.defense + "\nTier : " + npc.GetGlobalNPC<ARPGGlobalNPC>().getRank + "\n");
+                        Mod mod = AnotherRpgMod.Instance;
+                        //MPDebug.Log(mod, "Server Side : \n" + npc.GetGivenOrTypeNetName() + " ID : " + npc.whoAmI + "\nLvl." + (npc.GetGlobalNPC<ARPGGlobalNPC>().getLevel + npc.GetGlobalNPC<ARPGGlobalNPC>().getTier) + "\nHealth : " + npc.life + " / " + npc.lifeMax + "\nDamage : " + npc.damage + "\nDef : " + npc.defense + "\nTier : " + npc.GetGlobalNPC<ARPGGlobalNPC>().getRank + "\n");
 
                         SendNpcSpawn(mod, npc, tier, level, npc.GetGlobalNPC<ARPGGlobalNPC>());
                     }

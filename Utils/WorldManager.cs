@@ -120,7 +120,7 @@ namespace AnotherRpgMod.Utils
             BossDefeated = tag.GetInt("BossDefeated");
             Day = tag.GetInt("day");
             ConvertToList(tag.GetIntArray("BossDefeatedList"));
-            Arpg.PlayerLevel = 0;
+            AnotherRpgMod.PlayerLevel = 0;
         }
 
     }

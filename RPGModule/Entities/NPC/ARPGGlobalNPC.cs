@@ -7,89 +7,6 @@ using Microsoft.Xna.Framework;
 
 namespace AnotherRpgMod.RPGModule.Entities
 {
-
-    public enum NPCRank
-    {
-        Weak = 0, // -50% stats,
-        Normal = 1, // normal stats
-        Alpha = 2, // +40% hp , 15% damage, 10% def
-        Elite = 3, // + 80% hp, 40% damage, 20% def
-        Legendary = 4, //+ 200% hp, 60% damage, 40% def
-        Mythical = 5, // + 600 %health, 100% damage, 60% def
-        Godly = 6, // + 1400% health; 200% damage, 80% def
-        DIO = 7 // All modifier, + 2400% hp, + 400 damage + 100%def
-    }
-    [Flags]
-    public enum NPCModifier:int
-    {
-        None = 0x0,
-        Cluster = 0x1, // On death spawn several mini version of himself (35% of original stats)
-        Size = 0x2, //Changed size ans stats
-        Berserker = 0x4, //Lower the health, higger the stat, up to 100%
-        Golden = 0x8, // + 200% damage, +50% damage, + 50% def, drop way more money than usual
-        Vampire = 0x10, // Heal itself on damage (10% of damage are converted to health)
-        ArmorBreaker = 0x20 //Ignore 30% of armor
-    }
-    
-
-
-    //======================================================================================================================================================
-    //======================================================================================================================================================
-    //======================================================================================================================================================
-    //======================================================================================================================================================
-
-    class ARPGGlobalProjectile : GlobalProjectile
-    {
-        bool init = false;
-
-        public Item itemOrigin;
-
-        public override bool InstancePerEntity
-        {
-            get
-            {
-                return true;
-            }
-        }
-        
-
-        public override void AI(Projectile projectile)
-        {
-
-            
-            if (init)
-                return;
-            if (projectile.friendly)
-                return;
-            if (projectile.npcProj)
-            { 
-                if (projectile.owner > Main.npc.Length)
-                    return;
-                NPC owner = Main.npc[projectile.owner];
-                if (owner.GivenName == "")
-                    return;
-                ARPGGlobalNPC ownerGlobal = owner.GetGlobalNPC<ARPGGlobalNPC>();
-
-                    projectile.damage = owner.damage;
-
-            }
-            else
-            {
-                Player p = Main.player[projectile.owner];
-                itemOrigin = p.HeldItem;
-            }
-            init = true;
-
-        }
-    }
-
-
-    //======================================================================================================================================================
-    //======================================================================================================================================================
-    //======================================================================================================================================================
-    //======================================================================================================================================================
-
-
     class ARPGGlobalNPC : GlobalNPC
     {
 
@@ -129,7 +46,10 @@ namespace AnotherRpgMod.RPGModule.Entities
                 npc.checkDead();
         }
 
-
+        public override void TownNPCAttackProj(NPC npc, ref int projType, ref int attackDelay)
+        {
+            base.TownNPCAttackProj(npc, ref projType, ref attackDelay);
+        }
         public int ApplyVampricAura(NPC npc, float damage)
         {
             int value = 0;
@@ -229,23 +149,26 @@ namespace AnotherRpgMod.RPGModule.Entities
             
             if (Main.netMode == 2)
             {
-                Main.npcLifeBytes[npc.type] = 4; //Sadly have to UN-optimise Health of enemy, because it caused npc to dispear if health was over 128 (for small )
+                Main.npcLifeBytes[npc.type] = 4; //Sadly have to UN-optimise Health of ennemy, because it caused npc to dispear if health was over 128 (for small )
             }
-            if (!ConfigFile.GetConfig.gpConfig.NPCProgress)
-            {
-                return;
-            }   
+            
 
             if (Main.netMode != 1)
             {
-                if (level < 0) { 
-                    level = Mathf.CeilInt(NPCUtils.GetBaseLevel(npc) * ConfigFile.GetConfig.gpConfig.NpclevelMultiplier);
-
-                    if (npc.townNPC || (npc.damage == 0))
-                        tier = Mathf.CeilInt(NPCUtils.GetTierAlly(npc, level) * ConfigFile.GetConfig.gpConfig.NpclevelMultiplier);
-                    else if (ConfigFile.GetConfig.gpConfig.NPCProgress)
-                        tier = Mathf.CeilInt(NPCUtils.GetTier(npc, level) * ConfigFile.GetConfig.gpConfig.NpclevelMultiplier);
-
+                if (level < 0) {
+                    if (!ConfigFile.GetConfig.gpConfig.NPCProgress)
+                    {
+                        level = 0;
+                        tier = 0;
+                    }
+                    else { 
+                        level = Mathf.CeilInt(NPCUtils.GetBaseLevel(npc) * ConfigFile.GetConfig.gpConfig.NpclevelMultiplier);
+                    
+                        if (npc.townNPC || (npc.damage == 0))
+                            tier = Mathf.CeilInt(NPCUtils.GetTierAlly(npc, level) * ConfigFile.GetConfig.gpConfig.NpclevelMultiplier);
+                        else if (ConfigFile.GetConfig.gpConfig.NPCProgress)
+                            tier = Mathf.CeilInt(NPCUtils.GetTier(npc, level) * ConfigFile.GetConfig.gpConfig.NpclevelMultiplier);
+                    }
                     if (!npc.townNPC && !(npc.damage == 0) && (!npc.dontCountMe)) { 
                         Rank = NPCUtils.GetRank(level+tier);
                         modifier = NPCUtils.GetModifier(Rank,npc);
@@ -257,8 +180,8 @@ namespace AnotherRpgMod.RPGModule.Entities
                                 rn+=1;
                             if (rn < 1)
                             {
-                                SetBufferProperty("size", "Growth");
-                                SetBufferProperty("GrowthStep", "Mini");
+                                SetBufferProperty("size", "Growther");
+                                SetBufferProperty("GrowtherStep", "Mini");
                             }
                             else if (rn < 3)
                                 SetBufferProperty("size", "Titan");
@@ -385,26 +308,26 @@ namespace AnotherRpgMod.RPGModule.Entities
 
         public override bool CheckDead(NPC npc)
         {
-            if (HaveBufferProperty("GrowthStep"))
+            if (HaveBufferProperty("GrowtherStep"))
             {
-                switch (GetBufferProperty("GrowthStep"))
+                switch (GetBufferProperty("GrowtherStep"))
                 {
                     case "Mini":
-                        SetBufferProperty("GrowthStep", "Normal");
+                        SetBufferProperty("GrowtherStep", "Normal");
                         break;
                     case "Normal":
-                        SetBufferProperty("GrowthStep", "Giant");
+                        SetBufferProperty("GrowtherStep", "Giant");
                         break;
                     case "Giant":
-                        SetBufferProperty("GrowthStep", "Colossus");
+                        SetBufferProperty("GrowtherStep", "Colossus");
                         break;
                     case "Colossus":
-                        SetBufferProperty("GrowthStep", "Titan");
+                        SetBufferProperty("GrowtherStep", "Titan");
                         break;
                     case "Titan":
                         return false;
                 }
-                npc = NPCUtils.SizeShiftMult(npc, GetBufferProperty("GrowthStep"));
+                npc = NPCUtils.SizeShiftMult(npc, GetBufferProperty("GrowtherStep"));
                 npc.life = npc.lifeMax;
                 MPPacketHandler.SendNpcUpdate(mod, npc);
                 NetMessage.SendData(23, -1, -1, null, npc.whoAmI);
@@ -449,7 +372,7 @@ namespace AnotherRpgMod.RPGModule.Entities
             int xplevel = level + tier;
             if (!ConfigFile.GetConfig.gpConfig.XPReduction)
             {
-                xplevel = 99999;
+                xplevel = int.MaxValue;
             }
             MPPacketHandler.SendXPPacket(mod, XPToDrop, xplevel);
             if (Main.netMode == 0)

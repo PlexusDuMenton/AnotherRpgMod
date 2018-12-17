@@ -41,12 +41,13 @@ namespace AnotherRpgMod
     enum SupportedMod
     {
         Thorium, //only suported mod for now
-        Calamity
+        Calamity,
+        DBZMOD
     }
 
-    class Arpg : Mod
+    class AnotherRpgMod : Mod
 	{
-        public static Arpg Instance;
+        public static AnotherRpgMod Instance;
         public UserInterface customResources;
         public HealthBar healthBar;
         public UserInterface customNPCInfo;
@@ -87,7 +88,7 @@ namespace AnotherRpgMod
             ErrorLogger.Log("Another Rpg Mod " + Version + " Correctly loaded !");
             Instance = this;
             ConfigFile.Init();
-            JsonSkilLTree.Init();
+            JsonSkillTree.Init();
             JsonCharacterClass.Init();
             LoadedMods[SupportedMod.Thorium] = ModLoader.GetMod("ThoriumMod") != null;
             LoadedMods[SupportedMod.Calamity] = ModLoader.GetMod("CalamityMod") != null;
@@ -136,7 +137,7 @@ namespace AnotherRpgMod
             
         }
 
-        public Arpg()
+        public AnotherRpgMod()
 		{
 			Properties = new ModProperties()
 			{

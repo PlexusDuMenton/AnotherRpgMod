@@ -24,14 +24,14 @@ namespace AnotherRpgMod
      public class JsonNodeList
     {
         public JsonNode[] jsonList = {
-            // BASE TYPE , POSX, POSY, NEIGHBOURLIST, SPECIFIC TYPE, ISFLATDAMAGE?, VALUEPERLEVEL, LEVEL REQUIREMENT, MAXLEVEL , POINTS PER LEVEL
+            // BASE TYPE , POSX, POSY, NEIGHTBOORLIST, SPECIFIC TYPE, ISFLATDAMAGE?, VALUEPERLEVEL, LEVEL REQUIREMENT, MAXLEVEL , POINTS PER LEVEL
             new JsonNode("Class",0,0,true,new int[6]{ 1,2,3,4,5,6},"Tourist",false,0.1f,5,1,1), //0
             new JsonNode("Class",0,250,false,new int[1]{0},"Apprentice",false,0.1f,10,1,1), //1
-            new JsonNode("Damage",-100,75,false,new int[4]{0,3,7,8},"Melee",false,0.03f,1,20,1), //2
-            new JsonNode("Damage",100,75,false,new int[5]{ 0, 2,4,9,10},"Magic",false,0.03f,1,20,1), //3
-            new JsonNode("Damage",100,-50,false,new int[4]{ 0, 3,5,11},"Summon",false,0.03f,1,20,1), //4
-            new JsonNode("Damage",0,-111,false,new int[5]{ 0, 5,6,12,13},"Ranged",false,0.03f,1,20,1), //5
-            new JsonNode("Damage",-100,-50,false,new int[4]{0,5,2,14},"Throw",false,0.03f,1,20,1), //6
+            new JsonNode("Damage",-100,75,false,new int[4]{0,3,7,8},"Melee",false,0.01f,1,20,1), //2
+            new JsonNode("Damage",100,75,false,new int[5]{ 0, 2,4,9,10},"Magic",false,0.01f,1,20,1), //3
+            new JsonNode("Damage",100,-50,false,new int[4]{ 0, 3,5,11},"Summon",false,0.01f,1,20,1), //4
+            new JsonNode("Damage",0,-111,false,new int[5]{ 0, 5,6,12,13},"Ranged",false,0.01f,1,20,1), //5
+            new JsonNode("Damage",-100,-50,false,new int[4]{0,5,2,14},"Throw",false,0.01f,1,20,1), //6
 
             new JsonNode("Class",-300,100,false,new int[2]{2,8},"Cavalier",false,0.03f,10,1,1), //7
             new JsonNode("Class",-200,200,false,new int[2]{2,7},"SwordMan",false,0.03f,10,1,1), //8
@@ -62,11 +62,11 @@ namespace AnotherRpgMod
             new JsonNode("Class",75,-400,false,new int[2]{13,20},"Gunslinger",false,0.05f,50,1,5), //28
             new JsonNode("Class",-325,-250,false,new int[2]{14,21},"Shinobi",false,0.05f,50,1,5), //29
 
-            new JsonNode("Damage",400,400,false,new int[2]{24,25},"Magic",false,0.08f,75,50,4), //30
-            new JsonNode("Damage",450,-50,false,new int[2]{24,26},"Summon",false,0.08f,75,50,4), //31
-            new JsonNode("Damage",0,-475,false,new int[2]{27,28},"Ranged",false,0.08f,75,50,4), //32
-            new JsonNode("Damage",-500,-400,false,new int[2]{27,29},"Throw",false,0.08f,75,50,4), //33
-            new JsonNode("Damage",-400,400,false,new int[3]{22,23,25},"Melee",false,0.08f,75,50,4),//34
+            new JsonNode("Damage",400,400,false,new int[2]{24,25},"Magic",false,0.02f,75,50,4), //30
+            new JsonNode("Damage",450,-50,false,new int[2]{24,26},"Summon",false,0.02f,75,50,4), //31
+            new JsonNode("Damage",0,-475,false,new int[2]{27,28},"Ranged",false,0.02f,75,50,4), //32
+            new JsonNode("Damage",-500,-400,false,new int[2]{27,29},"Throw",false,0.02f,75,50,4), //33
+            new JsonNode("Damage",-400,400,false,new int[3]{22,23,25},"Melee",false,0.02f,75,50,4),//34
             new JsonNode("Leech",0,550,false,new int[1]{16},"Both",false,0.001f,100,10,10), //35
 
             new JsonNode("Stats",550,550,false,new int[1]{30},"Int",false,10,150,10,5), //36
@@ -92,13 +92,13 @@ namespace AnotherRpgMod
         public int pointsPerLevel = 1;
         public bool unlocked = false;
 
-        public JsonNode(string baseType,float posX,float posY,bool unlocked, int[] neighbourlist,string specificType,bool flatDamage,float valuePerLevel,int levelRequirement,int maxLevel, int pointsPerLevel)
+        public JsonNode(string baseType,float posX,float posY,bool unlocked, int[] neightboorlist,string specificType,bool flatDamage,float valuePerLevel,int levelRequirement,int maxLevel, int pointsPerLevel)
         {
             this.baseType = baseType;
             this.posX = posX;
             this.posY = posY;
             this.unlocked = unlocked;
-            this.neigthboorlist = neighbourlist;
+            this.neigthboorlist = neightboorlist;
             this.specificType = specificType;
             this.flatDamage = flatDamage;
             this.valuePerLevel = valuePerLevel;
@@ -109,7 +109,7 @@ namespace AnotherRpgMod
     }
 
 
-    class JsonSkilLTree
+    class JsonSkillTree
     {
         static JsonNodeList jsonSkillList;
         static public JsonNodeList GetJsonNodeList { get { return jsonSkillList; } }

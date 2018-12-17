@@ -11,7 +11,7 @@ using AnotherRpgMod.RPGModule;
 using AnotherRpgMod.Utils;
 namespace AnotherRpgMod.Command
 {
-    /*   
+    
     public class Level : ModCommand
     {
         public override CommandType Type
@@ -38,7 +38,10 @@ namespace AnotherRpgMod.Command
         {
             RPGPlayer character = caller.Player.GetModPlayer<RPGPlayer>(mod);
             int level = Int32.Parse(args[0]);
-            level = NPCUtils.Mathf.Clamp(level, 0, 2500);
+            level = Mathf.Clamp(level, 0, 9999);
+
+            character.ResetSkillTree();
+
             for (int i = 0; i< level; i++)
             {
                 character.commandLevelup();
@@ -48,11 +51,10 @@ namespace AnotherRpgMod.Command
             {
                 Main.NewText((Stat)i + " : " + character.GetStat((Stat)i), 255, 223, 63);
             }
-            Main.NewText(WorldManager.BossDefeated + " original boss degeated", 255, 223, 63);
             
             
         }
-    }*/
+    }
         public class ResetCommand : ModCommand
         {
             public override CommandType Type

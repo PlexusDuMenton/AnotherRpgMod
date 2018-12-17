@@ -126,7 +126,7 @@ namespace AnotherRpgMod.Utils
             for (int k = 0; k < 200; k++)
             {
                 ActualNPC = Main.npc[k];
-                if (ActualNPC.active )
+                if (ActualNPC.active && !ActualNPC.dontCountMe)
                 {
                     int type = Main.npc[k].type;
                     Rectangle NPCPos = new Rectangle((int)ActualNPC.Bottom.X - ActualNPC.frame.Width / 2, (int)ActualNPC.Bottom.Y - ActualNPC.frame.Height, ActualNPC.frame.Width, ActualNPC.frame.Height);
@@ -169,7 +169,7 @@ namespace AnotherRpgMod.Utils
 
                         NPCDetails= new NPCInfoUI(TempText, Color.White, new Vector2(Main.mouseX, Main.mouseY));
                     }
-                    else if (IsOnScreen && !ActualNPC.dontCountMe)
+                    else if (IsOnScreen && ConfigFile.GetConfig.vConfig.DisplayNpcName)
                     {
                         
                         Main.player[Main.myPlayer].showItemIcon = false;
@@ -244,16 +244,6 @@ namespace AnotherRpgMod.Utils
                         {
                             NpcColor = 0;
                         }
-                        /*
-                        panel = new UIText(TempText)
-                        {
-                            TextColor = NpcColor
-                        };
-                        panel.Left.Set(ActualNPC.Bottom.X - Main.screenPosition.X, 0);
-                        panel.Top.Set(ActualNPC.Bottom.Y - Main.screenPosition.Y, 0);
-                        panel.Width.Set(200, 0);
-                        panel.Height.Set(50, 0);
-                        */
                         NPCName.Add(new NPCInfoUI(TempText, ColorDic[NpcColor],new Vector2(ActualNPC.Bottom.X - Main.screenPosition.X, ActualNPC.Bottom.Y- Main.screenPosition.Y)));
                         
                     }

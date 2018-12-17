@@ -294,6 +294,16 @@ namespace AnotherRpgMod.UI
         private Color MainColor = new Color(75,75, 255);
         private Color SecondaryColor = new Color(150, 150, 255);
 
+        float GetCritImprov()
+        {
+            return Math.Abs(Utils.Mathf.Round((Utils.Mathf.Pow(Char.GetStatImproved(Stat.Agi) + Char.GetStatImproved(Stat.Str) +1, 0.8f) * 0.005f) - Char.GetCriticalDamage(),2));
+        }
+
+        float GetCritChanceImprov()
+        {
+            return Math.Abs( Utils.Mathf.Round((Utils.Mathf.Pow(Char.GetStatImproved(Stat.Foc) + Char.GetStatImproved(Stat.Dex) + 1, 0.8f) * 0.05f) - Char.GetCriticalChanceBonus(),3));
+        }
+
         public void UpdateStat(UIMouseEvent evt, UIElement listeningElement, Stat stat)
         {
             
@@ -310,61 +320,61 @@ namespace AnotherRpgMod.UI
             switch (stat)
             {
                 case (Stat.Vit):
-                    UpgradeStatOver[0].SetText("+ " + (((float)Char.player.statLifeMax / 20f) * 1.5f * Char.statMultiplier) + " Hp");
+                    UpgradeStatOver[0].SetText("+ " + (((float)Char.player.statLifeMax / 20f) * 0.15f * Char.statMultiplier) + " Hp");
                     UpgradeStatOver[0].TextColor = MainColor;
-                    UpgradeStatOver[2].SetText("+ " + (Char.BaseArmor*0.03f) + " Armor");
+                    UpgradeStatOver[2].SetText("+ " + (Char.BaseArmor*0.0055f* Char.statMultiplier) + " Armor");
                     UpgradeStatOver[2].TextColor = SecondaryColor;
-                    UpgradeStatOver[10].SetText("+ 0.1 HP/Sec");
+                    UpgradeStatOver[10].SetText("+ " + (0.1f* Char.statMultiplier)+" HP/Sec");
                     break;
                 case (Stat.Foc):
                     UpgradeStatOver[1].SetText("+ " + (((float)Char.player.statManaMax / 20f) * 0.2f * Char.statMultiplier) + " Mana");
                     UpgradeStatOver[1].TextColor = MainColor;
                     UpgradeStatOver[7].SetText("+ " + (RPGPlayer.SECONDARYTATSMULT * Char.statMultiplier) + " Multiplier");
                     UpgradeStatOver[7].TextColor = SecondaryColor;
-                    UpgradeStatOver[8].SetText("+ 0.05 %");
+                    UpgradeStatOver[8].SetText("+ " + GetCritChanceImprov() + " %");
 
                     break;
                 case (Stat.Cons):
-                    UpgradeStatOver[2].SetText("+ " + (Char.BaseArmor * 0.09f) + " Armor");
+                    UpgradeStatOver[2].SetText("+ " + (Char.BaseArmor * 0.012f * Char.statMultiplier) + " Armor");
                     UpgradeStatOver[2].TextColor = MainColor;
-                    UpgradeStatOver[0].SetText("+ " + (((float)Char.player.statLifeMax / 20f) * 0.75f * Char.statMultiplier) + " Hp");
+                    UpgradeStatOver[0].SetText("+ " + (((float)Char.player.statLifeMax / 20f) * 0.075f * Char.statMultiplier) + " Hp");
                     UpgradeStatOver[0].TextColor = SecondaryColor;
-                    UpgradeStatOver[10].SetText("+ 0.1 HP/Sec");
+                    UpgradeStatOver[10].SetText("+ " + (0.1f * Char.statMultiplier) + " HP/Sec");
                     break;
                 case (Stat.Str):
                     UpgradeStatOver[3].SetText("+ " +(RPGPlayer.MAINSTATSMULT * Char.statMultiplier)+ " Multiplier");
                     UpgradeStatOver[3].TextColor = MainColor;
                     UpgradeStatOver[5].SetText("+ " + (RPGPlayer.SECONDARYTATSMULT * Char.statMultiplier) + " Multiplier");
                     UpgradeStatOver[5].TextColor = SecondaryColor;
-                    UpgradeStatOver[9].SetText("+ 0.5 %");
+                    UpgradeStatOver[9].SetText("+ " + (GetCritImprov()*0.01f) + " %");
                     break;
                 case (Stat.Agi):
                     UpgradeStatOver[4].SetText("+ " + (RPGPlayer.MAINSTATSMULT * Char.statMultiplier) + " Multiplier");
                     UpgradeStatOver[4].TextColor = MainColor;
                     UpgradeStatOver[3].SetText("+ " + (RPGPlayer.SECONDARYTATSMULT * Char.statMultiplier) + " Multiplier");
                     UpgradeStatOver[3].TextColor = SecondaryColor;
-                    UpgradeStatOver[9].SetText("+ 0.5 %");
+                    UpgradeStatOver[9].SetText("+ " + (GetCritImprov() * 0.01f) + " %");
                     break;
                 case (Stat.Dex):
                     UpgradeStatOver[5].SetText("+ " + (RPGPlayer.MAINSTATSMULT * Char.statMultiplier) + " Multiplier");
                     UpgradeStatOver[5].TextColor = MainColor;
                     UpgradeStatOver[4].SetText("+ " + (RPGPlayer.SECONDARYTATSMULT * Char.statMultiplier) + " Multiplier");
                     UpgradeStatOver[4].TextColor = SecondaryColor;
-                    UpgradeStatOver[8].SetText("+ 0.05 %");
+                    UpgradeStatOver[8].SetText("+ "+ GetCritChanceImprov() + " %");
                     break;
                 case (Stat.Int):
                     UpgradeStatOver[6].SetText("+ " + (RPGPlayer.MAINSTATSMULT * Char.statMultiplier) + " Multiplier");
                     UpgradeStatOver[6].TextColor = MainColor;
                     UpgradeStatOver[1].SetText("+ " + (((float)Char.player.statManaMax / 20f) * 0.1f * Char.statMultiplier) + " Mana");
                     UpgradeStatOver[1].TextColor = SecondaryColor;
-                    UpgradeStatOver[11].SetText("+ 0.1 MP/Sec");
+                    UpgradeStatOver[11].SetText("+ " + (0.1f * Char.statMultiplier) + " MP/Sec");
                     break;
                 case (Stat.Spr):
                     UpgradeStatOver[7].SetText("+ " + (RPGPlayer.MAINSTATSMULT * Char.statMultiplier) + " Multiplier");
                     UpgradeStatOver[7].TextColor = MainColor;
                     UpgradeStatOver[6].SetText("+ " + (RPGPlayer.SECONDARYTATSMULT * Char.statMultiplier) + " Multiplier");
                     UpgradeStatOver[6].TextColor = SecondaryColor;
-                    UpgradeStatOver[11].SetText("+ 0.1 MP/Sec");
+                    UpgradeStatOver[11].SetText("+ " + (0.1f * Char.statMultiplier) + " MP/Sec");
                     break;
             }
         }
