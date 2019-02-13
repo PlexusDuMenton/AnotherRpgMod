@@ -169,7 +169,7 @@ namespace AnotherRpgMod.Utils
 
                         NPCDetails= new NPCInfoUI(TempText, Color.White, new Vector2(Main.mouseX, Main.mouseY));
                     }
-                    else if (IsOnScreen && ConfigFile.GetConfig.vConfig.DisplayNpcName)
+                    else if (IsOnScreen && Config.vConfig.DisplayNpcName)
                     {
                         
                         Main.player[Main.myPlayer].showItemIcon = false;

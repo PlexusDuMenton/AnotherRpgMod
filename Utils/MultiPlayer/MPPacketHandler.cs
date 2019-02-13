@@ -15,7 +15,6 @@ namespace AnotherRpgMod.Utils
             { Message.SyncLevel, new List<DataTag>(){ DataTag.playerId, DataTag.amount } },
             { Message.SyncNPCSpawn, new List<DataTag>(){ DataTag.npcId, DataTag.level, DataTag.tier, DataTag.rank,DataTag.modifiers,DataTag.buffer, DataTag.WorldTier } },
             { Message.SyncNPCUpdate, new List<DataTag>(){ DataTag.npcId, DataTag.life, DataTag.maxLife } },
-            { Message.SyncConfig, new List<DataTag>(){ DataTag.GPFlag, DataTag.XPReductionDelta, DataTag.XpMultiplier, DataTag.NpclevelMultiplier, DataTag.ItemXpMultiplier, DataTag.Seed } },
             { Message.AskNpc, new List<DataTag>(){ DataTag.npcId } },
             { Message.Log, new List<DataTag>(){ DataTag.buffer } }
         };
@@ -32,40 +31,7 @@ namespace AnotherRpgMod.Utils
             }
         }
 
-        static public void SendConfigFile(Mod mod, GamePlayConfig gconfig)
-        {
-            if (Main.netMode == 2)
-            {
-                ModPacket packet = mod.GetPacket();
-                packet.Write((byte)Message.SyncConfig);
-                packet.Write((int)gconfig.ToGPFlag());
-                packet.Write(gconfig.XPReductionDelta);
 
-                packet.Write(gconfig.XpMultiplier);
-                packet.Write(gconfig.NpclevelMultiplier);
-                packet.Write(gconfig.ItemXpMultiplier);
-                packet.Write(Mathf.GenNewSeed());
-
-
-                packet.Send();
-            }
-        }
-
-        static public void GetConfigFile(Dictionary<DataTag, object> tags)
-        {
-            if (Main.netMode == 1)
-            {
-                GamePlayConfig gpconfig = new GamePlayConfig();
-                gpconfig = gpconfig.FromGPFlag((GamePlayFlag)tags[DataTag.GPFlag]);
-                gpconfig.XPReductionDelta = (int)tags[DataTag.XPReductionDelta];
-
-                gpconfig.XpMultiplier = (float)tags[DataTag.XpMultiplier];
-                gpconfig.NpclevelMultiplier = (float)tags[DataTag.NpclevelMultiplier];
-                gpconfig.ItemXpMultiplier = (float)tags[DataTag.ItemXpMultiplier];
-                Mathf.NewSeed((int)tags[DataTag.Seed]);
-                ConfigFile.GetConfig.gpConfig = gpconfig;
-            }
-        }
 
         static public string ParseBuffer(Dictionary<string, string> buffer)
         {
@@ -99,7 +65,7 @@ namespace AnotherRpgMod.Utils
         {
             if (Main.netMode == 2)
             {
-                NetMessage.SendData(23, -1, -1, null, npc.whoAmI);
+                //NetMessage.SendData(23, -1, -1, null, npc.whoAmI);
 
                 ModPacket packet = mod.GetPacket();
                 
@@ -121,7 +87,7 @@ namespace AnotherRpgMod.Utils
         {
             if (Main.netMode == 1)
             {
-                //ErrorLogger.Log("ask npc to server");
+                //AnotherRpgMod.Instance.Logger.Info("ask npc to server");
                 ModPacket packet = mod.GetPacket();
                 packet.Write((byte)Message.AskNpc);
                 packet.Write(npc.whoAmI);
@@ -133,7 +99,7 @@ namespace AnotherRpgMod.Utils
         {
             if (Main.netMode == 2)
             {
-                NetMessage.SendData(23, -1, ignore, null, npc.whoAmI);
+                //NetMessage.SendData(23, -1, ignore, null, npc.whoAmI);
                 
                 
                 ModPacket packet = mod.GetPacket();
@@ -178,8 +144,8 @@ namespace AnotherRpgMod.Utils
                         NPCModifier modifiers = (NPCModifier)tags[DataTag.modifiers];
                         if (npc == null || npc.GetGlobalNPC<ARPGGlobalNPC>() == null)
                             return;
-                        //ErrorLogger.Log(npc.GivenOrTypeName + "\nTier : " + tier + "   Level : " + level + "   rank : " + rank + "   Modifier  : " + modifiers + " \n Buffer : " + (string)tags[DataTag.buffer]);
-                        
+                        //AnotherRpgMod.Instance.Logger.Info(npc.GivenOrTypeName + "\nTier : " + tier + "   Level : " + level + "   rank : " + rank + "   Modifier  : " + modifiers + " \n Buffer : " + (string)tags[DataTag.buffer]);
+
                         Dictionary<string, string> bufferStack = Unparse((string)tags[DataTag.buffer]);
 
                         WorldManager.BossDefeated = (int)tags[DataTag.WorldTier];
@@ -194,9 +160,9 @@ namespace AnotherRpgMod.Utils
 
                         npc.GetGlobalNPC<ARPGGlobalNPC>().StatsCreated = true;
 
-                        //ErrorLogger.Log("NPC created with id : " + npc.whoAmI);
-                        //ErrorLogger.Log( "Client Side : \n" + npc.GetGivenOrTypeNetName() + "\nLvl." + (npc.GetGlobalNPC<ARPGGlobalNPC>().getLevel + npc.GetGlobalNPC<ARPGGlobalNPC>().getTier) + "\nHealth : " + npc.life + " / " + npc.lifeMax + "\nDamage : " + npc.damage + "\nDef : " + npc.defense + "\nTier : " + npc.GetGlobalNPC<ARPGGlobalNPC>().getRank + "\n\n");
-                        
+                        //AnotherRpgMod.Instance.Logger.Info("NPC created with id : " + npc.whoAmI);
+                        //AnotherRpgMod.Instance.Logger.Info( "Client Side : \n" + npc.GetGivenOrTypeNetName() + "\nLvl." + (npc.GetGlobalNPC<ARPGGlobalNPC>().getLevel + npc.GetGlobalNPC<ARPGGlobalNPC>().getTier) + "\nHealth : " + npc.life + " / " + npc.lifeMax + "\nDamage : " + npc.damage + "\nDef : " + npc.defense + "\nTier : " + npc.GetGlobalNPC<ARPGGlobalNPC>().getRank + "\n\n");
+
                     }
                     break;
 
@@ -207,26 +173,19 @@ namespace AnotherRpgMod.Utils
 
                         if (npcu.lifeMax != (int)tags[DataTag.maxLife] || npcu.life != (int)tags[DataTag.life])
                         {
-                            ErrorLogger.Log("DESYNC ERROR SPOTTED FOR : ");
-                            ErrorLogger.Log(npcu.GivenOrTypeName + "\n" + (int)tags[DataTag.life] + " / " + (int)tags[DataTag.maxLife] + "\n" + npcu.life + " / " + npcu.lifeMax);
-                            ErrorLogger.Log("==============================================================================");
+                            AnotherRpgMod.Instance.Logger.Warn("DESYNC ERROR SPOTTED FOR : ");
+                            AnotherRpgMod.Instance.Logger.Warn(npcu.GivenOrTypeName + "\n" + (int)tags[DataTag.life] + " / " + (int)tags[DataTag.maxLife] + "\n" + npcu.life + " / " + npcu.lifeMax);
                         }
                         Main.npc[(int)tags[DataTag.npcId]].lifeMax = (int)tags[DataTag.maxLife];
                         Main.npc[(int)tags[DataTag.npcId]].life = (int)tags[DataTag.life];
 
                     }
                     break;
-                case Message.SyncConfig:
-                    if (Main.netMode == 1)
-                    {
-                        GetConfigFile(tags);
-                    }
-                    break;
                 case Message.Log:
                     if (Main.netMode == 1)
                     {
                         //ErrorLogger.Log("LOG FROM SERVER");
-                        ErrorLogger.Log((string)tags[DataTag.buffer]);
+                        AnotherRpgMod.Instance.Logger.Info((string)tags[DataTag.buffer]);
                     }
                     break;
                 case Message.AskNpc:

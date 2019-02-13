@@ -8,6 +8,15 @@ using Microsoft.Xna.Framework;
 using Terraria;
 using System.IO;
 using Terraria.ModLoader;
+using Terraria.ModLoader.Config;
+using Microsoft.Xna.Framework.Graphics;
+using Newtonsoft.Json.Converters;
+using System.Collections;
+using System.ComponentModel;
+using System.Runtime.Serialization;
+using Terraria.ModLoader.UI;    
+
+
 
 namespace AnotherRpgMod
 {
@@ -28,158 +37,167 @@ namespace AnotherRpgMod
         DISPLAYNPCNAME = 0x400
     }
 
-    public class VisualConfig
+    [Label("AnRPG display config")]
+    public class VisualConfig : ModConfig
     {
-        public float HealthBarYoffSet = 0;
-        public float HealthBarScale = 0.75f;
-        public float UI_Scale = 0.75f;
-        public bool DisplayNpcName = true;
-    }
-
-    static public class GPConfigExtension
-    {
-        static public GamePlayFlag ToGPFlag(this GamePlayConfig config)
+        // You MUST specify a MultiplayerSyncMode.
+        public override MultiplayerSyncMode Mode
         {
-            GamePlayFlag GpFlag = GamePlayFlag.NONE;
-
-            if (config.NPCProgress)
-                GpFlag = GpFlag | GamePlayFlag.NPCPROGRESS;
-            if (config.XPReduction)
-                GpFlag = GpFlag | GamePlayFlag.XPREDUTION;
-            if (config.NPCRarity)
-                GpFlag = GpFlag | GamePlayFlag.NPCRARITY;
-            if (config.NPCModifier)
-                GpFlag = GpFlag | GamePlayFlag.NPCMODIFIER;
-            if (config.BossModifier)
-                GpFlag = GpFlag | GamePlayFlag.BOSSMODIFIER;
-            if (config.BossClustered)
-                GpFlag = GpFlag | GamePlayFlag.BOSSCLUSTERED;
-            if (config.RPGPlayer)
-                GpFlag = GpFlag | GamePlayFlag.RPGPLAYER;
-            if (config.ItemModifier)
-                GpFlag = GpFlag | GamePlayFlag.ITEMMODIFIER;
-            if (config.ItemRarity)
-                GpFlag = GpFlag | GamePlayFlag.ITEMRARITY;
-            if (config.LimitNPCGrowth)
-                GpFlag = GpFlag | GamePlayFlag.LIMITNPCGROWTH;
-
-            return GpFlag;
+            get
+            {
+                return MultiplayerSyncMode.UniquePerPlayer;
+            }
         }
 
-        static private bool HaveFlag(GamePlayFlag test, GamePlayFlag tocheck)
+        [Label("HealthBar Offset")]
+        [Tooltip("Health Bar Offset on the Y axis")]
+        [Range(-500f, 1500f)]
+        [Increment(10f)]
+        [DefaultValue(100)]
+        public float HealthBarYoffSet;
+
+        [Label("Health Bar Scale")]
+        [Range(0f, 3f)]
+        [Increment(.25f)]
+        [DefaultValue(0.75f)]
+        public float HealthBarScale;
+
+        [Label("Other UI Scale")]
+        [Tooltip("Used for the scale of all other UI element from Another RPG Mod")]
+        [Range(0.25f, 3f)]
+        [Increment(.25f)]
+        [DefaultValue(0.75f)]
+        public float UI_Scale;
+
+        [Label("Display npc name")]
+        [Tooltip("Display NPC information at all time and detailed information when mouse over")]
+        [DefaultValue(true)]
+        public bool DisplayNpcName;
+
+        public override void PostAutoLoad()
         {
-            return ((tocheck & test) == tocheck);
+            AnotherRpgMod.visualConfig = this;
         }
-        static public GamePlayConfig FromGPFlag(this GamePlayConfig baseConfig, GamePlayFlag GpFlag)
+
+        public override void PostSave()
         {
-
-            baseConfig.NPCProgress = HaveFlag(GamePlayFlag.NPCPROGRESS, GpFlag);
-            baseConfig.XPReduction = HaveFlag(GamePlayFlag.XPREDUTION, GpFlag);
-            baseConfig.NPCRarity = HaveFlag(GamePlayFlag.NPCRARITY, GpFlag);
-            baseConfig.NPCModifier = HaveFlag(GamePlayFlag.NPCMODIFIER, GpFlag);
-            baseConfig.BossModifier = HaveFlag(GamePlayFlag.BOSSMODIFIER, GpFlag);
-            baseConfig.BossClustered = HaveFlag(GamePlayFlag.BOSSCLUSTERED, GpFlag);
-            baseConfig.RPGPlayer = HaveFlag(GamePlayFlag.RPGPLAYER, GpFlag);
-            baseConfig.ItemModifier = HaveFlag(GamePlayFlag.ITEMMODIFIER, GpFlag);
-            baseConfig.ItemRarity = HaveFlag(GamePlayFlag.ITEMRARITY, GpFlag);
-            baseConfig.LimitNPCGrowth = HaveFlag(GamePlayFlag.LIMITNPCGROWTH, GpFlag);
-
-            return baseConfig;
+            AnotherRpgMod.visualConfig = this;
         }
     }
 
-    public class GamePlayConfig
+    [Label("AnRPG gameplay config")]
+    public class GamePlayConfig : ModConfig
     {
 
-        public bool NPCProgress = true;
-        public bool XPReduction = true;
-        public bool NPCRarity = true;
-        public bool NPCModifier = true;
-        public bool BossModifier = true;
-        public bool BossClustered = false;
-        public bool RPGPlayer = true;
-        public bool ItemRarity = true;
-        public bool ItemModifier = true;
-        public bool LimitNPCGrowth = true;
-        
+        // You MUST specify a MultiplayerSyncMode.
+        public override MultiplayerSyncMode Mode
+        {
+            get
+            {
+                return MultiplayerSyncMode.ServerDictates;
+            }
+        }
 
-        public int XPReductionDelta = 10;
-        public float XpMultiplier = 1;
-        public float NpclevelMultiplier = 1;
-        public float ItemXpMultiplier = 1;
+        [Label("Npc Progression")]
+        [Tooltip("Npc level enable/Disable")]
+        [DefaultValue(true)]
+        public bool NPCProgress;
+
+        [Label("Xp Level Reduction")]
+        [Tooltip("Reduce the exp gained when the entity level is too low, look at Xp Reduction delta to change the value")]
+        [DefaultValue(true)]
+        public bool XPReduction;
+
+        [Label("NPC Rank")]
+        [Tooltip("Enable NPC rank, like : Alpha, Legendary ect ...")]
+        [DefaultValue(true)]
+        public bool NPCRarity;
+
+        [Label("NPC Modifier")]
+        [Tooltip("Enable NPC modifier, like : The golden, Clustered ect ...")]
+        [DefaultValue(true)]
+        public bool NPCModifier;
+
+        [Label("Boss Modifier")]
+        [Tooltip("Apply modifier to boss")]
+        [DefaultValue(true)]
+        public bool BossModifier;
+
+        [Label("Boss Clustered")]
+        [Tooltip("Enable Clustered modifier on boss, it's disable since most people don't want an army of boss spawning after killing one")]
+        [DefaultValue(false)]
+        public bool BossClustered;
+
+        [Label("RPG Player Module")]
+        [Tooltip("Enable all player related RPG elements")]
+        [DefaultValue(true)]
+        public bool RPGPlayer;
+
+        [Label("Item Rarity")]
+        [Tooltip("Enable item rarity like : Broken, Masterpiece, Legendary...")]
+        [DefaultValue(true)]
+        public bool ItemRarity;
+
+        [Label("Item Modifier")]
+        [Tooltip("Enable Item modifier like : Bonus damage based on distance...")]
+        [DefaultValue(true)]
+        public bool ItemModifier;
+
+        [Label("Limit NPC growth")]
+        [Tooltip("Not realy sure if work properly, but prevent npc from level over 100 that the player level (and a bit more) to spawn")]
+        [DefaultValue(true)]
+        public bool LimitNPCGrowth;
+
+        [Label("Item Tree")]
+        [Tooltip("Enable Skill Tree evolution for Item")]
+        [DefaultValue(true)]
+        public bool ItemTree;
+
+        [Label("Xp Reduction Delta")]
+        [Tooltip("Level range at which the xp gain will start to be reduced")]
+        [DefaultValue(10)]
+        public int XPReductionDelta;
+
+        [Label("Xp Multiplier")]
+        [Range(0f, 5f)]
+        [Increment(.25f)]
+        [DefaultValue(1)]
+        public float XpMultiplier;
+
+        [Label("Npc Level Multiplier")]
+        [Range(0f, 3f)]
+        [Increment(.1f)]
+        [DefaultValue(1)]
+        public float NpclevelMultiplier;
+
+        [Label("Item Xp Multiplier")]
+        [Range(0f, 5f)]
+        [Increment(.25f)]
+        [DefaultValue(1)]
+        public float ItemXpMultiplier;
+
+
+        public override void PostAutoLoad()
+        {
+            AnotherRpgMod.gpConfig = this;
+        }
+
+        public override void PostSave()
+        {
+            AnotherRpgMod.gpConfig = this;
+        }
     }
 
     public class Config
     {
-        public VisualConfig vConfig = new VisualConfig();
-        public GamePlayConfig gpConfig = new GamePlayConfig();
-    }
-
-
-    public class ConfigFile
-    {
-
-        public static string configName = "Settings.json";
-        public static string dir = "Mod Configs" + Path.DirectorySeparatorChar + "AnRPG";
-        public static string configPath;
-
-        static Config serverConfig = new Config();
-
-        public static Config GetConfig
+        static public VisualConfig vConfig
         {
-            get { return serverConfig; }
+            get { return AnotherRpgMod.visualConfig; }
         }
-
-        public static void Init()
+        static public GamePlayConfig gpConfig
         {
-            try
-            {
-                configPath =(Main.SavePath + Path.DirectorySeparatorChar + dir + Path.DirectorySeparatorChar + configName);
-                serverConfig = new Config();
-                Load();
-            }
-            catch (SystemException e)
-            {
-                ErrorLogger.Log(e.ToString());
-            }
+            get { return AnotherRpgMod.gpConfig; }
         }
-
-        public static void Load()
-        {
-            try
-            {
-                Directory.CreateDirectory(Main.SavePath + Path.DirectorySeparatorChar + dir);
-
-                serverConfig = new Config();
-                if (File.Exists(configPath))
-                {
-                    using (StreamReader reader = new StreamReader(configPath))
-                    {
-                        serverConfig = JsonConvert.DeserializeObject<Config>(reader.ReadToEnd());
-                    }
-                }
-                Save();
-
-            }
-            catch (SystemException e)
-            {
-                ErrorLogger.Log(e.ToString());
-            }
-        }
-        
-        public static void Save()
-        {
-            try
-            {
-                Directory.CreateDirectory(Main.SavePath + Path.DirectorySeparatorChar + dir);
-                File.WriteAllText(configPath, JsonConvert.SerializeObject(serverConfig, Formatting.Indented).Replace("  ", "\t"));
-            }
-            catch (SystemException e)
-            {
-                ErrorLogger.Log(e.ToString());
-            }
-        }
-
 
     }
 }

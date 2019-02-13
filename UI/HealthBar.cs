@@ -55,8 +55,8 @@ namespace AnotherRpgMod.UI
 
         private Player player;
 
-        float YDefaultOffSet = -ConfigFile.GetConfig.vConfig.HealthBarYoffSet;
-        float scale = ConfigFile.GetConfig.vConfig.HealthBarScale;
+        float YDefaultOffSet = -Config.vConfig.HealthBarYoffSet;
+        float scale = Config.vConfig.HealthBarScale;
         float baseUiHeight = 393f;
 
         Dictionary<Mode, RessourceInfo> RessourceTexture;
@@ -76,13 +76,22 @@ namespace AnotherRpgMod.UI
         private UIText Level;
 
         public static bool visible = false;
+        public bool hiden = false;
 
         public override void Update(GameTime gameTime)
         {
 
-            if (!ConfigFile.GetConfig.gpConfig.RPGPlayer)
+            if (!Config.gpConfig.RPGPlayer)
             {
+                RemoveAllChildren();
+                hiden = true;
                 return;
+            }
+
+            if (hiden)
+            {
+                hiden = false;
+                OnInitialize();
             }
 
             Player player = Main.player[Main.myPlayer]; //Get Player
@@ -111,10 +120,7 @@ namespace AnotherRpgMod.UI
 
         public override void OnInitialize()
         {
-            if (!ConfigFile.GetConfig.gpConfig.RPGPlayer)
-            {
-                return;
-            }
+            
 
             player = Main.player[Main.myPlayer];
 
@@ -131,11 +137,11 @@ namespace AnotherRpgMod.UI
 
             RessourceTexture = new Dictionary<Mode, RessourceInfo>()
             {
-                { Mode.HP, new RessourceInfo(ModLoader.GetTexture("AnotherRpgMod/Textures/UI/HealthBar"),new Vector2(14*scale,Main.screenHeight + YDefaultOffSet - baseUiOffset[0]),scale)},
-                { Mode.MANA, new RessourceInfo(ModLoader.GetTexture("AnotherRpgMod/Textures/UI/ManaBar"),new Vector2(31*scale,Main.screenHeight  + YDefaultOffSet - baseUiOffset[1]),scale)},
-                { Mode.XP, new RessourceInfo(ModLoader.GetTexture("AnotherRpgMod/Textures/UI/XPBar"),new Vector2(44*scale,Main.screenHeight + YDefaultOffSet -baseUiOffset[2]),scale)},
-                { Mode.Weapon, new RessourceInfo(ModLoader.GetTexture("AnotherRpgMod/Textures/UI/WeaponBar"),new Vector2(50*scale,Main.screenHeight + YDefaultOffSet - baseUiOffset[3]),scale)},
-                { Mode.Breath, new RessourceInfo(ModLoader.GetTexture("AnotherRpgMod/Textures/UI/BreathBar"),new Vector2(5*scale,Main.screenHeight + YDefaultOffSet - baseUiOffset[4]),scale)}
+                { Mode.HP, new RessourceInfo(ModContent.GetTexture("AnotherRpgMod/Textures/UI/HealthBar"),new Vector2(14*scale,Main.screenHeight + YDefaultOffSet - baseUiOffset[0]),scale)},
+                { Mode.MANA, new RessourceInfo(ModContent.GetTexture("AnotherRpgMod/Textures/UI/ManaBar"),new Vector2(31*scale,Main.screenHeight  + YDefaultOffSet - baseUiOffset[1]),scale)},
+                { Mode.XP, new RessourceInfo(ModContent.GetTexture("AnotherRpgMod/Textures/UI/XPBar"),new Vector2(44*scale,Main.screenHeight + YDefaultOffSet -baseUiOffset[2]),scale)},
+                { Mode.Weapon, new RessourceInfo(ModContent.GetTexture("AnotherRpgMod/Textures/UI/WeaponBar"),new Vector2(50*scale,Main.screenHeight + YDefaultOffSet - baseUiOffset[3]),scale)},
+                { Mode.Breath, new RessourceInfo(ModContent.GetTexture("AnotherRpgMod/Textures/UI/BreathBar"),new Vector2(5*scale,Main.screenHeight + YDefaultOffSet - baseUiOffset[4]),scale)}
 
             };
 
@@ -149,7 +155,7 @@ namespace AnotherRpgMod.UI
             MainPanel[0].Left.Set(0, 0f);
             MainPanel[0].Top.Set(Main.screenHeight - baseUiHeight + YDefaultOffSet, 0f);
 
-            Overlay = new UIOverlay(ModLoader.GetTexture("AnotherRpgMod/Textures/UI/OverlayHealthBar"));
+            Overlay = new UIOverlay(ModContent.GetTexture("AnotherRpgMod/Textures/UI/OverlayHealthBar"));
             Overlay.ImageScale = scale;
             Overlay.HAlign = 0;
             Overlay.VAlign = 0;

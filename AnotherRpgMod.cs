@@ -21,7 +21,9 @@ namespace AnotherRpgMod
         Magic,
         Summon,
         Symphonic, //thorium
-        Radiant //thorium
+        Radiant, //thorium
+        Alchemic, //tremor
+        KI,
 
     }
 
@@ -31,7 +33,6 @@ namespace AnotherRpgMod
         SyncNPCSpawn,
         SyncNPCUpdate,
         SyncWeapon,
-        SyncConfig,
         AskNpc,
         Log
     };
@@ -40,7 +41,8 @@ namespace AnotherRpgMod
 
     enum SupportedMod
     {
-        Thorium, //only suported mod for now
+        Thorium,
+        Tremor, //only suported mod for now
         Calamity,
         DBZMOD
     }
@@ -50,24 +52,40 @@ namespace AnotherRpgMod
         public static AnotherRpgMod Instance;
         public UserInterface customResources;
         public HealthBar healthBar;
+
         public UserInterface customNPCInfo;
         public UserInterface customstats;
         public UserInterface customOpenstats;
         public UserInterface customOpenST;
-        public Stats statMenu;
+        public UserInterface customItemTree;
+
+        public UserInterface customSkillTree;
+
         public OpenStatsButton openStatMenu;
         public OpenSTButton OpenST;
-        public UserInterface customSkillTree;
+        public Stats statMenu;
+        
         public SkillTreeUi skillTreeUI;
+        public ItemTreeUi ItemTreeUI;
+
         public ReworkMouseOver NPCInfo;
+
+
         public static ModHotKey StatsHotKey;
         public static ModHotKey SkillTreeHotKey;
+        public static ModHotKey ItemTreeHotKey;
+
+
+        internal static GamePlayConfig gpConfig;
+        internal static VisualConfig visualConfig;
 
         public static int PlayerLevel = 0;
         public static Dictionary<SupportedMod, bool> LoadedMods = new Dictionary<SupportedMod, bool>()
         {
             {SupportedMod.Thorium,false },
             {SupportedMod.Calamity,false },
+            {SupportedMod.Tremor,false }, 
+            {SupportedMod.DBZMOD,false },
             //{SupportedMod.Spirit,false }
 
         };
@@ -85,15 +103,19 @@ namespace AnotherRpgMod
         }
         public override void Load()
         {
-            ErrorLogger.Log("Another Rpg Mod " + Version + " Correctly loaded !");
+            
             Instance = this;
-            ConfigFile.Init();
+            Instance.Logger.Info("Another Rpg Mod " + Version + " Correctly loaded");
             JsonSkillTree.Init();
             JsonCharacterClass.Init();
-            LoadedMods[SupportedMod.Thorium] = ModLoader.GetMod("ThoriumMod") != null;
+            LoadedMods[SupportedMod.Thorium] = ModLoader.GetMod("Thorium") != null;
             LoadedMods[SupportedMod.Calamity] = ModLoader.GetMod("CalamityMod") != null;
+            LoadedMods[SupportedMod.Tremor] = ModLoader.GetMod("TremorMod") != null;
+            LoadedMods[SupportedMod.DBZMOD] = ModLoader.GetMod("DBZMOD") != null;
+            
             StatsHotKey = RegisterHotKey("Open Stats Menu", "C");
             SkillTreeHotKey = RegisterHotKey("Open SkillTree", "X");
+            ItemTreeHotKey = RegisterHotKey("Open Item Tree", "V");
             if (!Main.dedServ)
             {
 
@@ -126,6 +148,11 @@ namespace AnotherRpgMod
                 skillTreeUI = new SkillTreeUi();
                 OpenStatsButton.visible = true;
                 customSkillTree.SetState(skillTreeUI);
+
+                customItemTree = new UserInterface();
+                ItemTreeUI = new ItemTreeUi();
+                ItemTreeUi.visible = false;
+                customItemTree.SetState(ItemTreeUI);
 
                 /*
                 
@@ -166,10 +193,8 @@ namespace AnotherRpgMod
                     "AnotherRpgMod: NPC Info detail",
                     delegate
                     {
-                        if (HealthBar.visible) { 
                             customNPCInfo.Update(Main._drawInterfaceGameTime);
                             NPCInfo.Draw(Main.spriteBatch);
-                        }
                         return true;
                     },
                     InterfaceScaleType.UI)
@@ -192,6 +217,13 @@ namespace AnotherRpgMod
                                 //Update CustomBars
                                 customSkillTree.Update(Main._drawInterfaceGameTime);
                                 skillTreeUI.Draw(Main.spriteBatch);
+
+                        }
+                        if (ItemTreeUi.visible)
+                        {
+                            //Update CustomBars
+                            customItemTree.Update(Main._drawInterfaceGameTime);
+                            ItemTreeUI.Draw(Main.spriteBatch);
 
                         }
                         if (OpenSTButton.visible)
@@ -218,6 +250,8 @@ namespace AnotherRpgMod
                             if (HealthBar.visible)
                             {
                                 //Update CustomBars
+                                customOpenST.Update(Main._drawInterfaceGameTime);
+                                customOpenstats.Update(Main._drawInterfaceGameTime);
                                 customResources.Update(Main._drawInterfaceGameTime);
                                 healthBar.Draw(Main.spriteBatch);
                                 

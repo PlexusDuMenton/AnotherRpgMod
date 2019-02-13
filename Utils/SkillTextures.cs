@@ -1,5 +1,6 @@
 ﻿
 using AnotherRpgMod.RPGModule;
+using AnotherRpgMod.Items;
 
 namespace AnotherRpgMod.Utils
 {
@@ -18,6 +19,13 @@ namespace AnotherRpgMod.Utils
 
     class SkillTextures
     {
+
+        static public string GetItemTexture(ItemNode node)
+        {
+            string path = "AnotherRpgMod/Textures/ItemTree/" + node.GetName;
+            return path;
+        }
+
         static public string GetTexture(Node node)
         {
             string path = "AnotherRpgMod/Textures/SkillTree/" + node.GetNodeType + "/";

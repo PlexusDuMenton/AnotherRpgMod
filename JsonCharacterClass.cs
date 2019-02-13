@@ -34,7 +34,7 @@ namespace AnotherRpgMod
                     return jsonList[i];
                 }
             }
-            ErrorLogger.Log("Class "+ classType.ToString() +"is missing from class List");
+            AnotherRpgMod.Instance.Logger.Warn("Class "+ classType.ToString() +"is missing from class List");
             return jsonList[0];
         }
 
@@ -230,7 +230,7 @@ namespace AnotherRpgMod
             }
             catch (SystemException e)
             {
-                ErrorLogger.Log(e.ToString());
+                AnotherRpgMod.Instance.Logger.Error(e.ToString());
             }
         }
 
@@ -257,7 +257,7 @@ namespace AnotherRpgMod
             }
             catch (SystemException e)
             {
-                ErrorLogger.Log(e.ToString());
+                AnotherRpgMod.Instance.Logger.Error(e.ToString());
             }
         }
 
@@ -270,7 +270,7 @@ namespace AnotherRpgMod
             }
             catch (SystemException e)
             {
-                ErrorLogger.Log(e.ToString());
+                AnotherRpgMod.Instance.Logger.Error(e.ToString());
             }
         }
 

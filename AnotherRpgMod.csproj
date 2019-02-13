@@ -36,27 +36,77 @@
     <Compile Include="AnotherRpgMod.cs" />
     <Compile Include="Command\GeneralCommand.cs" />
     <Compile Include="ConfigFile.cs" />
-    <Compile Include="Items\ItemUpdate.cs" />
-    <Compile Include="Items\Modifier.cs" />
-    <Compile Include="NPCs\ARPGGlobalNPC.cs" />
-    <Compile Include="NPCs\NPCUtils.cs" />
+    <Compile Include="RPGModule\Items\Enum\ItemType.cs" />
+    <Compile Include="RPGModule\Items\Enum\Modifier.cs" />
+    <Compile Include="RPGModule\Items\Enum\Rarity.cs" />
+    <Compile Include="RPGModule\Items\Enum\WeaponType.cs" />
+    <Compile Include="RPGModule\Items\ItemDataTag.cs" />
+    <Compile Include="RPGModule\Items\ItemExtraction.cs" />
+    <Compile Include="RPGModule\Items\ItemTree\Enum\ItemReason.cs" />
+    <Compile Include="RPGModule\Items\ItemTree\ItemNode.cs" />
+    <Compile Include="RPGModule\Items\ItemTree\ItemSkillTree.cs" />
+    <Compile Include="RPGModule\Items\ItemTree\Nodes\Common\BonusExpNode.cs" />
+    <Compile Include="RPGModule\Items\ItemTree\Nodes\ItemNodeAtlas.cs" />
+    <Compile Include="RPGModule\Items\ItemTree\Nodes\Weapon\Common\UseTime.cs" />
+    <Compile Include="RPGModule\Items\ItemTree\Nodes\Weapon\Common\AdditionalDamageNodePercent.cs" />
+    <Compile Include="RPGModule\Items\ItemTree\Nodes\Weapon\Common\AdditionalDamageNode.cs" />
+    <Compile Include="RPGModule\Items\ItemTree\Nodes\Weapon\Ranged\AdditionalProjectile.cs" />
+    <Compile Include="RPGModule\Items\ItemUpdate.cs" />
+    <Compile Include="RPGModule\Items\ModifierManager.cs" />
+    <Compile Include="RPGModule\Items\RarityWeightManager.cs" />
+    <Compile Include="RPGModule\Items\Struct\ItemStats.cs" />
+    <Compile Include="RPGModule\Items\Struct\RarityWeight.cs" />
+    <Compile Include="RPGModule\Items\Struct\RollInfo.cs" />
+    <Compile Include="RPGModule\SkillTree\NodeSubClass\ClassNode.cs" />
+    <Compile Include="RPGModule\SkillTree\NodeSubClass\DamageNode.cs" />
+    <Compile Include="RPGModule\Enum\ClassType.cs" />
+    <Compile Include="RPGModule\Entities\NPC\ARPGGlobalNPC.cs" />
+    <Compile Include="RPGModule\Entities\NPC\ARPGGlobalProjectile.cs" />
+    <Compile Include="RPGModule\Entities\Enum\NPCModifier.cs" />
+    <Compile Include="RPGModule\Entities\Enum\NPCRank.cs" />
+    <Compile Include="RPGModule\Entities\NPC\NPCUtils.cs" />
     <Compile Include="obj\Debug\TemporaryGeneratedFile_036C0B5B-1481-4323-8D20-8F5ADCB23D92.cs" />
     <Compile Include="obj\Debug\TemporaryGeneratedFile_5937a670-0e60-4077-877b-f7221da3dda1.cs" />
     <Compile Include="obj\Debug\TemporaryGeneratedFile_E7A71F73-0F8D-4B9B-B56E-8E70B10BC5D3.cs" />
-    <Compile Include="RPGModule.cs" />
+    <Compile Include="RPGModule\Entities\RPGStats.cs" />
+    <Compile Include="RPGModule\Entities\StatData.cs" />
+    <Compile Include="RPGModule\Enum\Stat.cs" />
+    <Compile Include="RPGModule\Entities\RPGPlayer.cs" />
     <Compile Include="JsonCharacterClass.cs" />
     <Compile Include="JsonSkilLTree.cs" />
-    <Compile Include="UI\SkillTreeUi.cs" />
-    <Compile Include="Utils\MPPacketHandler.cs" />
+    <Compile Include="RPGModule\Enum\Immunity.cs" />
+    <Compile Include="RPGModule\Enum\LeechType.cs" />
+    <Compile Include="RPGModule\Enum\NodeType.cs" />
+    <Compile Include="RPGModule\Enum\Perk.cs" />
+    <Compile Include="RPGModule\Enum\Reason.cs" />
+    <Compile Include="RPGModule\SkillTree\NodeSubClass\ImmunityNode.cs" />
+    <Compile Include="RPGModule\SkillTree\NodeSubClass\LeechNode.cs" />
+    <Compile Include="RPGModule\SkillTree\Node.cs" />
+    <Compile Include="RPGModule\SkillTree\NodeList.cs" />
+    <Compile Include="RPGModule\SkillTree\NodeParent.cs" />
+    <Compile Include="RPGModule\SkillTree\NodeSubClass\PerkNode.cs" />
+    <Compile Include="RPGModule\SkillTree\NodeSubClass\SpeedNode.cs" />
+    <Compile Include="RPGModule\SkillTree\NodeSubClass\StatNode.cs" />
+    <Compile Include="UI\SkillTree\ItemTreeUi.cs" />
+    <Compile Include="UI\SkillTree\Shared.cs" />
+    <Compile Include="UI\SkillTree\SkillTreeUi.cs" />
+    <Compile Include="Utils\AdditionalInfo.cs" />
+    <Compile Include="Utils\MultiPlayer\DataTag.cs" />
+    <Compile Include="Utils\MultiPlayer\MPDebug.cs" />
+    <Compile Include="Utils\MultiPlayer\MPPacketHandler.cs" />
     <Compile Include="UI\ReworkMouseOver.cs" />
+    <Compile Include="Utils\SkillInfo.cs" />
     <Compile Include="Utils\SkillTextures.cs" />
     <Compile Include="UI\HealthBar.cs" />
     <Compile Include="UI\Stats.cs" />
     <Compile Include="Utils\Mathf.cs" />
-    <Compile Include="SkillTree.cs" />
+    <Compile Include="RPGModule\SkillTree\SkillTree.cs" />
     <Compile Include="Utils\WorldManager.cs" />
   </ItemGroup>
   <ItemGroup>
+    <Reference Include="log4net">
+      <HintPath>..\..\references\log4net.dll</HintPath>
+    </Reference>
     <Reference Include="Microsoft.Xna.Framework, Version=4.0.0.0, Culture=neutral, PublicKeyToken=842cf8be1de50553, processorArchitecture=x86">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>C:\Windows\Microsoft.NET\assembly\GAC_32\Microsoft.Xna.Framework\v4.0_4.0.0.0__842cf8be1de50553\Microsoft.Xna.Framework.dll</HintPath>
@@ -76,15 +126,26 @@
     <Reference Include="Newtonsoft.Json, Version=11.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
       <HintPath>packages\Newtonsoft.Json.11.0.2\lib\net45\Newtonsoft.Json.dll</HintPath>
     </Reference>
+    <Reference Include="ref">
+      <HintPath>..\..\Mod Reader\Tremor\ref.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Windows.Forms" />
-    <Reference Include="Terraria">
+    <Reference Include="Terraria, Version=1.3.5.1, Culture=neutral, processorArchitecture=x86">
+      <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\..\..\..\..\Program Files (x86)\Steam\steamapps\common\Terraria\Terraria.exe</HintPath>
+    </Reference>
+    <Reference Include="Windows">
+      <HintPath>..\..\Mod Reader\DBZMOD\Windows.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
     <None Include="packages.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="OtherModSources\" />
+    <Folder Include="RPGModule\Items\ItemTree\Nodes\Armor\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>

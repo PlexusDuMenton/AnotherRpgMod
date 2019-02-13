@@ -12,6 +12,7 @@ using AnotherRpgMod.Utils;
 using Terraria.ModLoader.IO;
 using Terraria.GameInput;
 using AnotherRpgMod.Items;
+using System.Reflection;
 
 namespace AnotherRpgMod.RPGModule.Entities
 {
@@ -113,7 +114,7 @@ namespace AnotherRpgMod.RPGModule.Entities
                     ItemUpdate Item = Xitem.GetGlobalItem<Items.ItemUpdate>();
                     if (Item != null && Item.NeedsSaving(Xitem))
                     {
-                        Item.AddExp(Mathf.Ceillong(damage * 0.2f * multiplier), player, Xitem);
+                        Item.AddExp(Mathf.Ceillong(damage * multiplier), player, Xitem);
                     }
                 }
             }
@@ -286,12 +287,13 @@ namespace AnotherRpgMod.RPGModule.Entities
                                 int heal = (int)(damage * value * 0.01f * ModifierManager.GetModifierBonusAlt(Modifier.BloodSeeker, instance));
                                 player.GetModPlayer<RPGPlayer>().ApplyReduction(ref heal);
                                 player.statLife = Mathf.Clamp(player.statLife + heal, player.statLife, player.statLifeMax2);
+                                if (Main.netMode == 1)
+                                {
+                                    NetMessage.SendData(21, -1, -1, null, player.whoAmI, 0f, 0f, 0f, 0, 0, 0);
+                                }
                             }
                         }
-                        if (Main.netMode == 1)
-                        {
-                            NetMessage.SendData(21, -1, -1, null, player.whoAmI, 0f, 0f, 0f, 0, 0, 0);
-                        }
+                        
                     }
                 }
                 return value;
@@ -336,7 +338,7 @@ namespace AnotherRpgMod.RPGModule.Entities
 
 
 
-                if (ConfigFile.GetConfig.gpConfig.RPGPlayer)
+                if (Config.gpConfig.RPGPlayer)
                 {
                     if (crit)
                     {
@@ -358,7 +360,7 @@ namespace AnotherRpgMod.RPGModule.Entities
             public override void ModifyHitNPCWithProj(Projectile proj, NPC target, ref int damage, ref float knockback, ref bool crit, ref int hitDirection)
             {
                 damage = (int)(damage * DamageMultiplierFromModifier(target, damage));
-                if (ConfigFile.GetConfig.gpConfig.RPGPlayer)
+                if (Config.gpConfig.RPGPlayer)
                 {
                     if (crit)
                     {
@@ -397,8 +399,8 @@ namespace AnotherRpgMod.RPGModule.Entities
             #endregion
 
             #region ARMORXP
-            private void AddArmorXp(int damage)
-            {
+            private void AddArmorXp(int damage, float multiplier = 1)
+        {
                 damage = Mathf.Clamp(damage, 0, player.statLifeMax2);
                 Item armorItem;
                 for (int i = 0;i< 3; i++)
@@ -406,7 +408,7 @@ namespace AnotherRpgMod.RPGModule.Entities
                     armorItem = player.armor[i];
                     if (armorItem.Name!= "")
                     {
-                        armorItem.GetGlobalItem<Items.ItemUpdate>().AddExp(Mathf.Ceillong(Mathf.Log2(damage)), player, armorItem);
+                        armorItem.GetGlobalItem<Items.ItemUpdate>().AddExp(Mathf.Ceillong(damage*multiplier), player, armorItem);
                     }
                     
                 }
@@ -563,11 +565,11 @@ namespace AnotherRpgMod.RPGModule.Entities
             }
             public float GetHealthPerHeart()
             {
-                    return (GetStatImproved(Stat.Vit) * 0.15f + GetStatImproved(Stat.Cons) * 0.075f)* statMultiplier;
+                    return (GetStatImproved(Stat.Vit) * 0.5f + GetStatImproved(Stat.Cons) * 0.3f)* statMultiplier + 10;
             }
             public float GetManaPerStar()
             {
-                    return (GetStatImproved(Stat.Foc) * 0.2f + GetStatImproved(Stat.Int) * 0.1f) * statMultiplier;
+                    return (GetStatImproved(Stat.Foc) * 0.15f + GetStatImproved(Stat.Int) * 0.075f) * statMultiplier;
             }
 
             public override void SyncPlayer(int toWho, int fromWho, bool newPlayer)
@@ -578,7 +580,8 @@ namespace AnotherRpgMod.RPGModule.Entities
             public override void SendClientChanges(ModPlayer clientPlayer)
             {
 
-                if (ConfigFile.GetConfig.gpConfig.RPGPlayer)
+
+                if (Config.gpConfig.RPGPlayer)
                 {
                     ModPacket packet = mod.GetPacket();
                     packet.Write((byte)Message.SyncLevel);
@@ -591,8 +594,9 @@ namespace AnotherRpgMod.RPGModule.Entities
 
             public override void PreUpdateBuffs()
             {
-                if (ConfigFile.GetConfig.gpConfig.RPGPlayer)
+                if (Config.gpConfig.RPGPlayer)
                 {
+
                     if (!initiated)
                     {
                         initiated = true;
@@ -600,17 +604,19 @@ namespace AnotherRpgMod.RPGModule.Entities
                     }
                     if (player.HasBuff(24) || player.HasBuff(20) || player.HasBuff(67))
                     {
-                        damageToApply += Mathf.Clamp(Mathf.Logx(player.statLifeMax2, 1.002f) * 0.25f * NPCUtils.DELTATIME, 0, player.statLifeMax2 * 0.05f * NPCUtils.DELTATIME);
+                        damageToApply += Mathf.Clamp(Mathf.Logx(player.statLifeMax2, 1.002f) * 0.05f * NPCUtils.DELTATIME, 0, player.statLifeMax2 * 0.015f * NPCUtils.DELTATIME);
                     }
                     if (player.HasBuff(70) || player.HasBuff(39) || player.HasBuff(68))
                     {
-                        damageToApply += Mathf.Clamp(Mathf.Logx(player.statLifeMax2, 1.002f) * 0.35f * NPCUtils.DELTATIME, 0, player.statLifeMax2 * 0.075f * NPCUtils.DELTATIME);
+                        damageToApply += Mathf.Clamp(Mathf.Logx(player.statLifeMax2, 1.002f) * 0.08f * NPCUtils.DELTATIME, 0, player.statLifeMax2 * 0.025f * NPCUtils.DELTATIME);
                     }
                     if (player.onFire2 || player.HasBuff(38) || player.breath <= 0)
                     {
-                        damageToApply += Mathf.Clamp(Mathf.Logx(player.statLifeMax2, 1.002f) * NPCUtils.DELTATIME, 0, player.statLifeMax2 * 0.2f * NPCUtils.DELTATIME);
+                        damageToApply += Mathf.Clamp(Mathf.Logx(player.statLifeMax2, 1.002f)*0.1f * NPCUtils.DELTATIME, 0, player.statLifeMax2 * 0.04f * NPCUtils.DELTATIME);
                     }
 
+                    if (AnotherRpgMod.LoadedMods[SupportedMod.DBZMOD])
+                        IncreaseDBZKi(player);
 
                     if (damageToApply > 1)
                     {
@@ -618,10 +624,6 @@ namespace AnotherRpgMod.RPGModule.Entities
                         damageToApply -= damageToApply;
                         ApplyReduction(ref BuffDamage);
                         player.statLife -= BuffDamage;
-                    }
-                    if (Main.netMode == 1)
-                    {
-                        NetMessage.SendData(21, -1, -1, null, player.whoAmI, 0f, 0f, 0f, 0, 0, 0);
                     }
 
                     if (Main.netMode != 2)
@@ -639,6 +641,11 @@ namespace AnotherRpgMod.RPGModule.Entities
                         {
                             UpdateThoriumDamage(player);
                         }
+                        if (AnotherRpgMod.LoadedMods[SupportedMod.DBZMOD])
+                        {
+                            UpdateDBZDamage(player);
+                        }
+
                     }
                 }
                     if (player.HeldItem != null && player.HeldItem.damage>0&& player.HeldItem.maxStack <= 1) { 
@@ -652,128 +659,157 @@ namespace AnotherRpgMod.RPGModule.Entities
                     }
 
             }
-            private void UpdateThoriumDamage(Player player)
+        private void IncreaseDBZKi(Player player)
+        {
+            Mod DBZ = ModLoader.GetMod("DBZMOD");
+            player.GetModPlayer<DBZMOD.MyPlayer>().KiMaxMult *= Mathf.Clamp((Mathf.Logx(GetStatImproved(Stat.Foc), 10)),1,10);
+            player.GetModPlayer<DBZMOD.MyPlayer>().KiChargeRate += Mathf.FloorInt( Mathf.Clamp((Mathf.Logx(GetStatImproved(Stat.Foc), 10)), 1, 10));
+        }
+            private void UpdateDBZDamage(Player player)
             {
-                Mod Thorium = ModLoader.GetMod("ThoriumMod");
-                //If one day I can obtain thorium source : 
-                //player.GetModPlayer<Thorium.ThoriumPlayer>().symphonicDamage *= GetDamageMult(DamageType.Symphonic);
-                //player.GetModPlayer<Thorium.ThoriumPlayer>().radiantBoost *= GetDamageMult(DamageType.Radiant);
-            }
+                Mod DBZ = ModLoader.GetMod("DBZMOD");
+                player.GetModPlayer<DBZMOD.MyPlayer>().KiDamage *= GetDamageMult(DamageType.KI);
+        }
+        private void UpdateThoriumDamage(Player player)
+        {
+            Mod Thorium = ModLoader.GetMod("Thorium");
+            //player.GetModPlayer<Thorium.ThoriumPlayer>().symphonicDamage *= GetDamageMult(DamageType.Symphonic);
+            //player.GetModPlayer<Thorium.ThoriumPlayer>().radiantBoost *= GetDamageMult(DamageType.Radiant);
+        }
+        private void UpdateTremorDamage(Player player)
+        {
+            Mod Tremor = ModLoader.GetMod("Tremor");
+            player.GetModPlayer<Tremor.MPlayer>().alchemicalDamage *= GetDamageMult(DamageType.Alchemic);
+        }
 
-            public void ApplyReduction(ref int damage,bool heal = false)
-            {
-                if (m_virtualRes>0)
-                    CombatText.NewText(player.getRect(), new Color(50, 26, 255,1), "("+damage + ")");
-                damage = (int)(damage * (1 - m_virtualRes));
+        public void ApplyReduction(ref int damage,bool heal = false)
+        {
+            if (m_virtualRes>0)
+                CombatText.NewText(player.getRect(), new Color(50, 26, 255,1), "("+damage + ")");
+            damage = (int)(damage * (1 - m_virtualRes));
                
-            }
+        }
 
-            public override void PostUpdateEquips()
+        public override void PostUpdateEquips()
+        {
+
+            if (Config.gpConfig.RPGPlayer)
             {
-
-                if (ConfigFile.GetConfig.gpConfig.RPGPlayer)
+                if (Main.netMode != 2)
                 {
-                    if (Main.netMode != 2)
+                    m_virtualRes = 0;
+                    armor = player.statDefense;
+                    if (Main.netMode == 1)
                     {
-                        m_virtualRes = 0;
-                        armor = player.statDefense;
-                        if (Main.netMode == 1)
+                        player.statLifeMax2 = Mathf.Clamp((int)(GetHealthMult() * player.statLifeMax2 * GetHealthPerHeart() / 20) + 10,10,Int16.MaxValue);
+                        if (player.statLifeMax2>= Int16.MaxValue)
                         {
-                            player.statLifeMax2 = Mathf.Clamp((int)(GetHealthMult() * player.statLifeMax2 * GetHealthPerHeart() / 20) + 10,10,Int16.MaxValue);
-                            if (player.statLifeMax2>= Int16.MaxValue)
-                            {
-                                float HealthVirtualMult = Mathf.Clamp((int)(GetHealthMult() * player.statLifeMax2 * GetHealthPerHeart() / 20) + 10, 10, int.MaxValue) / player.statLifeMax2;
-                                m_virtualRes = 1-(1f / HealthVirtualMult);
-                            }
+                            float HealthVirtualMult = Mathf.Clamp((int)(GetHealthMult() * player.statLifeMax2 * GetHealthPerHeart() / 20) + 10, 10, int.MaxValue) / player.statLifeMax2;
+                            m_virtualRes = 1-(1f / HealthVirtualMult);
+                        }
                             
-                        }
-                        else
-                        {
-                            player.statLifeMax2 = Mathf.Clamp((int)(GetHealthMult() * player.statLifeMax2 * GetHealthPerHeart() / 20) + 10, 10, int.MaxValue);
-                        }
-                        player.statManaMax2 = (int)(player.statManaMax2 * GetManaPerStar() / 20) + 4;
-                        player.statDefense = (int)(GetDefenceMult() * player.statDefense * GetArmorMult());
-                        player.meleeDamage *= GetDamageMult(DamageType.Melee, 2);
-                        player.thrownDamage *= GetDamageMult(DamageType.Throw, 2);
-                        player.rangedDamage *= GetDamageMult(DamageType.Ranged, 2);
-                        player.magicDamage *= GetDamageMult(DamageType.Magic, 2);
-                        player.minionDamage *= GetDamageMult(DamageType.Summon, 2);
-                        if (skilltree.ActiveClass != null)
-                        {
-                            player.accRunSpeed *= (1 + JsonCharacterClass.GetJsonCharList.GetClass(skilltree.ActiveClass.GetClassType).MovementSpeed);
-                            player.moveSpeed *= (1 + JsonCharacterClass.GetJsonCharList.GetClass(skilltree.ActiveClass.GetClassType).MovementSpeed);
-                            player.maxRunSpeed *= (1 + JsonCharacterClass.GetJsonCharList.GetClass(skilltree.ActiveClass.GetClassType).MovementSpeed);
-                            player.meleeSpeed *= 1 + JsonCharacterClass.GetJsonCharList.GetClass(skilltree.ActiveClass.GetClassType).Speed;
-                            player.manaCost *= 1 - JsonCharacterClass.GetJsonCharList.GetClass(skilltree.ActiveClass.GetClassType).ManaCost;
-                        }
                     }
-                    player.lifeRegen *= Mathf.FloorInt(GetHealthRegen());
-                    player.manaRegenBonus *= Mathf.FloorInt(GetManaRegen());
+                    else
+                    {
+                        player.statLifeMax2 = Mathf.Clamp((int)(GetHealthMult() * player.statLifeMax2 * GetHealthPerHeart() / 20) + 10, 10, int.MaxValue);
+                    }
+                    player.statManaMax2 = (int)(player.statManaMax2 * GetManaPerStar() / 20) + 4;
+                    player.statDefense = (int)(GetDefenceMult() * player.statDefense * GetArmorMult());
+                    player.meleeDamage *= GetDamageMult(DamageType.Melee, 2);
+                    player.thrownDamage *= GetDamageMult(DamageType.Throw, 2);
+                    player.rangedDamage *= GetDamageMult(DamageType.Ranged, 2);
+                    player.magicDamage *= GetDamageMult(DamageType.Magic, 2);
+                    player.minionDamage *= GetDamageMult(DamageType.Summon, 2);
+                    if (skilltree.ActiveClass != null)
+                    {
+                        player.accRunSpeed *= (1 + JsonCharacterClass.GetJsonCharList.GetClass(skilltree.ActiveClass.GetClassType).MovementSpeed);
+                        player.moveSpeed *= (1 + JsonCharacterClass.GetJsonCharList.GetClass(skilltree.ActiveClass.GetClassType).MovementSpeed);
+                        player.maxRunSpeed *= (1 + JsonCharacterClass.GetJsonCharList.GetClass(skilltree.ActiveClass.GetClassType).MovementSpeed);
+                        player.meleeSpeed *= 1 + JsonCharacterClass.GetJsonCharList.GetClass(skilltree.ActiveClass.GetClassType).Speed;
+                        player.manaCost *= 1 - JsonCharacterClass.GetJsonCharList.GetClass(skilltree.ActiveClass.GetClassType).ManaCost;
+                    }
                 }
-                UpdateModifier();
-                //Issue : After one use of item , player can no longer do anything wiht item&inventory
-                //ErrorLogger.Log(player.can);
+                player.lifeRegen += Mathf.FloorInt(GetHealthRegen());
+                player.manaRegenBonus += Mathf.FloorInt(GetManaRegen());
             }
+            UpdateModifier();
+            //Issue : After one use of item , player can no longer do anything wiht item&inventory
+            //ErrorLogger.Log(player.can);
+        }
 
 
 
 
-            public void SpendPoints(Stat _stat,int ammount)
+        public void SpendPoints(Stat _stat,int ammount)
+        {
+            ammount = Mathf.Clamp(ammount, 1, freePoints);
+            Stats.UpgradeStat(_stat, ammount);
+            freePoints -= ammount;
+        }
+
+        public void ResetStats()
+        {
+            Stats.Reset(level);
+            freePoints = totalPoints;
+        }
+
+        public float GetCriticalChanceBonus()
+        {
+            float X = Mathf.Pow(GetStatImproved(Stat.Foc) * statMultiplier + GetStatImproved(Stat.Dex) * statMultiplier, 0.8f) * 0.05f;
+            Mathf.Clamp(X, 0, 75);
+            return X;
+        }
+        public float GetCriticalDamage()
+        {
+            float X = Mathf.Pow(GetStatImproved(Stat.Agi) * statMultiplier + GetStatImproved(Stat.Str) * statMultiplier, 0.8f)*0.005f;
+            return 1.4f+X;
+        }
+
+        public override void ProcessTriggers(TriggersSet triggersSet)
+        {
+            if (Config.gpConfig.RPGPlayer)
             {
-                ammount = Mathf.Clamp(ammount, 1, freePoints);
-                Stats.UpgradeStat(_stat, ammount);
-                freePoints -= ammount;
-            }
-
-            public void ResetStats()
-            {
-                Stats.Reset(level);
-                freePoints = totalPoints;
-            }
-
-            public float GetCriticalChanceBonus()
-            {
-                float X = Mathf.Pow(GetStatImproved(Stat.Foc) * statMultiplier + GetStatImproved(Stat.Dex) * statMultiplier, 0.8f) * 0.05f;
-                Mathf.Clamp(X, 0, 75);
-                return X;
-            }
-            public float GetCriticalDamage()
-            {
-                float X = Mathf.Pow(GetStatImproved(Stat.Agi) * statMultiplier + GetStatImproved(Stat.Str) * statMultiplier, 0.8f)*0.005f;
-                return 1.4f+X;
-            }
-
-            public override void ProcessTriggers(TriggersSet triggersSet)
-            {
-                if (ConfigFile.GetConfig.gpConfig.RPGPlayer)
+                if (AnotherRpgMod.StatsHotKey.JustPressed)
                 {
-                    if (AnotherRpgMod.StatsHotKey.JustPressed)
-                    {
-                        Main.PlaySound(SoundID.MenuOpen);
-                        UI.Stats.Instance.LoadChar();
-                        UI.Stats.visible = !UI.Stats.visible;
-                    }
-                    if (AnotherRpgMod.SkillTreeHotKey.JustPressed)
-                    {
-                        Main.PlaySound(SoundID.MenuOpen);
-
-
-                        UI.SkillTreeUi.visible = !UI.SkillTreeUi.visible;
-                        if (UI.SkillTreeUi.visible)
-                            UI.SkillTreeUi.Instance.LoadSkillTree();
-                    }
+                    Main.PlaySound(SoundID.MenuOpen);
+                    UI.Stats.Instance.LoadChar();
+                    UI.Stats.visible = !UI.Stats.visible;
                 }
-                
+                if (AnotherRpgMod.SkillTreeHotKey.JustPressed)
+                {
+                    Main.PlaySound(SoundID.MenuOpen);
+
+
+                    UI.SkillTreeUi.visible = !UI.SkillTreeUi.visible;
+                    if (UI.SkillTreeUi.visible)
+                        UI.SkillTreeUi.Instance.LoadSkillTree();
+                }
             }
+            
+            if (AnotherRpgMod.ItemTreeHotKey.JustPressed && Config.gpConfig.ItemTree)
+            {
+                Main.PlaySound(SoundID.MenuOpen);
+                UI.ItemTreeUi.visible = !UI.ItemTreeUi.visible;
+                if (UI.ItemTreeUi.visible)
+                {
+                    if (ItemUpdate.HaveTree(player.HeldItem))
+                        UI.ItemTreeUi.Instance.Open(player.HeldItem.GetGlobalItem<ItemUpdate>());
+                    else
+                        UI.ItemTreeUi.visible = false;
+                }
+
+            }
+
+        }
             public float GetBonusHeal()
             {
-                if (ConfigFile.GetConfig.gpConfig.RPGPlayer)
+                if (Config.gpConfig.RPGPlayer)
                     return GetHealthPerHeart() /20;
                 return 1;
             }
             public float GetBonusHealMana()
             {
-                if (ConfigFile.GetConfig.gpConfig.RPGPlayer)
+                if (Config.gpConfig.RPGPlayer)
                     return GetManaPerStar() / 20;
                 return 1;
             }
@@ -835,7 +871,11 @@ namespace AnotherRpgMod.RPGModule.Entities
                             return (GetStatImproved(Stat.Agi) * SECONDARYTATSMULT + GetStatImproved(Stat.Foc) * SECONDARYTATSMULT) *statMultiplier + 0.8f;
                         case DamageType.Radiant:
                             return (GetStatImproved(Stat.Int) * SECONDARYTATSMULT + GetStatImproved(Stat.Spr) * SECONDARYTATSMULT) * statMultiplier + 0.8f;
-                        default:
+                        case DamageType.Alchemic:
+                            return (Stats.GetStat(Stat.Dex) * SECONDARYTATSMULT + Stats.GetStat(Stat.Str) * SECONDARYTATSMULT) * statMultiplier + 0.8f;
+                    case DamageType.KI:
+                            return (GetStatImproved(Stat.Spr) * MAINSTATSMULT + GetStatImproved(Stat.Str) * SECONDARYTATSMULT) * statMultiplier + 0.8f;
+                    default:
                             return (GetStatImproved(Stat.Str) * MAINSTATSMULT + GetStatImproved(Stat.Agi) * SECONDARYTATSMULT) * statMultiplier + 0.8f;
                     }
                 }
@@ -882,7 +922,7 @@ namespace AnotherRpgMod.RPGModule.Entities
             }
             public void AddXp(int exp,int _level)
             {
-                if (ConfigFile.GetConfig.gpConfig.RPGPlayer)
+                if (Config.gpConfig.RPGPlayer)
                 {
                     exp = (int)(exp * GetXpMult());
                     exp = ReduceExp(exp, _level);
@@ -1133,16 +1173,12 @@ namespace AnotherRpgMod.RPGModule.Entities
                 freePoints = tag.GetInt("freePoints");
                 skillPoints = level - 1;
                 if (tag.GetInt("AnRPGSkillVersion") != SkillTree.SKILLTREEVERSION)
-                    ErrorLogger.Log("AnRPG SkillTree Is Outdated, reseting skillTree");
+                    AnotherRpgMod.Instance.Logger.Warn("AnRPG SkillTree Is Outdated, reseting skillTree");
                 else
                 {
                     LoadSkills(tag.GetIntArray("skillLevel"));
                     if (tag.GetInt("activeClass") < skilltree.nodeList.nodeList.Count && tag.GetInt("activeClass")>0)
                     {
-
-                        if (skilltree.nodeList.nodeList[tag.GetInt("activeClass")].GetNodeType == NodeType.Class)
-                            ErrorLogger.Log(tag.GetInt("activeClass") + " " + skilltree.nodeList.nodeList.Count + " " + skilltree.nodeList.nodeList[tag.GetInt("activeClass")].GetNodeType);
-
                         skilltree.ActiveClass = (ClassNode)skilltree.nodeList.nodeList[tag.GetInt("activeClass")].GetNode;
                     }
                 }
@@ -1153,10 +1189,6 @@ namespace AnotherRpgMod.RPGModule.Entities
             public override void PlayerConnect(Player player)
             {
                 
-                
-
-                if (Main.netMode == 2)
-                    MPPacketHandler.SendConfigFile(mod, ConfigFile.GetConfig.gpConfig);
             }
 
         }

@@ -1,9 +1,9 @@
-﻿using System;
+﻿using AnotherRpgMod.Utils;
+using Microsoft.Xna.Framework;
+using System;
+using System.Collections.Generic;
 using Terraria;
 using Terraria.ModLoader;
-using AnotherRpgMod.Utils;
-using System.Collections.Generic;
-using Microsoft.Xna.Framework;
 
 namespace AnotherRpgMod.RPGModule.Entities
 {
@@ -96,7 +96,7 @@ namespace AnotherRpgMod.RPGModule.Entities
                 }
                 catch (System.Exception exception)
                 {
-                    ErrorLogger.Log(
+                AnotherRpgMod.Instance.Logger.Error(
                         "[" + this.GetType().FullName + "] GetBufferProperty(" +
                         property + "): " + exception.Message
                     );
@@ -156,18 +156,18 @@ namespace AnotherRpgMod.RPGModule.Entities
             if (Main.netMode != 1)
             {
                 if (level < 0) {
-                    if (!ConfigFile.GetConfig.gpConfig.NPCProgress)
+                    if (!Config.gpConfig.NPCProgress)
                     {
                         level = 0;
                         tier = 0;
                     }
                     else { 
-                        level = Mathf.CeilInt(NPCUtils.GetBaseLevel(npc) * ConfigFile.GetConfig.gpConfig.NpclevelMultiplier);
+                        level = Mathf.CeilInt(NPCUtils.GetBaseLevel(npc) * Config.gpConfig.NpclevelMultiplier);
                     
                         if (npc.townNPC || (npc.damage == 0))
-                            tier = Mathf.CeilInt(NPCUtils.GetTierAlly(npc, level) * ConfigFile.GetConfig.gpConfig.NpclevelMultiplier);
-                        else if (ConfigFile.GetConfig.gpConfig.NPCProgress)
-                            tier = Mathf.CeilInt(NPCUtils.GetTier(npc, level) * ConfigFile.GetConfig.gpConfig.NpclevelMultiplier);
+                            tier = Mathf.CeilInt(NPCUtils.GetTierAlly(npc, level) * Config.gpConfig.NpclevelMultiplier);
+                        else if (Config.gpConfig.NPCProgress)
+                            tier = Mathf.CeilInt(NPCUtils.GetTier(npc, level) * Config.gpConfig.NpclevelMultiplier);
                     }
                     if (!npc.townNPC && !(npc.damage == 0) && (!npc.dontCountMe)) { 
                         Rank = NPCUtils.GetRank(level+tier);
@@ -243,7 +243,7 @@ namespace AnotherRpgMod.RPGModule.Entities
                 SetStats(npc);
                 //MPDebug.Log(mod,"Server Side : \n"+ npc.GetGivenOrTypeNetName()+ " ID : "+ npc.whoAmI + "\nLvl."+ (getLevel+getTier)+"\nHealth : " + npc.life + " / " + npc.lifeMax + "\nDamage : " + npc.damage + "\nDef : " + npc.defense + "\nTier : " + getRank + "\n");
                 MPPacketHandler.SendNpcSpawn(mod, npc, tier, level, this);
-                NetMessage.SendData(23, -1, -1, null, npc.whoAmI);
+                //NetMessage.SendData(23, -1, -1, null, npc.whoAmI);
 
                 npc.GivenName = NPCUtils.GetNpcNameChange(npc, tier, level, Rank);
             }
@@ -295,7 +295,7 @@ namespace AnotherRpgMod.RPGModule.Entities
             
             base.OnHitByItem(npc, player, item, damage, knockback, crit);
             MPPacketHandler.SendNpcUpdate(mod, npc);
-            NetMessage.SendData(23, -1, -1, null, npc.whoAmI);
+            //NetMessage.SendData(23, -1, -1, null, npc.whoAmI);
         }
 
         public override void OnHitByProjectile(NPC npc, Projectile projectile, int damage, float knockback, bool crit)
@@ -303,7 +303,7 @@ namespace AnotherRpgMod.RPGModule.Entities
             
             base.OnHitByProjectile(npc, projectile, damage, knockback, crit);
             MPPacketHandler.SendNpcUpdate(mod, npc);
-            NetMessage.SendData(23, -1, -1, null, npc.whoAmI);
+            //NetMessage.SendData(23, -1, -1, null, npc.whoAmI);
         }
 
         public override bool CheckDead(NPC npc)
@@ -330,7 +330,7 @@ namespace AnotherRpgMod.RPGModule.Entities
                 npc = NPCUtils.SizeShiftMult(npc, GetBufferProperty("GrowtherStep"));
                 npc.life = npc.lifeMax;
                 MPPacketHandler.SendNpcUpdate(mod, npc);
-                NetMessage.SendData(23, -1, -1, null, npc.whoAmI);
+                //NetMessage.SendData(23, -1, -1, null, npc.whoAmI);
             }
             return true;
         }
@@ -367,10 +367,10 @@ namespace AnotherRpgMod.RPGModule.Entities
                 WorldManager.OnBossDefeated(npc);
             }
 
-            XPToDrop = Mathf.CeilInt(XPToDrop * ConfigFile.GetConfig.gpConfig.XpMultiplier);
+            XPToDrop = Mathf.CeilInt(XPToDrop * Config.gpConfig.XpMultiplier);
 
             int xplevel = level + tier;
-            if (!ConfigFile.GetConfig.gpConfig.XPReduction)
+            if (!Config.gpConfig.XPReduction)
             {
                 xplevel = int.MaxValue;
             }

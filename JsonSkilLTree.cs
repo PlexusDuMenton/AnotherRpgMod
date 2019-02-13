@@ -130,7 +130,7 @@ namespace AnotherRpgMod
             }
             catch (SystemException e)
             {
-                ErrorLogger.Log(e.ToString());
+                AnotherRpgMod.Instance.Logger.Error(e.ToString());
             }
         }
 
@@ -157,7 +157,7 @@ namespace AnotherRpgMod
             }
             catch (SystemException e)
             {
-                ErrorLogger.Log(e.ToString());
+                AnotherRpgMod.Instance.Logger.Error(e.ToString());
             }
         }
 
@@ -170,7 +170,7 @@ namespace AnotherRpgMod
             }
             catch (SystemException e)
             {
-                ErrorLogger.Log(e.ToString());
+                AnotherRpgMod.Instance.Logger.Error(e.ToString());
             }
         }
 

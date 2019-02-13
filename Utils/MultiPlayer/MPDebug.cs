@@ -11,7 +11,7 @@ namespace AnotherRpgMod.Utils
     {
         static public void Log(Mod mod, object message)
         {
-            Log(mod, (string)message);
+            Log(mod, message.ToString());
         }
 
 

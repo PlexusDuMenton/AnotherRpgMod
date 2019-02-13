@@ -20,14 +20,28 @@ namespace AnotherRpgMod.UI
     {
         public static bool visible = true;
         public UIElement OpenSTPanel;
-        public float scale = ConfigFile.GetConfig.vConfig.HealthBarScale;
-        public float yOffSet = ConfigFile.GetConfig.vConfig.HealthBarYoffSet;
-        public override void OnInitialize()
+        public float scale = Config.vConfig.HealthBarScale;
+        public float yOffSet = Config.vConfig.HealthBarYoffSet;
+        public bool hiden = false;
+        public override void Update(GameTime gameTime)
         {
-            if (!ConfigFile.GetConfig.gpConfig.RPGPlayer)
+            if (!Config.gpConfig.RPGPlayer)
             {
+                RemoveAllChildren();
+                hiden = true;
                 return;
             }
+
+            if (hiden)
+            {
+                hiden = false;
+                OnInitialize();
+            }
+            base.Update(gameTime);
+        }
+
+        public override void OnInitialize()
+        {
 
             OpenSTPanel = new UIElement();
             OpenSTPanel.SetPadding(0);
@@ -38,7 +52,7 @@ namespace AnotherRpgMod.UI
             OpenSTPanel.HAlign = 0;
             OpenSTPanel.VAlign = 0;
 
-            Texture2D Button = ModLoader.GetTexture("AnotherRpgMod/Textures/UI/skill_tree");
+            Texture2D Button = ModContent.GetTexture("AnotherRpgMod/Textures/UI/skill_tree");
             OpenStatButton OpenButton = new OpenStatButton(Button);
             OpenButton.Left.Set(0, 0f);
             OpenButton.Top.Set(0, 0f);
@@ -54,6 +68,9 @@ namespace AnotherRpgMod.UI
         }
         public void OpenSTMenu(UIMouseEvent evt, UIElement listeningElement)
         {
+            if (!Config.gpConfig.RPGPlayer)
+                return;
+
             Main.PlaySound(SoundID.MenuOpen);
 
             SkillTreeUi.visible = !SkillTreeUi.visible;
@@ -65,14 +82,29 @@ namespace AnotherRpgMod.UI
     {
         public static bool visible = true;
         public UIElement OpenStatsPanel;
-        public float scale = ConfigFile.GetConfig.vConfig.HealthBarScale;
-        public float yOffSet = ConfigFile.GetConfig.vConfig.HealthBarYoffSet;
-        public override void OnInitialize()
+        public float scale = Config.vConfig.HealthBarScale;
+        public float yOffSet = Config.vConfig.HealthBarYoffSet;
+
+        public bool hiden = false;
+        public override void Update(GameTime gameTime)
         {
-            if (!ConfigFile.GetConfig.gpConfig.RPGPlayer)
+            if (!Config.gpConfig.RPGPlayer)
             {
+                RemoveAllChildren();
+                hiden = true;
                 return;
             }
+
+            if (hiden)
+            {
+                hiden = false;
+                OnInitialize();
+            }
+            base.Update(gameTime);
+        }
+
+        public override void OnInitialize()
+        {
 
             OpenStatsPanel = new UIElement();
             OpenStatsPanel.SetPadding(0);
@@ -83,7 +115,7 @@ namespace AnotherRpgMod.UI
             OpenStatsPanel.HAlign = 0;
             OpenStatsPanel.VAlign = 0;
 
-            Texture2D Button = ModLoader.GetTexture("AnotherRpgMod/Textures/UI/character");
+            Texture2D Button = ModContent.GetTexture("AnotherRpgMod/Textures/UI/character");
             OpenStatButton OpenButton = new OpenStatButton(Button);
             OpenButton.Left.Set(0, 0f);
             OpenButton.Top.Set(0, 0f);
@@ -99,6 +131,8 @@ namespace AnotherRpgMod.UI
         }
         public void OpenStatMenu(UIMouseEvent evt, UIElement listeningElement)
         {
+            if (!Config.gpConfig.RPGPlayer)
+                return;
             Main.PlaySound(SoundID.MenuOpen);
             Stats.Instance.LoadChar();
             Stats.visible = !Stats.visible;
@@ -130,7 +164,7 @@ namespace AnotherRpgMod.UI
         private UIText PointsLeft = new UIText("");
 
         UIText ResetText;
-
+        UIText InfoStat;
         private float baseYOffset = 100;
         private float baseXOffset = 100;
         private float YOffset = 35;
@@ -148,10 +182,6 @@ namespace AnotherRpgMod.UI
         public override void OnInitialize()
         {
 
-            if (!ConfigFile.GetConfig.gpConfig.RPGPlayer)
-            {
-                return;
-            }
 
             SizeMultiplier = (Main.screenHeight / 1080f);
             baseYOffset *= SizeMultiplier;
@@ -194,7 +224,7 @@ namespace AnotherRpgMod.UI
             ResetText.OnMouseOut += new MouseEvent(ResetTextOut);
             statsPanel.Append(ResetText);
 
-            Texture2D Button = ModLoader.GetTexture("Terraria/UI/ButtonPlay");
+            Texture2D Button = ModContent.GetTexture("Terraria/UI/ButtonPlay");
             for (int i = 0; i < 12; i++)
             {
                 if (i < 8) { 
@@ -214,7 +244,7 @@ namespace AnotherRpgMod.UI
                     statsPanel.Append(UpgradeStatButton);
 
 
-                    progressStatsBar[i] = new StatProgress((Stat)i, ModLoader.GetTexture("AnotherRpgMod/Textures/UI/Blank"));
+                    progressStatsBar[i] = new StatProgress((Stat)i, ModContent.GetTexture("AnotherRpgMod/Textures/UI/Blank"));
                     progressStatsBar[i].Left.Set(baseXOffset + XOffset*1.0f, 0f);
                     progressStatsBar[i].Top.Set(baseYOffset + (YOffset * i)+6, 0f);
                     progressStatsBar[i].Width.Set(105, 0);
@@ -224,7 +254,7 @@ namespace AnotherRpgMod.UI
                     progressStatsBar[i].left = baseYOffset + (YOffset * i);
                     statsPanel.Append(progressStatsBar[i]);
 
-                    progressStatsBarBG[i] = new ProgressBG(ModLoader.GetTexture("AnotherRpgMod/Textures/UI/Blank"));
+                    progressStatsBarBG[i] = new ProgressBG(ModContent.GetTexture("AnotherRpgMod/Textures/UI/Blank"));
                     progressStatsBarBG[i].Left.Set(baseXOffset + XOffset * 1.0f, 0f);
                     progressStatsBarBG[i].Top.Set(baseYOffset + (YOffset * i)+6, 0f);
                     progressStatsBarBG[i].Width.Set(105, 0);
@@ -256,7 +286,20 @@ namespace AnotherRpgMod.UI
                     UpgradeStatText[i].MinWidth.Set(150* SizeMultiplier, 0);
                     UpgradeStatText[i].MaxWidth.Set(150* SizeMultiplier, 0);
                     statsPanel.Append(UpgradeStatText[i]);
+
+                    
                 }
+
+                InfoStat = new UIText("0", SizeMultiplier*1.25f);
+                InfoStat.SetText("");
+                InfoStat.Left.Set(baseXOffset - 75 * SizeMultiplier, 0f);
+                InfoStat.Top.Set(baseYOffset +300*SizeMultiplier, 0f);
+                InfoStat.HAlign = 0f;
+                InfoStat.VAlign = 0f;
+                InfoStat.MinWidth.Set(150 * SizeMultiplier, 0);
+                InfoStat.MaxWidth.Set(150 * SizeMultiplier, 0);
+                statsPanel.Append(InfoStat);
+
                 UpgradeStatDetails[i] = new UIText("", SizeMultiplier);
                 if (i < 3 || i> 7)
                 {
@@ -377,6 +420,7 @@ namespace AnotherRpgMod.UI
                     UpgradeStatOver[11].SetText("+ " + (0.1f * Char.statMultiplier) + " MP/Sec");
                     break;
             }
+            InfoStat.SetText(Utils.AdditionalInfo.GetAdditionalStatInfo(stat));
         }
         public void ResetOver(UIMouseEvent evt, UIElement listeningElement)
         {
@@ -384,6 +428,7 @@ namespace AnotherRpgMod.UI
             {
                 UpgradeStatOver[i].SetText("");
             }
+            InfoStat.SetText("");
         }
         private void ResetStats(UIMouseEvent evt, UIElement listeningElement)
         {
