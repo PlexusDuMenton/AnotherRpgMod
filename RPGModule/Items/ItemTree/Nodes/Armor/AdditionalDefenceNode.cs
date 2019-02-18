@@ -7,11 +7,20 @@ using Terraria;
 
 namespace AnotherRpgMod.Items
 {
-    class BonusExpNode : ItemNodeAdvanced
+    class AdditionalDefenceNode : ItemNode
     {
-        new protected string m_Name = "Bonus Experience";
+        new protected string m_Name = "Additional Defence";
         new protected string m_Desc = "Add";
-        new protected NodeCategory m_NodeCategory = NodeCategory.Other;
+
+
+        public override NodeCategory GetNodeCategory 
+        {
+            get
+            {
+                
+                return NodeCategory.Flat;
+            }
+        }
 
         public override string GetName
         {
@@ -22,29 +31,31 @@ namespace AnotherRpgMod.Items
         }
 
         public override string GetDesc { get {
-                return "Add " + (PercentBonus * Utils.Mathf.Clamp(GetLevel,1,GetMaxLevel)) + " % bonus Item Exp";
+                return "Add " + (FlatDef * Utils.Mathf.Clamp(GetLevel,1,GetMaxLevel)) + " Defences";
             } }
+
+        
+
+        public int FlatDef;
 
         public override void Passive(Item item)
         {
-            item.GetGlobalItem<ItemUpdate>().bonusXp +=  0.01f * PercentBonus * GetLevel;
+            item.GetGlobalItem<ItemUpdate>().DefenceFlatBuffer += FlatDef * GetLevel;
         }
-
-        public int PercentBonus;    
 
         public override void SetPower(float value)
         {
-            PercentBonus = Utils.Mathf.Clamp((int)value*5, 1, 150);
+            FlatDef = Utils.Mathf.Clamp((int)value,1,999);
         }
 
         public override void LoadValue(string saveValue)
         {
-            PercentBonus = int.Parse(saveValue);
+            FlatDef = int.Parse(saveValue);
         }
 
         public override string GetSaveValue()
         {
-            return PercentBonus.ToString();
+            return FlatDef.ToString();
         }
 
     }

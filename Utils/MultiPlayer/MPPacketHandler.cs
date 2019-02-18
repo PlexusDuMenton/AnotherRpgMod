@@ -65,7 +65,7 @@ namespace AnotherRpgMod.Utils
         {
             if (Main.netMode == 2)
             {
-                //NetMessage.SendData(23, -1, -1, null, npc.whoAmI);
+                NetMessage.SendData(23, -1, -1, null, npc.whoAmI);
 
                 ModPacket packet = mod.GetPacket();
                 
@@ -135,7 +135,7 @@ namespace AnotherRpgMod.Utils
 
                         NPC npc = Main.npc[(int)tags[DataTag.npcId]];
 
-                        npc.SetDefaults(npc.type);
+                        //npc.SetDefaults(npc.type);
 
                         int tier = (int)tags[DataTag.tier];
                         int level = (int)tags[DataTag.level];
@@ -144,7 +144,7 @@ namespace AnotherRpgMod.Utils
                         NPCModifier modifiers = (NPCModifier)tags[DataTag.modifiers];
                         if (npc == null || npc.GetGlobalNPC<ARPGGlobalNPC>() == null)
                             return;
-                        //AnotherRpgMod.Instance.Logger.Info(npc.GivenOrTypeName + "\nTier : " + tier + "   Level : " + level + "   rank : " + rank + "   Modifier  : " + modifiers + " \n Buffer : " + (string)tags[DataTag.buffer]);
+                        AnotherRpgMod.Instance.Logger.Info(npc.GivenOrTypeName + "\nTier : " + tier + "   Level : " + level + "   rank : " + rank + "   Modifier  : " + modifiers + " \n Buffer : " + (string)tags[DataTag.buffer]);
 
                         Dictionary<string, string> bufferStack = Unparse((string)tags[DataTag.buffer]);
 

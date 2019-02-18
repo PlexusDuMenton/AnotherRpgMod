@@ -103,43 +103,105 @@ namespace AnotherRpgMod.RPGModule.Entities
             public int TotalPtns { get { return totalPoints; } }
 
 
+        public float GetLifeLeechLeft { get { return HealthRegenLeech * LifeLeechDuration * player.statLifeMax2; } }
+        private float HealthRegenLeech = 0.1f;
 
-            #region WEAPONXP
-            public void AddWeaponXp(int damage,Item Xitem,float multiplier = 1 )
+        private float LifeLeechDuration;
+        public float LifeLeechMaxDuration = 3;
+
+        #region WEAPONXP
+        public void AddWeaponXp(int damage,Item Xitem,float multiplier = 1 )
+        {
+            if (damage < 0)
+                damage = -damage;
+            if (Xitem != null && Xitem.damage > 0 && Xitem.maxStack <= 1)
             {
-                if (damage < 0)
-                    damage = -damage;
-                if (Xitem != null && Xitem.damage > 0 && Xitem.maxStack <= 1)
+                ItemUpdate Item = Xitem.GetGlobalItem<Items.ItemUpdate>();
+                if (Item != null && Item.NeedsSaving(Xitem))
                 {
-                    ItemUpdate Item = Xitem.GetGlobalItem<Items.ItemUpdate>();
-                    if (Item != null && Item.NeedsSaving(Xitem))
-                    {
-                        Item.AddExp(Mathf.Ceillong(damage * multiplier), player, Xitem);
-                    }
+                    Item.AddExp(Mathf.Ceillong(damage * multiplier), player, Xitem);
                 }
             }
+        }
 
-            public void Leech(int damage)
+        public void Leech(int damage)
+        {
+            float lifeHeal = damage * GetLifeLeech();
+            int manaHeal = (int) (player.statManaMax2 * GetManaLeech());
+            player.GetModPlayer<RPGPlayer>().ApplyReduction(ref lifeHeal);
+
+            if (lifeHeal > 0)
             {
-                int lifeHeal = (int)(player.statLife * GetLifeLeech());
-                player.GetModPlayer<RPGPlayer>().ApplyReduction(ref lifeHeal);
-                if (lifeHeal >0)
-                    player.HealEffect(lifeHeal, false);
-                player.statLife = Mathf.Clamp(player.statLife + lifeHeal, 0, player.statLifeMax2);
-                int manaHeal = (int)(player.statManaMax2 * GetManaLeech());
+                if (lifeHeal < 1)
+                    lifeHeal = 1;
+                float duration = lifeHeal / (player.statLifeMax2 * HealthRegenLeech);
+                float buffer = 0;
+                float totalHeal = 0;
+
+                if (LifeLeechDuration < 1)
+                {
+                    buffer = LifeLeechDuration;
+                    LifeLeechDuration = Mathf.Clamp(LifeLeechDuration + duration, LifeLeechDuration, 1);
+                    buffer = LifeLeechDuration - buffer;
+                    totalHeal = lifeHeal * buffer;
+                    duration -= buffer;
+                }
+                if (duration > 0)
+                {
+
+                    int LifeLifeHealInfo = (int)(lifeHeal * 0.2f);
+                    
+                    duration *= 0.2f;
+
+                    buffer = LifeLeechDuration;
+
+                    LifeLeechDuration = Mathf.Clamp(LifeLeechDuration + duration, LifeLeechDuration, LifeLeechMaxDuration);
+                    buffer = LifeLeechDuration - buffer;
+                    totalHeal += lifeHeal * buffer;
+
+                }
+                if (totalHeal < 1)
+                    totalHeal = 1;
+                CombatText.NewText(player.getRect(), new Color(64, 255, 64), "+" + (int)totalHeal);
+
+            }
+
+            if (manaHeal > 0)
+            {
                 player.statMana = Mathf.Clamp(player.statMana + manaHeal, 0, player.statManaMax2);
-                if (lifeHeal > 0)
-                    CombatText.NewText(player.getRect(), new Color(50, 255, 50), "+" + lifeHeal);
-                if (manaHeal > 0)
-                    CombatText.NewText(player.getRect(), new Color(50, 50, 255), "+" + manaHeal);
+            }
+            
+        }
+
+        private float BufferLife;
+
+        private void CustomPostUpdates()
+        {
+
+            if ( LifeLeechDuration > 0 && player.statLife < player.statLifeMax2)
+            {
+                LifeLeechDuration -= 1f / 60f;
+
+                float newLife = BufferLife + player.statLife + (player.statLifeMax2 * HealthRegenLeech) / 60;
+                int LifeGain = Mathf.Clamp(Mathf.FloorInt(newLife), player.statLife, player.statLifeMax2) ;
+                BufferLife = newLife - LifeGain;
+                player.statLife = LifeGain;
 
                 if (Main.netMode == 1)
                 {
                     NetMessage.SendData(21, -1, -1, null, player.whoAmI, 0f, 0f, 0f, 0, 0, 0);
                 }
             }
+            else
+            {
+                BufferLife = 0;
+                LifeLeechDuration = 0;
+            }
+            
 
-            int GetBuffAmmount(int[] bufftime)
+        }
+
+        int GetBuffAmmount(int[] bufftime)
             {
                 int count =0;
                 for (int i = 0; i < bufftime.Length; i++)
@@ -372,15 +434,9 @@ namespace AnotherRpgMod.RPGModule.Entities
                     if (target.type != 488)
                     {
                         if (player.HeldItem.summon)
-                        {
-                            AddWeaponXp(damage / proj.penetrate, proj.GetGlobalProjectile<ARPGGlobalProjectile>().itemOrigin, 1);
                             AddWeaponXp(damage / proj.penetrate, player.HeldItem,1);
-                        }
                         else
-                        {
-                            AddWeaponXp(damage / proj.penetrate, proj.GetGlobalProjectile<ARPGGlobalProjectile>().itemOrigin, 1);
-                            AddWeaponXp(damage / proj.penetrate, player.HeldItem, 0.25f);
-                        }
+                            AddWeaponXp(damage / proj.penetrate, player.HeldItem, 0.5f);
                             
                     }
                         
@@ -662,19 +718,19 @@ namespace AnotherRpgMod.RPGModule.Entities
         private void IncreaseDBZKi(Player player)
         {
             Mod DBZ = ModLoader.GetMod("DBZMOD");
-            player.GetModPlayer<DBZMOD.MyPlayer>().KiMaxMult *= Mathf.Clamp((Mathf.Logx(GetStatImproved(Stat.Foc), 10)),1,10);
-            player.GetModPlayer<DBZMOD.MyPlayer>().KiChargeRate += Mathf.FloorInt( Mathf.Clamp((Mathf.Logx(GetStatImproved(Stat.Foc), 10)), 1, 10));
+            player.GetModPlayer<DBZMOD.MyPlayer>().kiMaxMult *= Mathf.Clamp((Mathf.Logx(GetStatImproved(Stat.Foc), 10)),1,10);
+            player.GetModPlayer<DBZMOD.MyPlayer>().kiChargeRate += Mathf.FloorInt( Mathf.Clamp((Mathf.Logx(GetStatImproved(Stat.Foc), 10)), 1, 10));
         }
             private void UpdateDBZDamage(Player player)
             {
                 Mod DBZ = ModLoader.GetMod("DBZMOD");
-                player.GetModPlayer<DBZMOD.MyPlayer>().KiDamage *= GetDamageMult(DamageType.KI);
+                player.GetModPlayer<DBZMOD.MyPlayer>().kiDamage *= GetDamageMult(DamageType.KI);
         }
         private void UpdateThoriumDamage(Player player)
         {
             Mod Thorium = ModLoader.GetMod("Thorium");
-            //player.GetModPlayer<Thorium.ThoriumPlayer>().symphonicDamage *= GetDamageMult(DamageType.Symphonic);
-            //player.GetModPlayer<Thorium.ThoriumPlayer>().radiantBoost *= GetDamageMult(DamageType.Radiant);
+            //player.GetModPlayer<ThoriumMod.ThoriumPlayer>(ModLoader.GetMod("ThoriumMod")).symphonicDamage *= GetDamageMult(DamageType.Symphonic);
+            //player.GetModPlayer<ThoriumMod.ThoriumPlayer>(ModLoader.GetMod("ThoriumMod")).radiantBoost *= GetDamageMult(DamageType.Radiant);
         }
         private void UpdateTremorDamage(Player player)
         {
@@ -689,6 +745,16 @@ namespace AnotherRpgMod.RPGModule.Entities
             damage = (int)(damage * (1 - m_virtualRes));
                
         }
+
+        public void ApplyReduction(ref float damage, bool heal = false)
+        {
+            if (m_virtualRes > 0)
+                CombatText.NewText(player.getRect(), new Color(50, 26, 255, 1), "(" + damage + ")");
+            damage = (float)(damage * (1 - m_virtualRes));
+
+        }
+
+
 
         public override void PostUpdateEquips()
         {
@@ -735,10 +801,11 @@ namespace AnotherRpgMod.RPGModule.Entities
             UpdateModifier();
             //Issue : After one use of item , player can no longer do anything wiht item&inventory
             //ErrorLogger.Log(player.can);
+            CustomPostUpdates();
         }
 
 
-
+        
 
         public void SpendPoints(Stat _stat,int ammount)
         {
@@ -792,6 +859,7 @@ namespace AnotherRpgMod.RPGModule.Entities
                 UI.ItemTreeUi.visible = !UI.ItemTreeUi.visible;
                 if (UI.ItemTreeUi.visible)
                 {
+                    
                     if (ItemUpdate.HaveTree(player.HeldItem))
                         UI.ItemTreeUi.Instance.Open(player.HeldItem.GetGlobalItem<ItemUpdate>());
                     else
@@ -816,11 +884,11 @@ namespace AnotherRpgMod.RPGModule.Entities
 
             public float GetHealthRegen()
             {
-                return (GetStatImproved(Stat.Vit) + GetStatImproved(Stat.Cons)) * 0.1f * statMultiplier;
+                return (GetStatImproved(Stat.Vit) + GetStatImproved(Stat.Cons)) * 0.02f * statMultiplier;
             }
             public float GetManaRegen()
             {
-                return (GetStatImproved(Stat.Int) + GetStatImproved(Stat.Spr)) * 0.1f * statMultiplier;
+                return (GetStatImproved(Stat.Int) + GetStatImproved(Stat.Spr)) * 0.01f * statMultiplier;
             }
 
             public bool HaveRangedWeapon()
@@ -973,7 +1041,10 @@ namespace AnotherRpgMod.RPGModule.Entities
                     Items.ItemUpdate Item = player.HeldItem.GetGlobalItem<Items.ItemUpdate>();
                     if (Item != null && Item.NeedsSaving(player.HeldItem))
                     {
-                        value = Item.GetLifeLeech*0.01f;
+                        if (Config.gpConfig.ItemTree)
+                            value = Item.leech;
+                        else
+                            value = Item.GetLifeLeech*0.01f;
                     }
                 }
                 value += skilltree.GetLeech(LeechType.Life) + skilltree.GetLeech(LeechType.Both);
@@ -987,10 +1058,11 @@ namespace AnotherRpgMod.RPGModule.Entities
                     Items.ItemUpdate Item = player.HeldItem.GetGlobalItem<Items.ItemUpdate>();
                     if (Item != null && Item.NeedsSaving(player.HeldItem))
                     {
+                    if (!Config.gpConfig.ItemTree)
                         value = Item.GetManaLeech * 0.01f;
                     }
                 }
-                value += skilltree.GetLeech(LeechType.Magic) + skilltree.GetLeech(LeechType.Both);
+                value += skilltree.GetLeech(LeechType.Magic) + skilltree.GetLeech(LeechType.Both)*0.1f;
                 return value;
             }
             private void LevelUp()

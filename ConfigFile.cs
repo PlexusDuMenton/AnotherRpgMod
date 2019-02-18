@@ -14,7 +14,8 @@ using Newtonsoft.Json.Converters;
 using System.Collections;
 using System.ComponentModel;
 using System.Runtime.Serialization;
-using Terraria.ModLoader.UI;    
+using Terraria.ModLoader.UI;
+using AnotherRpgMod.UI;
 
 
 
@@ -82,6 +83,9 @@ namespace AnotherRpgMod
         public override void PostSave()
         {
             AnotherRpgMod.visualConfig = this;
+            AnotherRpgMod.Instance.healthBar.OnInitialize();
+            AnotherRpgMod.Instance.OpenST.OnInitialize();
+            AnotherRpgMod.Instance.openStatMenu.OnInitialize();
         }
     }
 

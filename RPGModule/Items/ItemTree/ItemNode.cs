@@ -96,7 +96,9 @@ namespace AnotherRpgMod.Items
             foreach (int Node in m_ID_Neightboor)
             {
                 m_SkillTreeParent.GetNode(Node).AddNeightboor(m_ID);
+                
             }
+            
         }
         virtual public void AddNeightboor(int ID)
         {

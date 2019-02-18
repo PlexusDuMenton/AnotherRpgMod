@@ -257,7 +257,7 @@ namespace AnotherRpgMod.RPGModule.Entities
 
                 else if(!StatsCreated)
                 {
-                    //ErrorLogger.Log("NPC not generated ! : \n" + npc.GetGivenOrTypeNetName());
+                    StatsCreated = true;
                     MPPacketHandler.AskNpcInfo(mod, npc);
                 }
             }

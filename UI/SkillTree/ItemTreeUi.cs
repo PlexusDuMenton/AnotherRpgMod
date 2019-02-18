@@ -37,7 +37,7 @@ namespace AnotherRpgMod.UI
         float zoomMin = 0.5f;
 
         float iZoom = 1;
-        float uIScale = Config.vConfig.UI_Scale;
+        static float uIScale = Config.vConfig.UI_Scale;
         float screenMult = (Main.screenHeight / 1080f);
 
         public float sizeMultplier;
@@ -91,11 +91,12 @@ namespace AnotherRpgMod.UI
             {
                 if (allBasePanel[i].node.GetState > 1 )
                     allBasePanel[i].skill.SetTexture =  ModContent.GetTexture(SkillTextures.GetItemTexture(allBasePanel[i].node));
+                allBasePanel[i].Hidden = false;
+                allBasePanel[i].skill.Hidden = false;
                 switch (allBasePanel[i].node.GetState)
                 {
                     case 1:
-                        allBasePanel[i].Hidden = false;
-                        allBasePanel[i].skill.Hidden = false;
+                        
                         allBasePanel[i].skill.color = new Color(255, 255, 255, 255);
                         allBasePanel[i].color = new Color(255, 255, 255, 255);
                         break;
@@ -104,6 +105,7 @@ namespace AnotherRpgMod.UI
                         allBasePanel[i].color = new Color(160, 180, 50, 255);
                         break;
                     case 3:
+
                         allBasePanel[i].skill.color = new Color(220, 220, 220, 255);
                         allBasePanel[i].color = new Color(120, 120, 120, 255);
                         break;
@@ -133,15 +135,8 @@ namespace AnotherRpgMod.UI
             if (!visible)
                 return;
             Main.PlaySound(SoundID.MenuOpen);
-            if (Main.keyState.PressingShift())
-            {
-                m_itemSource.CompleteReset();
-                Init();
-            }
-            else {
                 m_itemSource.ResetTree();
                 Init();
-            }
                 
 
             dragging = false;
@@ -537,7 +532,10 @@ namespace AnotherRpgMod.UI
             UIText Name = new UIText("",0.5f,true);
             Name.Left.Set(10, 0);
             Name.Top.Set(10, 0);
-            Name.SetText(node.GetName +"\nLevel : " + node.GetLevel + " / " + node.GetMaxLevel);
+            if(node.GetState <= 1)
+                Name.SetText("???\nLevel : ?? / ??");
+            else
+                Name.SetText(node.GetName +"\nLevel : " + node.GetLevel + " / " + node.GetMaxLevel);
 
             string costText = "Cost " + node.GetRequiredPoints;
             if (node.IsAscend)
@@ -545,11 +543,18 @@ namespace AnotherRpgMod.UI
             else
                 costText += " Evolution Points\n";
 
+            if (node.GetState <= 1)
+                costText = "Cost ??? Ascendence Points";
+
             UIText info = new UIText(costText);
             info.Left.Set(50* unzoomMult, 0);
             info.Top.Set(100* unzoomMult, 0);
 
-            UIText description = new UIText(node.GetDesc);
+            string desc = node.GetDesc;
+
+            if (node.GetState <= 1)
+                desc = "Unknow Bonus, Unlock a close node to know what this one does !";
+            UIText description = new UIText(desc);
             description.Left.Set(50* unzoomMult, 0);
             description.Top.Set(170* unzoomMult, 0);
             

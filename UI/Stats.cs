@@ -23,6 +23,13 @@ namespace AnotherRpgMod.UI
         public float scale = Config.vConfig.HealthBarScale;
         public float yOffSet = Config.vConfig.HealthBarYoffSet;
         public bool hiden = false;
+
+        public void Erase()
+        {
+
+            base.RemoveAllChildren();
+        }
+
         public override void Update(GameTime gameTime)
         {
             if (!Config.gpConfig.RPGPlayer)
@@ -42,6 +49,9 @@ namespace AnotherRpgMod.UI
 
         public override void OnInitialize()
         {
+            Erase();
+            yOffSet = Config.vConfig.HealthBarYoffSet;
+            scale = Config.vConfig.HealthBarScale;
 
             OpenSTPanel = new UIElement();
             OpenSTPanel.SetPadding(0);
@@ -86,6 +96,14 @@ namespace AnotherRpgMod.UI
         public float yOffSet = Config.vConfig.HealthBarYoffSet;
 
         public bool hiden = false;
+
+
+        public void Erase()
+        {
+
+            base.RemoveAllChildren();
+        }
+
         public override void Update(GameTime gameTime)
         {
             if (!Config.gpConfig.RPGPlayer)
@@ -105,6 +123,10 @@ namespace AnotherRpgMod.UI
 
         public override void OnInitialize()
         {
+
+            Erase();
+            yOffSet = Config.vConfig.HealthBarYoffSet;
+            scale = Config.vConfig.HealthBarScale;
 
             OpenStatsPanel = new UIElement();
             OpenStatsPanel.SetPadding(0);
@@ -290,7 +312,7 @@ namespace AnotherRpgMod.UI
                     
                 }
 
-                InfoStat = new UIText("0", SizeMultiplier*1.25f);
+                InfoStat = new UIText("0", SizeMultiplier);
                 InfoStat.SetText("");
                 InfoStat.Left.Set(baseXOffset - 75 * SizeMultiplier, 0f);
                 InfoStat.Top.Set(baseYOffset +300*SizeMultiplier, 0f);

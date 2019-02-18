@@ -13,13 +13,13 @@ namespace AnotherRpgMod.Utils
         //Node availible for all items;
         static public List<int> CommonID = new List<int>()
         {
-            //500
+            500,
         };
 
         //Node availible for armor
         static public List<int> ArmorID = new List<int>()
         {
-
+            300,
         };
 
 
@@ -38,7 +38,7 @@ namespace AnotherRpgMod.Utils
         //Node abaible for melee Weapon only
         static public List<int> MeleeID = new List<int>()
         {
-
+            50
         };
 
         //Node abaible for magic Weapon only
@@ -59,9 +59,13 @@ namespace AnotherRpgMod.Utils
             {0, typeof(AdditionalDamageNode) },
             {1,typeof(AdditionalDamageNodePercent) },
             {2,typeof(UseTimeNode) },
+            {50,typeof(LifeLeech) },
 
-            
+
             {100,typeof(AdditionalProjectile) },
+
+            {300,typeof(AdditionalDefenceNode) },
+
 
             {500,typeof(BonusExpNode) }
         };

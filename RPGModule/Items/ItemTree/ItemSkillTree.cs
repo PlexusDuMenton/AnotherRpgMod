@@ -192,7 +192,6 @@ namespace AnotherRpgMod.Items
 
                 save += "," + skilltree.GetNode(i).GetState + ","+ skilltree.GetNode(i).GetLevel+ "," + skilltree.GetNode(i).GetMaxLevel + ","+ skilltree.GetNode(i).GetRequiredPoints + "," + skilltree.GetNode(i).GetPos.X + ":"+ skilltree.GetNode(i).GetPos.Y+",";
 
-                AnotherRpgMod.Instance.Logger.Info(skilltree.GetNode(i).GetSaveValue());
                 save += skilltree.GetNode(i).GetSaveValue();
 
             }
@@ -239,7 +238,6 @@ namespace AnotherRpgMod.Items
                 }
                 bufferNode.ForceLockNode(int.Parse(nodeDetails[2]));
                 bufferNode.SetLevel = int.Parse(nodeDetails[3]);
-                AnotherRpgMod.Instance.Logger.Info(nodeDetails[7]);
                 if (nodeDetails[7] != "")
                     bufferNode.LoadValue(nodeDetails[7]);
                 tree.AddNode(bufferNode);
@@ -350,6 +348,19 @@ namespace AnotherRpgMod.Items
             }
         }
 
+        public void UpdateConnection()
+        {
+            foreach (ItemNode node in m_nodeList)
+            {
+                node.ShareNeightboor();
+            }
+            foreach (ItemNode node in m_nodeList)
+            {
+                node.UnlockStep(node.GetState);
+            }
+           
+        }
+
         public void BuildConnection()
         {
             foreach (ItemNode node in m_nodeList)
@@ -411,32 +422,54 @@ namespace AnotherRpgMod.Items
                 }
             }
 
-            return (int)higgestYPos / 100;
+            return (int)(higgestYPos / 100);
         }
         #endregion
 
         #region Generation
+
+        private int GetLowestBranch(List<Branch> Branches,int ypos)
+        {
+            int id = 0;
+            int higgest = -1;
+            foreach(Branch b in Branches)
+            {
+                id++;
+                if ((int)(m_nodeList[b.GetLast()].GetPos.Y / 100) == ypos)
+                    higgest = id;
+            }
+            return id;
+        }
 
         public void ExtendTree(int Node)
         {
             //Init all value to continue building the tree
             int yPos = GetYPos();
             List<int> IDS = ItemNodeAtlas.GetAvailibleNodeList(m_ItemSource, false);
-
             int brancheAmm = Mathf.RandomInt(
                 Mathf.Clamp(GetBranchesCount(), Mathf.RoundInt(MINBRANCH + m_ItemSource.GetCapLevel() * 0.02f),MAXBRANCH)
                 , MAXBRANCH
                 );
-
-            List<Branch> Branches = new List<Branch>(brancheAmm);
+            
+            List<Branch> Branches = new List<Branch>();
             for (int i = 0; i < brancheAmm; i++)
             {
-                Branches[i] = GetEntireBranch(i);
+                Branches.Add(GetEntireBranch(i));
             }
 
-            int brancheID = 0;
+            bool emptyLevel = false;
+
+            int brancheID = GetLowestBranch(Branches, yPos);
+            if (brancheID == -1)
+            {
+                brancheID++;
+                    emptyLevel = true;
+            }
+                
             int connectionBranch;
             Vector2 pos;
+
+            AnotherRpgMod.Instance.Logger.Info(m_nodeList.Count);
             for (int i = 0; i < Node; i++)
             {
                 //20% chance to add a new branches
@@ -448,11 +481,13 @@ namespace AnotherRpgMod.Items
                 //if we reached all branches, then we goes to the layer
                 if (brancheID >= Branches.Count)
                 {
+                    emptyLevel = true;
                     brancheID = 0;
                     yPos++;
                 }
-                if (Mathf.RandomInt(0, 5) < 4 || (brancheID == Branches.Count - 1 ))
+                if (Mathf.RandomInt(0, 5) < 4 || (brancheID == Branches.Count - 1 && emptyLevel))
                 {
+                    emptyLevel = false;
 
                     connectionBranch = brancheID;
 
@@ -485,13 +520,11 @@ namespace AnotherRpgMod.Items
                         if (!m_nodeList[Branches[brancheID].GetLast()].GetNeighboor.Contains(id))
                             m_nodeList[Branches[brancheID].GetLast()].AddNeightboor(id);
                     }
-
+                    
                 }
-                //Go through all the node one by one
                 brancheID += 1;
-
             }
-
+            UpdateConnection();
 
         }
 
@@ -539,6 +572,7 @@ namespace AnotherRpgMod.Items
                     //if we reached all branches, then we goes to the layer
                     if (brancheID >= Branches.Count)
                     {
+                        emptyLevel = true;
                         brancheID = 0;
                         yPos++;
                     }

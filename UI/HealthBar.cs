@@ -18,10 +18,12 @@ namespace AnotherRpgMod.UI
     internal enum Mode
     {
         HP,
+        Leech,
         MANA,
         XP,
         Weapon,
-        Breath
+        Breath,
+        
     }
 
 
@@ -31,6 +33,7 @@ namespace AnotherRpgMod.UI
         public Vector2 position;
         private Vector2 baseSize;
         public Vector2 size;
+        public Color color;
 
         public RessourceInfo(Texture2D _texture, Vector2 _position,float scale = 1f)
         {
@@ -54,21 +57,21 @@ namespace AnotherRpgMod.UI
         
 
         private Player player;
-
         float YDefaultOffSet = -Config.vConfig.HealthBarYoffSet;
+
         float scale = Config.vConfig.HealthBarScale;
         float baseUiHeight = 393f;
 
         Dictionary<Mode, RessourceInfo> RessourceTexture;
 
-        Ressource[] ressourcebar = new Ressource[4];
+        Ressource[] ressourcebar = new Ressource[5];
 
         RessourceBreath breath;
         UIOverlay Overlay;
 
 
 
-        public UIElement[] MainPanel = new UIElement[6];
+        public UIElement[] MainPanel = new UIElement[7];
 
         private UIText health;
         private UIText manatext;
@@ -77,7 +80,6 @@ namespace AnotherRpgMod.UI
 
         public static bool visible = false;
         public bool hiden = false;
-
         public override void Update(GameTime gameTime)
         {
 
@@ -116,11 +118,17 @@ namespace AnotherRpgMod.UI
             base.Update(gameTime);
         }
 
+        public void Erase()
+        {
 
+            base.RemoveAllChildren();
+        }
 
         public override void OnInitialize()
         {
-            
+            Erase();
+            YDefaultOffSet = -Config.vConfig.HealthBarYoffSet;
+            scale = Config.vConfig.HealthBarScale;
 
             player = Main.player[Main.myPlayer];
 
@@ -137,6 +145,7 @@ namespace AnotherRpgMod.UI
 
             RessourceTexture = new Dictionary<Mode, RessourceInfo>()
             {
+                { Mode.Leech, new RessourceInfo(ModContent.GetTexture("AnotherRpgMod/Textures/UI/LeechBar"),new Vector2(14*scale,Main.screenHeight + YDefaultOffSet - baseUiOffset[0]),scale)},
                 { Mode.HP, new RessourceInfo(ModContent.GetTexture("AnotherRpgMod/Textures/UI/HealthBar"),new Vector2(14*scale,Main.screenHeight + YDefaultOffSet - baseUiOffset[0]),scale)},
                 { Mode.MANA, new RessourceInfo(ModContent.GetTexture("AnotherRpgMod/Textures/UI/ManaBar"),new Vector2(31*scale,Main.screenHeight  + YDefaultOffSet - baseUiOffset[1]),scale)},
                 { Mode.XP, new RessourceInfo(ModContent.GetTexture("AnotherRpgMod/Textures/UI/XPBar"),new Vector2(44*scale,Main.screenHeight + YDefaultOffSet -baseUiOffset[2]),scale)},
@@ -161,15 +170,15 @@ namespace AnotherRpgMod.UI
             Overlay.VAlign = 0;
             MainPanel[0].Append(Overlay);
 
-            for (int i = 0; i < 5; i++)
+            for (int i = 0; i < 6; i++)
             {
                 MainPanel[i + 1] = new PanelBar((Mode)i, RessourceTexture[(Mode)i].texture);
-                if (i > 3) {
+                if ((Mode)i == Mode.Breath) {
                     breath = new RessourceBreath((Mode)i, RessourceTexture[(Mode)i].texture);
                 }
                 else
                 {
-                    ressourcebar[i] = new Ressource((Mode)i, RessourceTexture[(Mode)i].texture);
+                    ressourcebar[i] = new Ressource((Mode)i, RessourceTexture[(Mode)i].texture, Color.White);
                 }
                 MainPanel[i + 1].HAlign = 0;
                 MainPanel[i + 1].VAlign = 0;
@@ -180,7 +189,7 @@ namespace AnotherRpgMod.UI
                 MainPanel[i + 1].Left.Set(RessourceTexture[(Mode)i].position.X, 0f);
                 MainPanel[i + 1].Top.Set(RessourceTexture[(Mode)i].position.Y, 0f);
 
-                if (i > 3)
+                if ((Mode)i == Mode.Breath)
                 {
                     breath.ImageScale = scale;
                     MainPanel[i + 1].Append(breath);
@@ -188,6 +197,8 @@ namespace AnotherRpgMod.UI
                 else
                 {
                     ressourcebar[i].ImageScale = scale;
+                    if (i == 0)
+                        ressourcebar[i].color = new Color(0.3f, 0.3f, 0.3f, 0.3f);
                     MainPanel[i + 1].Append(ressourcebar[i]);
                 }
 
@@ -195,7 +206,7 @@ namespace AnotherRpgMod.UI
 
 
             }
-
+            ;
             base.Append(MainPanel[0]);
 
             health = new UIText("0|0", 1.3f* scale);
@@ -297,7 +308,7 @@ namespace AnotherRpgMod.UI
         private Mode stat;
         private float width;
 
-        public Ressource(Mode stat, Texture2D texture)
+        public Ressource(Mode stat, Texture2D texture, Color col)
         {
             _texture = texture;
             Width.Set(_texture.Width, 0f);
@@ -305,7 +316,7 @@ namespace AnotherRpgMod.UI
             width = _texture.Width;
             Left.Set(0, 0f);
             Top.Set(0, 0f);
-            this.color = Color.White;
+            this.color = col;
             this.stat = stat;
             VAlign = 0;
             HAlign = 0;
@@ -329,6 +340,9 @@ namespace AnotherRpgMod.UI
             {
                 case Mode.HP:
                     quotient = (float)player.statLife / (float)player.statLifeMax2;
+                    break;
+                case Mode.Leech:
+                    quotient = (float)Utils.Mathf.Clamp(player.statLife + player.GetModPlayer<RPGPlayer>().GetLifeLeechLeft,0, player.statLifeMax2) / (float)player.statLifeMax2;
                     break;
 
                 case Mode.MANA:

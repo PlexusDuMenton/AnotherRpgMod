@@ -42,14 +42,17 @@
     <Compile Include="RPGModule\Items\Enum\WeaponType.cs" />
     <Compile Include="RPGModule\Items\ItemDataTag.cs" />
     <Compile Include="RPGModule\Items\ItemExtraction.cs" />
+    <Compile Include="RPGModule\Items\ItemTree\Enum\NodeCategory.cs" />
     <Compile Include="RPGModule\Items\ItemTree\Enum\ItemReason.cs" />
     <Compile Include="RPGModule\Items\ItemTree\ItemNode.cs" />
     <Compile Include="RPGModule\Items\ItemTree\ItemSkillTree.cs" />
+    <Compile Include="RPGModule\Items\ItemTree\Nodes\Armor\AdditionalDefenceNode.cs" />
     <Compile Include="RPGModule\Items\ItemTree\Nodes\Common\BonusExpNode.cs" />
     <Compile Include="RPGModule\Items\ItemTree\Nodes\ItemNodeAtlas.cs" />
     <Compile Include="RPGModule\Items\ItemTree\Nodes\Weapon\Common\UseTime.cs" />
     <Compile Include="RPGModule\Items\ItemTree\Nodes\Weapon\Common\AdditionalDamageNodePercent.cs" />
     <Compile Include="RPGModule\Items\ItemTree\Nodes\Weapon\Common\AdditionalDamageNode.cs" />
+    <Compile Include="RPGModule\Items\ItemTree\Nodes\Weapon\Melee\LifeLeech.cs" />
     <Compile Include="RPGModule\Items\ItemTree\Nodes\Weapon\Ranged\AdditionalProjectile.cs" />
     <Compile Include="RPGModule\Items\ItemUpdate.cs" />
     <Compile Include="RPGModule\Items\ModifierManager.cs" />
@@ -145,7 +148,6 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="OtherModSources\" />
-    <Folder Include="RPGModule\Items\ItemTree\Nodes\Armor\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>

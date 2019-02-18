@@ -75,6 +75,8 @@ namespace AnotherRpgMod.Items
         public float DefenceBuffer = 0;
         public float DefenceFlatBuffer = 0;
         public float UseTimeBuffer = 0;
+        public float leech= 0;
+        public float bonusXp = 0;
 
         public int baseCap = 5;
 
@@ -173,15 +175,29 @@ namespace AnotherRpgMod.Items
             return value;
         }
 
+
+        public void UpdatePassive(Item item)
+        {
+            leech = 0;
+            bonusXp = 0;
+
+            m_itemTree.ApplyFlatPassives(item);
+            m_itemTree.ApplyMultiplierPassives(item);
+            m_itemTree.ApplyOtherPassives(item);
+        }
+
+
         public int GetDamage(Item item)
         {
             int _damage = baseDamage;
             DamageFlatBuffer = _damage;
 
+           
             if (Config.gpConfig.ItemTree)
             {
+                if (m_itemTree == null || item == null)
+                    return _damage;
                 m_itemTree.ApplyFlatPassives(item);
-                
                 DamageBuffer = DamageFlatBuffer;
                 m_itemTree.ApplyMultiplierPassives(item);
                 m_itemTree.ApplyOtherPassives(item);
@@ -200,6 +216,8 @@ namespace AnotherRpgMod.Items
             UseTimeBuffer = _use;
             if (Config.gpConfig.ItemTree)
             {
+                if (m_itemTree == null || item == null)
+                    return _use;
                 m_itemTree.ApplyMultiplierPassives(item);
                 m_itemTree.ApplyOtherPassives(item);
                 _use = (int)UseTimeBuffer;
@@ -217,8 +235,11 @@ namespace AnotherRpgMod.Items
             
             int _defense = baseArmor;
             DefenceBuffer = _defense;
+            DefenceFlatBuffer = _defense;
             if (Config.gpConfig.ItemTree)
             {
+                if (m_itemTree == null || item == null)
+                    return _defense;
                 m_itemTree.ApplyFlatPassives(item);
                 DefenceBuffer = DefenceFlatBuffer;
                 m_itemTree.ApplyMultiplierPassives(item);
@@ -233,7 +254,7 @@ namespace AnotherRpgMod.Items
         public Int64 GetExpToNextLevel(int _level, int _ascendedLevel)
         {
 
-            if (level == GetCapLevel())
+            if (level == GetCapLevel() * (ascendedLevel + 1))
                 return Mathf.Floorlong((_level + 1) * 10000 + Mathf.Pow(_level, 4.5f));
 
             return Mathf.Floorlong((_level + 1) * 1000 + Mathf.Pow(_level,4));
@@ -316,16 +337,18 @@ namespace AnotherRpgMod.Items
                 itemType = GetItemTypeCustom(item);
                 baseArmor = item.defense;
                 baseDamage = item.damage;
-                
 
+                Roll(item);
+
+                baseCap = GetCapLevel();
                 if (HaveTree(item) && (m_itemTree == null || m_itemTree.GetSize == 0))
                 {
                     m_itemTree = new ItemSkillTree();
                     m_itemTree.Init(this);
                 }
 
-                Roll(item);
-                baseCap = GetCapLevel();
+               
+                
 
             }
 
@@ -340,10 +363,6 @@ namespace AnotherRpgMod.Items
         }
 
         #region OverrideFunction
-        public override void PostReforge(Item item)
-        {
-            Roll(item);
-        }
 
         public override void NetSend(Item item, BinaryWriter writer)
         {
@@ -545,8 +564,6 @@ namespace AnotherRpgMod.Items
             rarity = (Rarity)tag.GetInt("rarity");
             modifier = (Modifier)tag.GetInt("modifier");
 
-            AnotherRpgMod.Instance.Logger.Info(tag.GetIntArray("evolutionInfo"));
-
             if (tag.GetIntArray("evolutionInfo")!= null && tag.GetIntArray("evolutionInfo").Length == 4)
             {
                 m_evolutionPoints = tag.GetIntArray("evolutionInfo")[0];
@@ -556,7 +573,6 @@ namespace AnotherRpgMod.Items
             }
             else
             {
-                AnotherRpgMod.Instance.Logger.Warn("WARNING : Item " + item.HoverName + " isn't update to 1.3 item format! reseting...");
                 level = 0;
                 ascendedLevel = 0;
                 xp = 0;
@@ -570,8 +586,7 @@ namespace AnotherRpgMod.Items
 
 
             itemTreeSave = tag.Get<string>("tree");
-            AnotherRpgMod.Instance.Logger.Info(item.Name);
-            AnotherRpgMod.Instance.Logger.Info(itemTreeSave);
+
 
             if (itemTreeSave != "")
             {
@@ -866,8 +881,8 @@ namespace AnotherRpgMod.Items
                     statsArray[(i * 2) + 1] = (int)(stats.Stats[i].value * 100);
                 }
             }
-            AnotherRpgMod.Instance.Logger.Info(item.Name);
-            AnotherRpgMod.Instance.Logger.Info(treeToString(m_itemTree));
+            //AnotherRpgMod.Instance.Logger.Info(item.Name);
+            //AnotherRpgMod.Instance.Logger.Info(treeToString(m_itemTree));
 
             return new TagCompound
             {
@@ -907,10 +922,11 @@ namespace AnotherRpgMod.Items
 
                 if (NeedsSaving(item) && (level > 0 || ascendedLevel > 0))
                 {
-
+                    
                     baseValue = (int)(item.value * (1 + Mathf.Pow(ascendedLevel, 2f) + level * 0.1f));
                     if (itemType == ItemType.Armor)
                     {
+                        UpdatePassive(item);
                         item.defense = GetDefense(item);
                         if (ascendedLevel > 0)
                         {
@@ -942,8 +958,9 @@ namespace AnotherRpgMod.Items
                 if (NeedsSaving(item) && (level > 0 || ascendedLevel > 0))
                 {
 
+                    UpdatePassive(item);
 
-                    baseValue = (int)(item.value * (1 + Mathf.Pow(ascendedLevel, 2f) + level * 0.1f));
+                    baseValue = (int)(item.value * (1 + Mathf.Pow(ascendedLevel, 1.5f) + level * 0.1f));
                     if (itemType == ItemType.Armor)
                     {
                         item.defense = GetDefense(item);
@@ -1117,8 +1134,7 @@ namespace AnotherRpgMod.Items
 
             if (baseAutoReuse)
                 powerLevel *= 1.2f;
-            powerLevel *= (0.75f + (float)rarity * 0.25f);
-
+            powerLevel *= (1 - Mathf.Log2((float)rarity) * 0.05f);
             return 5 *GetTier(powerLevel);
         }
 
@@ -1140,30 +1156,31 @@ namespace AnotherRpgMod.Items
 
         public void Ascend()
         {
+            ascendedLevel++;
+            m_maxAscendPoints++;
+            m_ascendPoints++;
+            m_itemTree.ExtendTree(Mathf.Clamp( Mathf.CeilInt(Mathf.Pow(baseCap / 3f, 0.95)),5,99));
+
+            if (UI.ItemTreeUi.visible)
+            {
+                AnotherRpgMod.Instance.ItemTreeUI.Init();
+            }
+            
             //First Ascension = LIMIT BREAK
             if (ascendedLevel == 0)
             {
-                ascendedLevel++;
-                m_maxAscendPoints++;
-                m_ascendPoints++;
+                
                 Main.NewText("WEAPON LIMIT BREAK !!!",Color.OrangeRed);
                 m_evolutionPoints = 0;
                 m_maxEvolutionPoints = 0;
                 m_itemTree.Reset(false);
                 level = 0;
             }
-
-            //other Ascension
-            if (ascendedLevel == 0)
-            {
-                ascendedLevel++;
-                m_maxAscendPoints++;
-                m_ascendPoints++;
-                Main.NewText("weapon ascended!");
-            }
+            else
+                Main.NewText("weapon ascended !");
         }
 
-        void Roll(Item item)
+        public void Roll(Item item)
         {
             RollInfo info = ModifierManager.RollItem(this, item);
             if (Config.gpConfig.ItemRarity)
@@ -1214,8 +1231,8 @@ namespace AnotherRpgMod.Items
             m_evolutionPoints++;
 
             if (level == GetCapLevel() && ascendedLevel == 0)
-                Main.NewText("Your item has reached his limit", Color.Red);
-            if (level >= GetCapLevel() && ascendedLevel == 0 || level >= GetCapLevel()*ascendedLevel && ascendedLevel > 0)
+                Main.NewText("Your item has reached its limit", Color.Red);
+            if (level > GetCapLevel()*(ascendedLevel+1))
             {
                 Ascend();
             }
@@ -1227,6 +1244,7 @@ namespace AnotherRpgMod.Items
             if (ModifierManager.HaveModifier(Modifier.SelfLearning, modifier) && !Main.dayTime)
             {
                 _xp *= 1 + (long)ModifierManager.GetModifierBonus(Modifier.SelfLearning, this) * (long)0.01f;
+                _xp *= 1 + (long)bonusXp;
             }
             xp += Mathf.Clamp(_xp * (Int64)Config.gpConfig.ItemXpMultiplier - level, (Int64)0, Int64.MaxValue);
             while (xp >= GetExpToNextLevel(level, ascendedLevel))
@@ -1234,7 +1252,6 @@ namespace AnotherRpgMod.Items
                 LevelUp(player, item);
             }
         }
-
         public void EquipedUpdateModifier(Item item, Player player)
         {
             if (ModifierManager.HaveModifier(Modifier.Thorny, modifier))
