@@ -676,8 +676,6 @@ namespace AnotherRpgMod.RPGModule.Entities
 
                 if (AnotherRpgMod.LoadedMods[SupportedMod.DBZMOD])
                     IncreaseDBZKi(player);
-                if (AnotherRpgMod.LoadedMods[SupportedMod.Thorium])
-                    IncreaseThoriumRessource( player);
 
             if (damageToApply > 1)
                 {
@@ -726,14 +724,6 @@ namespace AnotherRpgMod.RPGModule.Entities
         player.GetModPlayer<DBZMOD.MyPlayer>().kiMaxMult *= Mathf.Clamp((Mathf.Logx(GetStatImproved(Stat.Foc), 10)),1,10);
         player.GetModPlayer<DBZMOD.MyPlayer>().kiChargeRate += Mathf.FloorInt( Mathf.Clamp((Mathf.Logx(GetStatImproved(Stat.Foc), 6)), 0, 25));
     }
-
-    private void IncreaseThoriumRessource(Player player)
-    {
-        Mod Thorium = ModLoader.GetMod("Thorium");
-        player.GetModPlayer<ThoriumMod.ThoriumPlayer>().bardResourceMax = Mathf.CeilInt( player.GetModPlayer<ThoriumMod.ThoriumPlayer>().bardResourceMax * Mathf.Clamp((Mathf.Logx(GetStatImproved(Stat.Spr), 10)), 1, 10));
-        player.GetModPlayer<ThoriumMod.ThoriumPlayer>().bardResourceRecharge += Mathf.FloorInt(Mathf.Clamp((Mathf.Logx(GetStatImproved(Stat.Dex), 10)), 0, 10));
-    }
-
     private void UpdateDBZDamage(Player player)
         {
             Mod DBZ = ModLoader.GetMod("DBZMOD");
@@ -774,7 +764,7 @@ namespace AnotherRpgMod.RPGModule.Entities
     }
 
 
-
+    
     public override void PostUpdateEquips()
     {
            
@@ -798,7 +788,8 @@ namespace AnotherRpgMod.RPGModule.Entities
                 {
                     player.statLifeMax2 = Mathf.Clamp((int)(GetHealthMult() * player.statLifeMax2 * GetHealthPerHeart() / 20) + 10, 10, int.MaxValue);
                 }
-                player.statManaMax2 = (int)(player.statManaMax2 * GetManaPerStar() / 20) + 4;
+                
+                player.statManaMax2 = (int)(player.statManaMax2 * GetManaPerStar() / 20) + 10;
                 player.statDefense = (int)(GetDefenceMult() * player.statDefense * GetArmorMult());
                 player.meleeDamage *= GetDamageMult(DamageType.Melee, 2);
                 player.thrownDamage *= GetDamageMult(DamageType.Throw, 2);
@@ -812,6 +803,11 @@ namespace AnotherRpgMod.RPGModule.Entities
                     player.maxRunSpeed *= (1 + JsonCharacterClass.GetJsonCharList.GetClass(skilltree.ActiveClass.GetClassType).MovementSpeed);
                     player.meleeSpeed *= 1 + JsonCharacterClass.GetJsonCharList.GetClass(skilltree.ActiveClass.GetClassType).Speed;
                     player.manaCost *= 1 - JsonCharacterClass.GetJsonCharList.GetClass(skilltree.ActiveClass.GetClassType).ManaCost;
+
+                    if (skilltree.ActiveClass.GetClassType == ClassType.Shinobi)
+                    {
+                        player.dash = 4;
+                    }
                 }
             }
             player.lifeRegen += Mathf.FloorInt(GetHealthRegen());
@@ -1268,8 +1264,6 @@ namespace AnotherRpgMod.RPGModule.Entities
                 
             freePoints = tag.GetInt("freePoints");
             skillPoints = level - 1;
-
-            AnotherRpgMod.Instance.Logger.Info("Active Class ID : " + tag.GetInt("activeClass"));
 
             if (tag.GetInt("AnRPGSkillVersion") != SkillTree.SKILLTREEVERSION)
                 AnotherRpgMod.Instance.Logger.Warn("AnRPG SkillTree Is Outdated, reseting skillTree");

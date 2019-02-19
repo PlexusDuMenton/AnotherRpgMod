@@ -12,7 +12,7 @@ namespace AnotherRpgMod.Items
         new protected string m_Name = "Bonus Experience";
         new protected string m_Desc = "Add";
         new protected NodeCategory m_NodeCategory = NodeCategory.Other;
-
+        new public float rarityWeight = 0.4f;
         public override string GetName
         {
             get
@@ -39,7 +39,8 @@ namespace AnotherRpgMod.Items
 
         public override void LoadValue(string saveValue)
         {
-            PercentBonus = int.Parse(saveValue);
+            power = float.Parse(saveValue);
+            SetPower(power);
         }
 
         public override string GetSaveValue()

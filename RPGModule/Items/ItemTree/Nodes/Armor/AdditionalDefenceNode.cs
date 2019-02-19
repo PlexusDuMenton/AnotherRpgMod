@@ -50,7 +50,8 @@ namespace AnotherRpgMod.Items
 
         public override void LoadValue(string saveValue)
         {
-            FlatDef = int.Parse(saveValue);
+            power = float.Parse(saveValue);
+            SetPower(power);
         }
 
         public override string GetSaveValue()

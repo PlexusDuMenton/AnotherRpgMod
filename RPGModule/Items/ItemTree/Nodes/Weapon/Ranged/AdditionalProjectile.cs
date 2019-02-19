@@ -14,6 +14,7 @@ namespace AnotherRpgMod.Items
         new protected string m_Name = "Additional Porjectile";
         new protected string m_Desc = "+ X Projectile";
         new protected NodeCategory m_NodeCategory = NodeCategory.Other;
+        
 
 
 
@@ -53,15 +54,20 @@ namespace AnotherRpgMod.Items
             }
         }
 
+        public override void SetPower(float value)
+        {
+            base.SetPower(value);
+        }
 
         public override void LoadValue(string saveValue)
         {
-            ProjectileAmmount = int.Parse(saveValue);
+            power = float.Parse(saveValue);
+            SetPower(power);
         }
 
         public override string GetSaveValue()
         {
-            return ProjectileAmmount.ToString();
+            return power.ToString();
         }
     }
 }

@@ -26,7 +26,7 @@ namespace AnotherRpgMod.Utils
         //Node abaible for weapons
         static public List<int> WeaponID = new List<int>()
         {
-            0,1,2
+            0,1,2,1000
         };
 
         //Node abaible for ranged Weapon only
@@ -50,7 +50,7 @@ namespace AnotherRpgMod.Utils
         //Node abaible for summon Weapon only
         static public List<int> SummonID = new List<int>()
         {
-
+            0,1
         };
 
 
@@ -67,7 +67,9 @@ namespace AnotherRpgMod.Utils
             {300,typeof(AdditionalDefenceNode) },
 
 
-            {500,typeof(BonusExpNode) }
+            {500,typeof(BonusExpNode) },
+
+            {1000, typeof(SuperAdditionalDamageNode) },
         };
 
         static public object GetCorrectNode(int AtlasID)
@@ -86,9 +88,38 @@ namespace AnotherRpgMod.Utils
             return 0;
         }
 
+        static protected float RarityOffset(float power, float rarity)
+        {
+            return (power * rarity) / Mathf.Pow(1.5f, (power * rarity));
+        }
+
+        static public int GetIDFromList(float power, List<int> IDS)
+        {
+            float totalWeight = 0;
+            for (int i = 0; i < IDS.Count; i++)
+            {
+                int AID = IDS[i];
+                totalWeight = RarityOffset(power,(GetCorrectNode(AID) as ItemNode).rarityWeight);
+            }
+
+
+            float rn = Mathf.Random(0, totalWeight);
+            float checkingWeight = 0;
+            for (int i = 0; i < IDS.Count; i++)
+            {
+                int AID = IDS[i];
+                if (rn < checkingWeight + RarityOffset(power, (GetCorrectNode(AID) as ItemNode).rarityWeight))
+                    return AID;
+                checkingWeight += RarityOffset(power, (GetCorrectNode(AID) as ItemNode).rarityWeight);
+
+            }
+            return 0;
+        }
+
         static public List<int> GetAvailibleNodeList(ItemUpdate source,bool ascend)
         {
-            List<int> IDS = CommonID;
+            List<int> IDS = new List<int>();
+            IDS.AddRange(CommonID);
 
             switch (source.Get_ItemType)
             {
@@ -110,6 +141,8 @@ namespace AnotherRpgMod.Utils
                             IDS.AddRange(RangedID);
                             break;
                         case WeaponType.Summon:
+                            IDS = new List<int>();
+                            IDS.AddRange(CommonID);
                             IDS.AddRange(SummonID);
                             break;
                         case WeaponType.Magic:
@@ -135,6 +168,7 @@ namespace AnotherRpgMod.Utils
             {
                 IDS.Remove(n);
             }
+
             return IDS;
         }
     }

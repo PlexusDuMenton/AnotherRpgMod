@@ -8,6 +8,7 @@ namespace AnotherRpgMod.RPGModule
 {
     public enum ClassType
     {
+        Hobo,
         //Tier 0 
         Tourist, // base class + 5% all damage 
         //Tier 1 -lvl 15+ (should be arround EoC)

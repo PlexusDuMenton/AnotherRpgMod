@@ -17,11 +17,13 @@ namespace AnotherRpgMod.Items
         protected List<int> m_ID_Neightboor;
         protected ItemSkillTree m_SkillTreeParent;
 
+        public float rarityWeight = 1;
+
         public List<int> GetNeighboor { get { return m_ID_Neightboor; } }
         public ItemSkillTree GetParent { get { return m_SkillTreeParent; } }
         public int GetId { get { return m_ID; } }
 
-
+        protected float power;
         protected NodeCategory m_NodeCategory = NodeCategory.Other;
         virtual public NodeCategory GetNodeCategory
         {

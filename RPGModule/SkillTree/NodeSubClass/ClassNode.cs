@@ -48,14 +48,16 @@ namespace AnotherRpgMod.RPGModule
         public void UpdateClass()
         {
             NodeParent _node;
-
+            ClassType Active = ClassType.Hobo;
+            if (Main.player[Main.myPlayer].GetModPlayer<RPGPlayer>().GetskillTree.ActiveClass != null)
+                Active = Main.player[Main.myPlayer].GetModPlayer<RPGPlayer>().GetskillTree.ActiveClass.GetClassType;
             for (int i = 0; i < Main.player[Main.myPlayer].GetModPlayer<RPGPlayer>().GetskillTree.nodeList.nodeList.Count; i++)
             {
                 _node = Main.player[Main.myPlayer].GetModPlayer<RPGPlayer>().GetskillTree.nodeList.nodeList[i];
                 if (_node.GetNodeType == NodeType.Class)
                 {
                     ClassNode classNode = (ClassNode)_node.GetNode;
-                    if (classNode.GetClassType != classType && classNode.GetActivate)
+                    if (Active != classNode.GetClassType && classNode.GetActivate)
                     {
                         classNode.Disable();
                     }
@@ -76,10 +78,11 @@ namespace AnotherRpgMod.RPGModule
             }
             
             RPGPlayer player = Main.player[Main.myPlayer].GetModPlayer<RPGPlayer>();
-            if (Main.netMode == 1)
-                player.SendClientChanges(player);
+            
 
             UpdateClass();
+            if (Main.netMode == 1)
+                player.SendClientChanges(player);
         }
 
 

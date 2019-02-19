@@ -7,17 +7,17 @@ using Terraria;
 
 namespace AnotherRpgMod.Items
 {
-    class LifeLeech : ItemNode
+    class SuperAdditionalDamageNode : ItemNode
     {
-
-        new protected string m_Name = "Life Leech";
-        new protected string m_Desc = "+ 0.X% Life Leech";
-        new public float rarityWeight = 0.2f;
-
-        public override NodeCategory GetNodeCategory
+        new protected string m_Name = "(Rare) Additional Damage";
+        new protected string m_Desc = "Add";
+        new public float rarityWeight = 0.075f;
+        
+        public override NodeCategory GetNodeCategory 
         {
             get
             {
+                
                 return NodeCategory.Flat;
             }
         }
@@ -30,24 +30,24 @@ namespace AnotherRpgMod.Items
             }
         }
 
-        public override string GetDesc
-        {
-            get
-            {
-                return "Convert " + (leech * Utils.Mathf.Clamp(GetLevel, 1, GetMaxLevel)) + "% Damage into health";
-            }
-        }
+        public override string GetDesc { get {
+                return "Add " + (FlatDamage * Utils.Mathf.Clamp(GetLevel,1,GetMaxLevel)) + " Damage";
+            } }
 
-        public float leech;
+        
+
+        public int FlatDamage;
 
         public override void Passive(Item item)
         {
-            item.GetGlobalItem<ItemUpdate>().leech += (leech * GetLevel) * 0.01f;
+            item.GetGlobalItem<ItemUpdate>().DamageFlatBuffer += FlatDamage * GetLevel;
         }
 
         public override void SetPower(float value)
         {
-            leech = Utils.Mathf.Clamp(Utils.Mathf.Round(value*0.5f,2), 0.5f, 50);
+            FlatDamage = Utils.Mathf.Clamp((int)Utils.Mathf.Pow(value*4,1.2f),8,999);
+            m_MaxLevel = 1;
+            m_RequiredPoints = Utils.Mathf.FloorInt(1 + power * 0.75f)*5;
         }
 
         public override void LoadValue(string saveValue)

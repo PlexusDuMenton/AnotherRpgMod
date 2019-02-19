@@ -12,7 +12,7 @@ namespace AnotherRpgMod.Items
         new protected string m_Name = "Attack Speed";
         new protected string m_Desc = "+ XX% Attack Speed";
         new protected NodeCategory m_NodeCategory = NodeCategory.Multiplier;
-
+        new public float rarityWeight = 0.5f;
         public override string GetName
         {
             get
@@ -47,12 +47,13 @@ namespace AnotherRpgMod.Items
 
         public override void LoadValue(string saveValue)
         {
-            UseTimeReduction = int.Parse(saveValue);
+            power = float.Parse(saveValue);
+            SetPower(power);
         }
 
         public override string GetSaveValue()
         {
-            return UseTimeReduction.ToString();
+            return power.ToString();
         }
     }
 }

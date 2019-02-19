@@ -26,6 +26,39 @@ namespace AnotherRpgMod.UI
         
     }
 
+    class BuffIcon : UIElement
+    {
+        private Texture2D _texture;
+        public Color color;
+        public float ImageScale = 1f;
+
+        public BuffIcon(Texture2D texture)
+        {
+            _texture = texture;
+            Width.Set(_texture.Width, 0f);
+            Height.Set(_texture.Height, 0f);
+            Left.Set(0, 0f);
+            Top.Set(0, 0f);
+            VAlign = 0;
+            HAlign = 0;
+        }
+
+        public void SetImage(Texture2D texture)
+        {
+            _texture = texture;
+            Width.Set(_texture.Width, 0f);
+            Height.Set(_texture.Height, 0f);
+        }
+
+
+        protected override void DrawSelf(SpriteBatch spriteBatch)
+        {
+            CalculatedStyle dimensions = GetDimensions();
+
+            spriteBatch.Draw(_texture, dimensions.Position() + new Vector2(0, _texture.Size().Y) * (1f - ImageScale), null, color, 0f, Vector2.Zero, ImageScale, SpriteEffects.None, 0f);
+        }
+    }
+
 
     class RessourceInfo
     {
@@ -73,6 +106,10 @@ namespace AnotherRpgMod.UI
 
         public UIElement[] MainPanel = new UIElement[7];
 
+        public UIElement buffPanel;
+        public UIElement buffTTPanel;
+        public List<BuffIcon> BuffList;
+
         private UIText health;
         private UIText manatext;
         private UIText xptext;
@@ -83,6 +120,7 @@ namespace AnotherRpgMod.UI
         public override void Update(GameTime gameTime)
         {
 
+            UpdateBuffList();
             if (!Config.gpConfig.RPGPlayer)
             {
                 RemoveAllChildren();
@@ -95,7 +133,7 @@ namespace AnotherRpgMod.UI
                 hiden = false;
                 OnInitialize();
             }
-
+            buffPanel.Top.Set(Main.screenHeight - baseUiHeight + YDefaultOffSet + 185 * scale, 0f);
             Player player = Main.player[Main.myPlayer]; //Get Player
 
             if (player.GetModPlayer<RPGPlayer>().m_virtualRes > 0)
@@ -118,6 +156,138 @@ namespace AnotherRpgMod.UI
             base.Update(gameTime);
         }
 
+        
+        private void UpdateBuffList()
+        {
+            buffPanel.RemoveAllChildren();
+            buffTTPanel.RemoveAllChildren();
+            int rowLimit = 11;
+            for (int i = 0; i < Main.player[Main.myPlayer].buffType.Length; i++)
+            {
+
+                if (Main.player[Main.myPlayer].buffType[i] > 0)
+                {
+                    int buffType = Main.player[Main.myPlayer].buffType[i];
+                    int x_pos = 32 + i * 38;
+                    int y_pos = 76;
+                    if (i >= rowLimit)
+                    {
+                        y_pos -= 50;
+                        x_pos = 32 + (i - rowLimit) * 38;
+                    }
+                    DrawBuff(buffType,i, x_pos, y_pos);
+                    
+                }
+            }
+        }
+
+        private void DrawBuff(int type,int i,int x,int y)
+        {
+            BuffIcon buffIcon = new BuffIcon(Main.buffTexture[type]);
+            buffIcon.color = new Color(0.4f, 0.4f, 0.4f, 0.4f);
+            
+            buffIcon.Left.Set(x, 0f);
+            buffIcon.Top.Set(y, 0f);
+            if (!Main.vanityPet[type] && 
+                !Main.lightPet[type] && 
+                !Main.buffNoTimeDisplay[type] && 
+                (!Main.player[Main.myPlayer].honeyWet || type != 48) && 
+                (!Main.player[Main.myPlayer].wet || !Main.expertMode || type != 46) && 
+                Main.player[Main.myPlayer].buffTime[i] > 2)
+            {
+                string text = Lang.LocalizedDuration(new TimeSpan(0, 0, Main.player[Main.myPlayer].buffTime[i] / 60), true, false);
+                UIText uIText = new UIText(text, scale);
+                uIText.Top.Set(Main.buffTexture[type].Height,0);
+                buffIcon.Append(uIText);
+                
+                //buffIcon.MouseOver() += draw
+            }
+            
+            if (Main.mouseX-buffPanel.Left.Pixels < x + Main.buffTexture[type].Width && Main.mouseY -buffPanel.Top.Pixels < y + Main.buffTexture[type].Height && Main.mouseX- buffPanel.Left.Pixels > x && Main.mouseY- buffPanel.Top.Pixels > y)
+            {
+                DrawBuffToolTip(type, buffIcon);
+                if (Main.mouseRight && Main.mouseRightRelease)
+                {
+                    RemoveBuff(i, type);
+                }
+            }
+            buffPanel.Append(buffIcon);
+        }
+        private void RemoveBuff(int id, int type)
+        {
+            AnotherRpgMod.Instance.Logger.Info("Remove buff");
+            bool flag = false;
+            if (!Main.debuff[type] && type != 60 && type != 151)
+            {
+                if (Main.player[Main.myPlayer].mount.Active && Main.player[Main.myPlayer].mount.CheckBuff(type))
+                {
+                    Main.player[Main.myPlayer].mount.Dismount(Main.player[Main.myPlayer]);
+                    flag = true;
+                }
+                if (Main.player[Main.myPlayer].miscEquips[0].buffType == type && !Main.player[Main.myPlayer].hideMisc[0])
+                {
+                    Main.player[Main.myPlayer].hideMisc[0] = true;
+                }
+                if (Main.player[Main.myPlayer].miscEquips[1].buffType == type && !Main.player[Main.myPlayer].hideMisc[1])
+                {
+                    Main.player[Main.myPlayer].hideMisc[1] = true;
+                }
+                Main.PlaySound(12, -1, -1, 1, 1f, 0f);
+                if (!flag)
+                {
+                    Main.player[Main.myPlayer].DelBuff(id);
+                }
+            }
+        }
+
+
+        private void DrawBuffToolTip(int id,BuffIcon icon)
+        {
+            int mouseY = Main.lastMouseY - (int)buffPanel.Top.Pixels;
+            int mouseX = Main.lastMouseX - (int)buffPanel.Left.Pixels;
+            AnotherRpgMod.Instance.Logger.Info("ToolTip");
+            icon.color = new Color(1, 1, 1, 1f);
+            string buffDesc = Lang.GetBuffDescription(id);
+            if (id == 26 && Main.expertMode)
+            {
+                buffDesc = Language.GetTextValue("BuffDescription.WellFed_Expert");
+            }
+            if (id == 94)
+            {
+                int percentManaSick = (int)(Main.player[Main.myPlayer].manaSickReduction * 100f) + 1;
+                buffDesc = Main.buffString + percentManaSick + "%";
+            }
+
+            string buffName = Lang.GetBuffName(id);
+            UIText TText = new UIText(buffName, scale,true);
+            TText.Top.Set(mouseY -60, 0);
+            TText.Left.Set(mouseX + 20, 0);
+            UIText DescText = new UIText(buffDesc, scale);
+            DescText.Top.Set(mouseY - 30, 0);
+            DescText.Left.Set(mouseX + 20, 0);
+
+            buffTTPanel.Append(TText);
+            buffTTPanel.Append(DescText);
+            if (id == 147)
+            {
+                string bannerTT = "";
+                for (int l = 0; l < NPCLoader.NPCCount; l++)
+                {
+                    if (Item.BannerToNPC(l) != 0 && Main.player[Main.myPlayer].NPCBannerBuff[l])
+                    {
+                        bannerTT += "\n" + Lang.GetNPCNameValue(Item.BannerToNPC(l));
+                    }
+                }
+                    
+                UIText BText = new UIText(bannerTT, scale);
+                BText.Top.Set(mouseY - 20, 0);
+                BText.Left.Set(mouseX + 20, 0);
+                BText.TextColor = Color.Green;
+                buffTTPanel.Append(BText);
+            }
+
+        }
+        
         public void Erase()
         {
 
@@ -127,6 +297,18 @@ namespace AnotherRpgMod.UI
         public override void OnInitialize()
         {
             Erase();
+
+            buffTTPanel = new UIElement();
+            buffTTPanel.Left.Set(10 * scale, 0f);
+            buffTTPanel.Top.Set(Main.screenHeight - baseUiHeight + YDefaultOffSet + 185 * scale, 0f);
+            buffTTPanel.Width.Set(0, 0f);
+            buffTTPanel.Height.Set(0, 0f);
+
+            buffPanel = new UIElement();
+            buffPanel.Left.Set(10 * scale, 0f);
+            buffPanel.Top.Set(Main.screenHeight - baseUiHeight + YDefaultOffSet + 185 * scale, 0f);
+            buffPanel.Width.Set(1000, 0f);
+            buffPanel.Height.Set(400, 0f);
             YDefaultOffSet = -Config.vConfig.HealthBarYoffSet;
             scale = Config.vConfig.HealthBarScale;
 
@@ -207,7 +389,11 @@ namespace AnotherRpgMod.UI
 
             }
             ;
+            
             base.Append(MainPanel[0]);
+            base.Append(buffPanel);
+            base.Append(buffTTPanel);
+
 
             health = new UIText("0|0", 1.3f* scale);
             manatext = new UIText("0|0", scale);

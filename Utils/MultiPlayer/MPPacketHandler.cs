@@ -144,7 +144,8 @@ namespace AnotherRpgMod.Utils
                         NPC npc = Main.npc[(int)tags[DataTag.npcId]];
 
                         //npc.SetDefaults(npc.type);
-
+                        if (npc.GetGlobalNPC<ARPGGlobalNPC>().StatsCreated == true)
+                            return;
                         int tier = (int)tags[DataTag.tier];
                         int level = (int)tags[DataTag.level];
                         NPCRank rank = (NPCRank)tags[DataTag.rank];

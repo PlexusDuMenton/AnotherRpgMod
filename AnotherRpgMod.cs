@@ -9,6 +9,12 @@ using Terraria.UI;
 using AnotherRpgMod.UI;
 using AnotherRpgMod.RPGModule.Entities;
 using AnotherRpgMod.Utils;
+using Microsoft.Xna.Framework.Graphics;
+using ReLogic.Graphics;
+using Terraria.GameInput;
+using Terraria.Localization;
+
+
 
 
 namespace AnotherRpgMod
@@ -185,6 +191,13 @@ namespace AnotherRpgMod
             if (Main.netMode == 2)
                 return;
 
+
+            if (HealthBar.visible && Config.gpConfig.RPGPlayer)
+            {
+                int ressourceid = layers.FindIndex(layer => layer.Name.Equals("Vanilla: Resource Bars"));
+                layers.RemoveAt(ressourceid);
+            }
+
             //Vanilla: Emote Bubbles
             int mouseid = layers.FindIndex(layer => layer.Name.Equals("Vanilla: Mouse Over"));
             if (mouseid != -1)
@@ -250,11 +263,15 @@ namespace AnotherRpgMod
                             if (HealthBar.visible)
                             {
                                 //Update CustomBars
+                                
+
                                 customOpenST.Update(Main._drawInterfaceGameTime);
                                 customOpenstats.Update(Main._drawInterfaceGameTime);
                                 customResources.Update(Main._drawInterfaceGameTime);
                                 healthBar.Draw(Main.spriteBatch);
                                 
+
+
                             }
                             return true;
                         }, InterfaceScaleType.UI)
@@ -287,7 +304,160 @@ namespace AnotherRpgMod
             }
 
         }
+
+
+        private void DrawInterface_Resources_ClearBuffs()
+        {
+            Main.buffString = "";
+            Main.bannerMouseOver = false;
+            if (!Main.recBigList)
+            {
+                Main.recStart = 0;
+            }
+        }
+
+        private void DrawInterface_Resources_Buffs()
+        {
+            int BuffID = -1;
+            int num2 = 11;
+            for (int i = 0; i < 22; i++)
+            {
+                if (Main.player[Main.myPlayer].buffType[i] > 0)
+                {
+                    int b = Main.player[Main.myPlayer].buffType[i];
+                    int x = 32 + i * 38;
+                    int num3 = 76;
+                    if (i >= num2)
+                    {
+                        x = 32 + (i - num2) * 38;
+                        num3 += 50;
+                    }
+                    BuffID = DrawBuffIcon(BuffID, i, b, x, num3);
+                }
+                else
+                {
+                    Main.buffAlpha[i] = 0.4f;
+                }
+            }
+            if (BuffID >= 0)
+            {
+                int num4 = Main.player[Main.myPlayer].buffType[BuffID];
+                if (num4 > 0)
+                {
+                    Main.buffString = Lang.GetBuffDescription(num4);
+                    int itemRarity = 0;
+                    if (num4 == 26 && Main.expertMode)
+                    {
+                        Main.buffString = Language.GetTextValue("BuffDescription.WellFed_Expert");
+                    }
+                    if (num4 == 147)
+                    {
+                        Main.bannerMouseOver = true;
+                    }
+                    if (num4 == 94)
+                    {
+                        int num5 = (int)(Main.player[Main.myPlayer].manaSickReduction * 100f) + 1;
+                        Main.buffString = Main.buffString + num5 + "%";
+                    }
+                    if (Main.meleeBuff[num4])
+                    {
+                        itemRarity = -10;
+                    }
+                    BuffLoader.ModifyBuffTip(num4, ref Main.buffString, ref itemRarity);
+                }
+            }
+
+
+
+
+            int DrawBuffIcon(int drawBuffText, int i, int b, int x, int y)
+            {
+                //IL_011b: Unknown result type (might be due to invalid IL or missing references)
+                if (b == 0)
+                {
+                    return drawBuffText;
+                }
+                Microsoft.Xna.Framework.Color color = new Microsoft.Xna.Framework.Color(Main.buffAlpha[i], Main.buffAlpha[i], Main.buffAlpha[i], Main.buffAlpha[i]);
+                Main.spriteBatch.Draw(Main.buffTexture[b], new Vector2((float)x, (float)y), new Microsoft.Xna.Framework.Rectangle(0, 0, Main.buffTexture[b].Width, Main.buffTexture[b].Height), color, 0f, default(Vector2), 1f, SpriteEffects.None, 0f);
+                if (!Main.vanityPet[b] && !Main.lightPet[b] && !Main.buffNoTimeDisplay[b] && (!Main.player[Main.myPlayer].honeyWet || b != 48) && (!Main.player[Main.myPlayer].wet || !Main.expertMode || b != 46) && Main.player[Main.myPlayer].buffTime[i] > 2)
+                {
+                    string text = Lang.LocalizedDuration(new TimeSpan(0, 0, Main.player[Main.myPlayer].buffTime[i] / 60), true, false);
+                    DynamicSpriteFontExtensionMethods.DrawString(Main.spriteBatch, Main.fontItemStack, text, new Vector2((float)x, (float)(y + Main.buffTexture[b].Height)), color, 0f, default(Vector2), 0.8f, SpriteEffects.None, 0f);
+                }
+                if (Main.mouseX < x + Main.buffTexture[b].Width && Main.mouseY < y + Main.buffTexture[b].Height && Main.mouseX > x && Main.mouseY > y)
+                {
+                    drawBuffText = i;
+                    Main.buffAlpha[i] += 0.1f;
+                    bool flag = Main.mouseRight && Main.mouseRightRelease;
+                    if (PlayerInput.UsingGamepad)
+                    {
+                        flag = (Main.mouseLeft && Main.mouseLeftRelease && Main.playerInventory);
+                        if (Main.playerInventory)
+                        {
+                            Main.player[Main.myPlayer].mouseInterface = true;
+                        }
+                    }
+                    else
+                    {
+                        Main.player[Main.myPlayer].mouseInterface = true;
+                    }
+                    if (flag)
+                    {
+                        TryRemovingBuff(i, b);
+                    }
+                }
+                else
+                {
+                    Main.buffAlpha[i] -= 0.05f;
+                }
+                if (Main.buffAlpha[i] > 1f)
+                {
+                    Main.buffAlpha[i] = 1f;
+                }
+                else if ((double)Main.buffAlpha[i] < 0.4)
+                {
+                    Main.buffAlpha[i] = 0.4f;
+                }
+                if (PlayerInput.UsingGamepad && !Main.playerInventory)
+                {
+                    drawBuffText = -1;
+                }
+                return drawBuffText;
+            }
+
+            void TryRemovingBuff(int i, int b)
+            {
+                bool flag = false;
+                if (!Main.debuff[b] && b != 60 && b != 151)
+                {
+                    if (Main.player[Main.myPlayer].mount.Active && Main.player[Main.myPlayer].mount.CheckBuff(b))
+                    {
+                        Main.player[Main.myPlayer].mount.Dismount(Main.player[Main.myPlayer]);
+                        flag = true;
+                    }
+                    if (Main.player[Main.myPlayer].miscEquips[0].buffType == b && !Main.player[Main.myPlayer].hideMisc[0])
+                    {
+                        Main.player[Main.myPlayer].hideMisc[0] = true;
+                    }
+                    if (Main.player[Main.myPlayer].miscEquips[1].buffType == b && !Main.player[Main.myPlayer].hideMisc[1])
+                    {
+                        Main.player[Main.myPlayer].hideMisc[1] = true;
+                    }
+                    Main.PlaySound(12, -1, -1, 1, 1f, 0f);
+                    if (!flag)
+                    {
+                        Main.player[Main.myPlayer].DelBuff(i);
+                    }
+                }
+            }
+        }
+
     }
+
+
+
+
+    
 
     
 

@@ -3,24 +3,20 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Microsoft.Xna.Framework;
 using Terraria;
 
 namespace AnotherRpgMod.Items
 {
-    class LifeLeech : ItemNode
+    class MagicCostReduction : ItemNode
     {
 
-        new protected string m_Name = "Life Leech";
-        new protected string m_Desc = "+ 0.X% Life Leech";
-        new public float rarityWeight = 0.2f;
+        new protected string m_Name = "Manacost Reduction";
+        new protected string m_Desc = "+ X Projectile";
+        new protected NodeCategory m_NodeCategory = NodeCategory.Other;
+        new public float rarityWeight = 0.4f;
 
-        public override NodeCategory GetNodeCategory
-        {
-            get
-            {
-                return NodeCategory.Flat;
-            }
-        }
+
 
         public override string GetName
         {
@@ -34,20 +30,22 @@ namespace AnotherRpgMod.Items
         {
             get
             {
-                return "Convert " + (leech * Utils.Mathf.Clamp(GetLevel, 1, GetMaxLevel)) + "% Damage into health";
+                return "- " + (manaCostReduction*100) + "% Manacost";
             }
         }
 
-        public float leech;
+        protected new bool m_isAscend = true;
+        public float manaCostReduction;
 
-        public override void Passive(Item item)
+        public override void PlayerPassive(Item item, Player player)
         {
-            item.GetGlobalItem<ItemUpdate>().leech += (leech * GetLevel) * 0.01f;
+            player.manaCost *= 1 - manaCostReduction;
         }
 
         public override void SetPower(float value)
         {
-            leech = Utils.Mathf.Clamp(Utils.Mathf.Round(value*0.5f,2), 0.5f, 50);
+            manaCostReduction = Utils.Mathf.Clamp(Utils.Mathf.Round(value * 0.01f, 2), 0.01f, 0.5f);
+            base.SetPower(value);
         }
 
         public override void LoadValue(string saveValue)
@@ -60,6 +58,5 @@ namespace AnotherRpgMod.Items
         {
             return power.ToString();
         }
-
     }
 }

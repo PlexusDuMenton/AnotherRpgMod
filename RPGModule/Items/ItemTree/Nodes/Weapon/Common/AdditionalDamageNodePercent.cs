@@ -12,6 +12,7 @@ namespace AnotherRpgMod.Items
 
         new protected string m_Name = "Bonus Damage";
         new protected string m_Desc = "+ XX% damage";
+        new public float rarityWeight = 0.8f;
 
         public override NodeCategory GetNodeCategory
         {
@@ -46,17 +47,18 @@ namespace AnotherRpgMod.Items
 
         public override void SetPower(float value)
         {
-            Damage = Utils.Mathf.Clamp(Utils.Mathf.Round(Utils.Mathf.Pow(value*0.5f,0.4f),2), 1, 50);
+            Damage = Utils.Mathf.Clamp(Utils.Mathf.Round(Utils.Mathf.Pow(value,0.7f),2), 2.5f, 10);
         }
 
         public override void LoadValue(string saveValue)
         {
-            Damage = float.Parse(saveValue);
+            power = float.Parse(saveValue);
+            SetPower(power);
         }
 
         public override string GetSaveValue()
         {
-            return Damage.ToString();
+            return power.ToString();
         }
 
     }

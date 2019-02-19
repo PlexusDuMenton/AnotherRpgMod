@@ -114,7 +114,10 @@ namespace AnotherRpgMod.Utils
                 desc += "Grand Mana Shield : " + (ClassInfo.ManaShield * 100) +
                     "% damage are absorbed by mana (" + (ClassInfo.ManaBaseEfficiency + (intelect * ClassInfo.ManaEfficiency)) + " Damage per mana)";
             }
-
+            if (classType == ClassType.Shinobi)
+            {
+                desc += "Grant Ninja Dash";
+            }
             return desc;
         }
 

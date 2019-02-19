@@ -49,9 +49,11 @@
     <Compile Include="RPGModule\Items\ItemTree\Nodes\Armor\AdditionalDefenceNode.cs" />
     <Compile Include="RPGModule\Items\ItemTree\Nodes\Common\BonusExpNode.cs" />
     <Compile Include="RPGModule\Items\ItemTree\Nodes\ItemNodeAtlas.cs" />
+    <Compile Include="RPGModule\Items\ItemTree\Nodes\Weapon\Common\SuperAdditionalDamageNode.cs" />
     <Compile Include="RPGModule\Items\ItemTree\Nodes\Weapon\Common\UseTime.cs" />
     <Compile Include="RPGModule\Items\ItemTree\Nodes\Weapon\Common\AdditionalDamageNodePercent.cs" />
     <Compile Include="RPGModule\Items\ItemTree\Nodes\Weapon\Common\AdditionalDamageNode.cs" />
+    <Compile Include="RPGModule\Items\ItemTree\Nodes\Weapon\Magic\MagicCostReduction.cs" />
     <Compile Include="RPGModule\Items\ItemTree\Nodes\Weapon\Melee\LifeLeech.cs" />
     <Compile Include="RPGModule\Items\ItemTree\Nodes\Weapon\Ranged\AdditionalProjectile.cs" />
     <Compile Include="RPGModule\Items\ItemUpdate.cs" />
@@ -132,11 +134,17 @@
     <Reference Include="ref">
       <HintPath>..\..\Mod Reader\Tremor\ref.dll</HintPath>
     </Reference>
+    <Reference Include="ReLogic">
+      <HintPath>..\..\references\ReLogic.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Windows.Forms" />
     <Reference Include="Terraria, Version=1.3.5.1, Culture=neutral, processorArchitecture=x86">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\..\..\..\..\Program Files (x86)\Steam\steamapps\common\Terraria\Terraria.exe</HintPath>
+    </Reference>
+    <Reference Include="ThoriumMod">
+      <HintPath>..\..\Mod Reader\ThoriumMod.dll</HintPath>
     </Reference>
     <Reference Include="Windows">
       <HintPath>..\..\Mod Reader\DBZMOD\Windows.dll</HintPath>

@@ -1152,6 +1152,11 @@ namespace AnotherRpgMod.Items
             m_evolutionPoints = m_maxEvolutionPoints;
             m_ascendPoints = m_maxAscendPoints;
             m_itemTree.Reset(true);
+            
+            if (ascendedLevel>0)
+                m_itemTree.ExtendTree(Mathf.Clamp(Mathf.CeilInt(Mathf.Pow(baseCap / 3f, 0.95)), 5, 99)*ascendedLevel);
+
+            AnotherRpgMod.Instance.ItemTreeUI.Open(this);
         }
 
         public void Ascend()
