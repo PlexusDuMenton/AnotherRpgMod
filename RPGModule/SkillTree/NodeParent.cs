@@ -37,7 +37,10 @@ namespace AnotherRpgMod.RPGModule
 
         public readonly ushort ID;
 
-
+        public static void ResetID()
+        {
+            TotalID = 0;
+        } 
 
         public Vector2 menuPos;
         //comment to my future self as I will surely forget it : 

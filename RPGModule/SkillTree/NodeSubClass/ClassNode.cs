@@ -28,25 +28,14 @@ namespace AnotherRpgMod.RPGModule
         public override void Upgrade()
         {
             base.Upgrade();
+            UpdateClass();
+        }
 
-            NodeParent _node;
-            if (Main.myPlayer >= Main.player.Length)
-                return;
-            RPGPlayer player = Main.player[Main.myPlayer].GetModPlayer<RPGPlayer>();
-            player.GetskillTree.ActiveClass = this;
-
-            for (int i = 0; i < player.GetskillTree.nodeList.nodeList.Count; i++)
-            {
-                _node = player.GetskillTree.nodeList.nodeList[i];
-                if (_node.GetNodeType == NodeType.Class)
-                {
-                    ClassNode classNode = (ClassNode)_node.GetNode;
-                    if (classNode.GetClassType != classType && classNode.GetActivate)
-                    {
-                        classNode.Disable();
-                    }
-                }
-            }
+        public void Disable(RPGPlayer p)
+        {
+            if (p.GetskillTree.ActiveClass == this)
+                p.GetskillTree.ActiveClass = null;
+            enable = false;
         }
 
         public void Disable()
@@ -56,16 +45,10 @@ namespace AnotherRpgMod.RPGModule
             enable = false;
         }
 
-        public override void ToggleEnable()
+        public void UpdateClass()
         {
-            base.ToggleEnable();
             NodeParent _node;
-            if (enable)
-                Main.player[Main.myPlayer].GetModPlayer<RPGPlayer>().GetskillTree.ActiveClass = this;
-            else
-            {
-                Main.player[Main.myPlayer].GetModPlayer<RPGPlayer>().GetskillTree.ActiveClass = null;
-            }
+
             for (int i = 0; i < Main.player[Main.myPlayer].GetModPlayer<RPGPlayer>().GetskillTree.nodeList.nodeList.Count; i++)
             {
                 _node = Main.player[Main.myPlayer].GetModPlayer<RPGPlayer>().GetskillTree.nodeList.nodeList[i];
@@ -80,5 +63,25 @@ namespace AnotherRpgMod.RPGModule
                 }
             }
         }
+
+        public override void ToggleEnable()
+        {
+            base.ToggleEnable();
+            
+            if (enable)
+                Main.player[Main.myPlayer].GetModPlayer<RPGPlayer>().GetskillTree.ActiveClass = this;
+            else
+            {
+                Main.player[Main.myPlayer].GetModPlayer<RPGPlayer>().GetskillTree.ActiveClass = null;
+            }
+            
+            RPGPlayer player = Main.player[Main.myPlayer].GetModPlayer<RPGPlayer>();
+            if (Main.netMode == 1)
+                player.SendClientChanges(player);
+
+            UpdateClass();
+        }
+
+
     }
 }

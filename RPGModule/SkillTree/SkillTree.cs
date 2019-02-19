@@ -156,7 +156,6 @@ namespace AnotherRpgMod.RPGModule
         }
         public SkillTree()
         {
-
             nodeList = new NodeList();
             JsonNodeList NodeSaved = JsonSkillTree.GetJsonNodeList;
 
@@ -225,6 +224,7 @@ namespace AnotherRpgMod.RPGModule
         public readonly static int SKILLTREEVERSION = 1;
         public void Init()
         {
+            NodeParent.ResetID();
             nodeList.nodeList[0].Upgrade();
         }
     }

@@ -12,7 +12,7 @@ namespace AnotherRpgMod.Utils
         public static Dictionary<Message, List<DataTag>> dataTags = new Dictionary<Message, List<DataTag>>()
         {
             { Message.AddXP, new List<DataTag>(){ DataTag.amount, DataTag.level } },
-            { Message.SyncLevel, new List<DataTag>(){ DataTag.playerId, DataTag.amount } },
+            { Message.SyncLevel, new List<DataTag>(){ DataTag.playerId, DataTag.amount,DataTag.buffer } },
             { Message.SyncNPCSpawn, new List<DataTag>(){ DataTag.npcId, DataTag.level, DataTag.tier, DataTag.rank,DataTag.modifiers,DataTag.buffer, DataTag.WorldTier } },
             { Message.SyncNPCUpdate, new List<DataTag>(){ DataTag.npcId, DataTag.life, DataTag.maxLife } },
             { Message.AskNpc, new List<DataTag>(){ DataTag.npcId } },
@@ -121,10 +121,18 @@ namespace AnotherRpgMod.Utils
             switch (msg)
             {
                 case Message.SyncLevel:
-                    if (Main.netMode != 0)
-                        Main.player[(int)tags[DataTag.playerId]].GetModPlayer<RPGPlayer>().SyncLevel((int)tags[DataTag.amount]);
-                    if ((int)tags[DataTag.amount] > AnotherRpgMod.PlayerLevel)
-                        AnotherRpgMod.PlayerLevel = (int)tags[DataTag.amount];
+                    RPGPlayer p = Main.player[(int)tags[DataTag.playerId]].GetModPlayer<RPGPlayer>();
+                    if (p.baseName == "")
+                        p.baseName = Main.player[(int)tags[DataTag.playerId]].name;
+
+                    
+                    if((int)tags[DataTag.playerId] != Main.myPlayer)
+                    {
+                        if (Main.netMode != 0)
+                            p.SyncLevel((int)tags[DataTag.amount]);
+                        Main.player[(int)tags[DataTag.playerId]].name = p.baseName + " The Lvl." + p.GetLevel() + " " + (string)tags[DataTag.buffer];
+                    }
+                    
                     break;
                 case Message.AddXP:
                     Main.LocalPlayer.GetModPlayer<RPGPlayer>().AddXp((int)tags[DataTag.amount], (int)tags[DataTag.level]);

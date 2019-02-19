@@ -108,7 +108,7 @@ namespace AnotherRpgMod
             Instance.Logger.Info("Another Rpg Mod " + Version + " Correctly loaded");
             JsonSkillTree.Init();
             JsonCharacterClass.Init();
-            LoadedMods[SupportedMod.Thorium] = ModLoader.GetMod("Thorium") != null;
+            LoadedMods[SupportedMod.Thorium] = ModLoader.GetMod("ThoriumMod") != null;
             LoadedMods[SupportedMod.Calamity] = ModLoader.GetMod("CalamityMod") != null;
             LoadedMods[SupportedMod.Tremor] = ModLoader.GetMod("TremorMod") != null;
             LoadedMods[SupportedMod.DBZMOD] = ModLoader.GetMod("DBZMOD") != null;
