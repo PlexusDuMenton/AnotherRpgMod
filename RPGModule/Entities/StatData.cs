@@ -16,7 +16,7 @@ namespace AnotherRpgMod.RPGModule.Entities
 
         public int XpForLevel()
         {
-            return Mathf.CeilInt(level * 0.04f) + 1;
+            return Mathf.CeilInt(Mathf.Pow(level * 0.04f,0.75f)) + 1;
         }
         public void AddXp(int _xp)
         {

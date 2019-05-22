@@ -688,7 +688,7 @@ namespace AnotherRpgMod.Items
                     value = 10 + (itemU.Level * 0.2f) + itemU.Ascention * 0.5f + Mathf.Log2((float)itemU.rarity) * 2f; ;
                     break;
                 case (Modifier.Savior): 
-                    value = 10 + (itemU.Level * 0.2f) + itemU.Ascention * 1f + Mathf.Log2((float)itemU.rarity) * 2.5f;
+                    value = Mathf.Clamp(10 + (itemU.Level * 0.2f) + itemU.Ascention * 1f + Mathf.Log2((float)itemU.rarity) * 2.5f,10,50);
                     break;
                 case (Modifier.FireLord):
                     value = 350 + (itemU.Level * 10) + itemU.Ascention * 50;
@@ -724,7 +724,7 @@ namespace AnotherRpgMod.Items
                     value = Mathf.Clamp(30f + (itemU.Level * 0.5f) + itemU.Ascention * 5f + Mathf.Log2((float)itemU.rarity) * 5f, 0f, 80f);
                     break;
                 case (Modifier.Cleave):
-                    
+                    value = Mathf.Clamp(5 + (itemU.Level * 0.15f) + itemU.Ascention * 1f + Mathf.Log2((float)itemU.rarity) * 1.5f, 0f, 80f);
                     break;
                 case (Modifier.Random):
                     break;

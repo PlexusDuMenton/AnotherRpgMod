@@ -30,25 +30,71 @@ namespace AnotherRpgMod.Items
         string[] AscendName =
         {
             "",
-            "Raised ",
+            "Limit Breaked",
             "Mortal ",
-            "Raging ",
+            "Raised ",
             "Unleashed ",
-            "Rampageous ",
+            "Immortal ",
             "Ascended ",
-            "transcendental ",
-            "Trans-Universal ",
-            "Trans-Dimensional "
+            "High Ascended ",
+            "Peak Ascended ",
+            "Transcendental ",
+            "Lower Divine Collection ",
+            "Divine Collection ",
+            "Higher Divine Collection ",
+            "Heavenly Divine Collection ",
+            "Heavenly Divine Collection ",
+            "Heavenly Div1ne Collection ",
+            "Heavenly D1vine Collection ",
+            "HeAvenly D1v1ne CollEction ",
+            "He@v3nly D1B1n3 C01leCti0n ",
+            "C8@V3€4y D3?5n C01;eCti0, ",
+            "C0rpt3d d30n Collection ",
+            "Corrupted Demon Collection ",
+            "Corrupted Arch-Demon Collection ",
+            "Corrupted Devil Collection ",
+            "Devil Horror Collection ",
+            "Cosmic Horror Collection ",
+            "Eldritch Horror Collection ",
+            "........",
+            "...H...",
+            "..Hello.",
+            "..Why are you keep using it ?..",
+            "..This is beyond any limit...",
+            "..What are you trying to achieve like this ?..",
+            "..Do you want Power ? You have it, wealth ? You have it too, WHAT IS THE POINTS OF THIS ?..",
+            "..Oh you do it for the Text ?..",
+            "..Do you realy think I want to speak to your ?..",
+            "..Ah, you can stop here, there won't be more, honestly, I'm surprised you didn't get an int overflow yet..",
+            "..Good bye..",
+            "........",
+            "........",
+            "........",
+            "........",
+            ".....................",
+            "...What are you doing ?! Did I fix this stupid overflow bug...",
+            "...Well, here something for you, Item node rarity increase as you go deep into the tree, so some impossible to get node...",
+            "...Will appear often at deep layer, but I guess you've seen it...",
+            "...Good Luck...",
+            "........",
+            ".......",
+            "......",
+            ".....",
+            "....",
+            "..",
+            ".",
+            "",
+            "One Punch Man",
         };
 
 
         protected ItemSkillTree m_itemTree;
-        protected int m_evolutionPoints;
-        protected int m_ascendPoints;
-        protected int m_maxEvolutionPoints;
-        protected int m_maxAscendPoints;
+        public int GetEvolutionPoints { get { return m_itemTree.EvolutionPoints; } }
+        public int GetAscendPoints { get { return m_itemTree.AscendPoints; } }
+        public int GetMaxEvolutionPoints { get { return m_itemTree.MaxEvolutionPoints; } }
+        public int GetMaxAscendPoints { get { return m_itemTree.MaxAscendPoints; } }
 
-        
+
 
 
         public Modifier modifier = Modifier.None;
@@ -297,20 +343,17 @@ namespace AnotherRpgMod.Items
 
 
         public ItemSkillTree GetItemTree { get { return m_itemTree; } }
-        public int GetEvolutionPoints { get { return m_evolutionPoints; } }
-        public int GetAscendPoints { get { return m_ascendPoints; } }
-        public int GetMaxEvolutionPoints { get { return m_maxEvolutionPoints; } }
-        public int GetMaxAscendPoints { get { return m_maxAscendPoints; } }
+        
 
         public void SpendPoints(int points,bool ascend = false)
         {
             if (ascend)
             {
-                m_ascendPoints -= points;
+                m_itemTree.AscendPoints -= points;
             }
             else
             {
-                m_evolutionPoints -= points;
+                m_itemTree.EvolutionPoints -= points;
             }
         }
         
@@ -518,18 +561,20 @@ namespace AnotherRpgMod.Items
                 Main.projectile[projnum].hostile = false;
 
             }
-            for (int i = 0; i < ascendedLevel; i++)
-            {
-                float spread = 10 * 0.0174f; //20 degree cone
-                float baseSpeed = (float)Math.Sqrt(speedX * speedX + speedY * speedY) * (1 + 0.1f * Main.rand.NextFloat());
-                double baseAngle = Math.Atan2(speedX, speedY);
-                double randomAngle = baseAngle + (Main.rand.NextFloat() - 0.5f) * spread;
-                float spdX = baseSpeed * (float)Math.Sin(randomAngle);
-                float spdY = baseSpeed * (float)Math.Cos(randomAngle);
+            if (!item.summon) { 
+                for (int i = 0; i < ascendedLevel; i++)
+                {
+                    float spread = 10 * 0.0174f; //20 degree cone
+                    float baseSpeed = (float)Math.Sqrt(speedX * speedX + speedY * speedY) * (1 + 0.1f * Main.rand.NextFloat());
+                    double baseAngle = Math.Atan2(speedX, speedY);
+                    double randomAngle = baseAngle + (Main.rand.NextFloat() - 0.5f) * spread;
+                    float spdX = baseSpeed * (float)Math.Sin(randomAngle);
+                    float spdY = baseSpeed * (float)Math.Cos(randomAngle);
 
-                int projnum = Projectile.NewProjectile(position.X, position.Y, spdX, spdY, Projectileid, damage, knockBack, player.whoAmI);
-                Main.projectile[projnum].friendly = true;
-                Main.projectile[projnum].hostile = false;
+                    int projnum = Projectile.NewProjectile(position.X, position.Y, spdX, spdY, Projectileid, damage, knockBack, player.whoAmI);
+                    Main.projectile[projnum].friendly = true;
+                    Main.projectile[projnum].hostile = false;
+                }
             }
             return true;
         }
@@ -566,10 +611,10 @@ namespace AnotherRpgMod.Items
 
             if (tag.GetIntArray("evolutionInfo")!= null && tag.GetIntArray("evolutionInfo").Length == 4)
             {
-                m_evolutionPoints = tag.GetIntArray("evolutionInfo")[0];
-                m_maxEvolutionPoints = tag.GetIntArray("evolutionInfo")[1];
-                m_ascendPoints = tag.GetIntArray("evolutionInfo")[2];
-                m_maxAscendPoints = tag.GetIntArray("evolutionInfo")[3];
+                m_itemTree.EvolutionPoints = tag.GetIntArray("evolutionInfo")[0];
+                m_itemTree.MaxEvolutionPoints = tag.GetIntArray("evolutionInfo")[1];
+                m_itemTree.AscendPoints = tag.GetIntArray("evolutionInfo")[2];
+                m_itemTree.MaxAscendPoints = tag.GetIntArray("evolutionInfo")[3];
             }
             else
             {
@@ -798,18 +843,18 @@ namespace AnotherRpgMod.Items
                     {
                         if (Config.gpConfig.ItemTree)
                         {
-                            if (m_evolutionPoints > 0)
+                            if (m_itemTree.EvolutionPoints > 0)
                             {
-                                TooltipLine infott = new TooltipLine(mod, "pointsInfo", m_evolutionPoints + " Evolution Points left !")
+                                TooltipLine infott = new TooltipLine(mod, "pointsInfo", m_itemTree.EvolutionPoints + " Evolution Points left !")
                                 {
                                     isModifier = true,
                                     overrideColor = Color.Orange
                                 };
                                 tooltips.Add(infott);
                             }
-                            if (m_ascendPoints > 0)
+                            if (m_itemTree.AscendPoints > 0)
                             {
-                                TooltipLine infotta = new TooltipLine(mod, "pointsAscendInfo", m_ascendPoints + " Ascend Points left !!!")
+                                TooltipLine infotta = new TooltipLine(mod, "pointsAscendInfo", m_itemTree.AscendPoints + " Ascend Points left !!!")
                                 {
                                     isModifier = true,
                                     overrideColor = Color.Red
@@ -893,7 +938,7 @@ namespace AnotherRpgMod.Items
                 {"modifier",(int)modifier },
                 {"stats", statsArray},
                 {"tree", treeToString(m_itemTree)},
-                {"evolutionInfo", new int[4]{m_evolutionPoints,m_maxEvolutionPoints,m_ascendPoints,m_maxAscendPoints } }
+                {"evolutionInfo", new int[4]{ m_itemTree.EvolutionPoints, m_itemTree.MaxEvolutionPoints, m_itemTree.AscendPoints, m_itemTree.MaxAscendPoints } }
             };
         }
 
@@ -1140,17 +1185,13 @@ namespace AnotherRpgMod.Items
 
         public void ResetTree()
         {
-            m_evolutionPoints = m_maxEvolutionPoints;
-            m_ascendPoints = m_maxAscendPoints;
             m_itemTree.Reset(false);
         }
 
         public void CompleteReset()
         {
-            m_maxEvolutionPoints = level;
-            m_maxAscendPoints = ascendedLevel;
-            m_evolutionPoints = m_maxEvolutionPoints;
-            m_ascendPoints = m_maxAscendPoints;
+            m_itemTree.MaxEvolutionPoints = level;
+            m_itemTree.MaxAscendPoints = ascendedLevel;
             m_itemTree.Reset(true);
             
             if (ascendedLevel>0)
@@ -1162,8 +1203,8 @@ namespace AnotherRpgMod.Items
         public void Ascend()
         {
             ascendedLevel++;
-            m_maxAscendPoints++;
-            m_ascendPoints++;
+            m_itemTree.MaxAscendPoints++;
+            m_itemTree.AscendPoints++;
             m_itemTree.ExtendTree(Mathf.Clamp( Mathf.CeilInt(Mathf.Pow(baseCap / 3f, 0.95)),5,99));
 
             if (UI.ItemTreeUi.visible)
@@ -1176,8 +1217,8 @@ namespace AnotherRpgMod.Items
             {
                 
                 Main.NewText("WEAPON LIMIT BREAK !!!",Color.OrangeRed);
-                m_evolutionPoints = 0;
-                m_maxEvolutionPoints = 0;
+                m_itemTree.MaxAscendPoints = 0;
+                m_itemTree.MaxEvolutionPoints = 0;
                 m_itemTree.Reset(false);
                 level = 0;
             }
@@ -1232,8 +1273,8 @@ namespace AnotherRpgMod.Items
             if (itemType == ItemType.Weapon)
                 CombatText.NewText(player.getRect(), new Color(255, 26, 255), "Weapon upgrade !", true);
             level++;
-            m_maxEvolutionPoints++;
-            m_evolutionPoints++;
+            m_itemTree.MaxEvolutionPoints++;
+            m_itemTree.EvolutionPoints++;
 
             if (level == GetCapLevel() && ascendedLevel == 0)
                 Main.NewText("Your item has reached its limit", Color.Red);

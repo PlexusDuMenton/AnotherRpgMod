@@ -457,7 +457,7 @@ namespace AnotherRpgMod.RPGModule.Entities
         #region ARMORXP
         private void AddArmorXp(int damage, float multiplier = 1)
     {
-            damage = Mathf.Clamp(damage, 0, player.statLifeMax2);
+            damage = Mathf.Clamp(damage + player.statDefense, 0, player.statLifeMax2);
             Item armorItem;
             for (int i = 0;i< 3; i++)
             {
@@ -696,10 +696,16 @@ namespace AnotherRpgMod.RPGModule.Entities
                     player.maxMinions += skilltree.GetSummonSlot();
                     player.maxMinions += GetMaxMinion();
 
+
+                    //MODED DAMAGE
                     if (AnotherRpgMod.LoadedMods[SupportedMod.Thorium])
                     {
                         UpdateThoriumDamage(player);
                     }
+
+                    if (AnotherRpgMod.LoadedMods[SupportedMod.Tremor])
+                        UpdateTremorDamage(player);
+
                     if (AnotherRpgMod.LoadedMods[SupportedMod.DBZMOD])
                     {
                         UpdateDBZDamage(player);
@@ -804,9 +810,15 @@ namespace AnotherRpgMod.RPGModule.Entities
                     player.meleeSpeed *= 1 + JsonCharacterClass.GetJsonCharList.GetClass(skilltree.ActiveClass.GetClassType).Speed;
                     player.manaCost *= 1 - JsonCharacterClass.GetJsonCharList.GetClass(skilltree.ActiveClass.GetClassType).ManaCost;
 
+
+                    if (skilltree.ActiveClass.GetClassType == ClassType.Ninja)
+                    {
+                        player.thrownVelocity *= 1.2f;
+                    }
+
                     if (skilltree.ActiveClass.GetClassType == ClassType.Shinobi)
                     {
-                        player.dash = 4;
+                        player.thrownVelocity *= 1.5f;
                     }
                 }
             }
@@ -955,7 +967,7 @@ namespace AnotherRpgMod.RPGModule.Entities
                     case DamageType.Radiant:
                         return (GetStatImproved(Stat.Int) * SECONDARYTATSMULT + GetStatImproved(Stat.Spr) * SECONDARYTATSMULT) * statMultiplier + 0.8f;
                     case DamageType.Alchemic:
-                        return (Stats.GetStat(Stat.Dex) * SECONDARYTATSMULT + Stats.GetStat(Stat.Str) * SECONDARYTATSMULT) * statMultiplier + 0.8f;
+                        return (Stats.GetStat(Stat.Int) * SECONDARYTATSMULT + Stats.GetStat(Stat.Str) * SECONDARYTATSMULT) * statMultiplier + 0.8f;
                 case DamageType.KI:
                         return (GetStatImproved(Stat.Spr) * MAINSTATSMULT + GetStatImproved(Stat.Str) * SECONDARYTATSMULT) * statMultiplier + 0.8f;
                 default:

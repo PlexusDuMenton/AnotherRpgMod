@@ -20,6 +20,8 @@ namespace AnotherRpgMod.Utils
                     break;
                 case Stat.Foc:
                     Text = "Focus : Increase Mana,\n Summon Damage\n and critical Chance.";
+                    if (AnotherRpgMod.LoadedMods[SupportedMod.Thorium])
+                        Text += "\n Also Slighty Increase Symphonic Damage";
                     if (AnotherRpgMod.LoadedMods[SupportedMod.DBZMOD])
                         Text += "\n Also Slighty Increase Max Ki";
                     break;
@@ -33,16 +35,25 @@ namespace AnotherRpgMod.Utils
                     break;
                 case Stat.Agi:
                     Text = "Agility : Increase Ranged,\n Melee\n and Critical Damage.";
+                    if (AnotherRpgMod.LoadedMods[SupportedMod.Thorium])
+                        Text += "\n Also Increase Symphonic Damage";
                     break;
                 case Stat.Dex:
                     Text = "Dexterity : Increase Throw\n and Ranged Damage,\n Critical Chance.";
+                    if (AnotherRpgMod.LoadedMods[SupportedMod.Tremor])
+                        Text += "\n Also Increase Alchemic Damage";
                     break;
                 case Stat.Int:
                     Text = "Inteligence : Increase Magic Damage,\n Mana Regeneration\n and Mana.";
-                    
+                    if (AnotherRpgMod.LoadedMods[SupportedMod.Thorium])
+                        Text += "\n Also Increase Radiant Damage";
+                    if (AnotherRpgMod.LoadedMods[SupportedMod.Tremor])
+                        Text += "\n Also Slighty Increase Alchemic Damage";
                     break;
                 case Stat.Spr:
                     Text = "Spirit : Increase Magic\n and Summon Damage,\n Increase Mana Regeneration.";
+                    if (AnotherRpgMod.LoadedMods[SupportedMod.Thorium])
+                        Text += "\n Also Slighty Increase Radiant Damage";
                     if (AnotherRpgMod.LoadedMods[SupportedMod.DBZMOD])
                         Text += "\n Also Increase Ki Damage";
                     break;

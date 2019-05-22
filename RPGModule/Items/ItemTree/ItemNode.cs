@@ -17,6 +17,9 @@ namespace AnotherRpgMod.Items
         protected List<int> m_ID_Neightboor;
         protected ItemSkillTree m_SkillTreeParent;
 
+
+
+
         public float rarityWeight = 1;
 
         public List<int> GetNeighboor { get { return m_ID_Neightboor; } }

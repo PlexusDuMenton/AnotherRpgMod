@@ -476,8 +476,9 @@ namespace AnotherRpgMod.RPGModule.Entities
                 (int)npc.position.Y,
                 npc.type
                 );
+            Main.npc[n].SetDefaults(Main.npc[n].netID);
             Main.npc[n].velocity.X = Mathf.RandomInt(-8, 8);
-            Main.npc[n].velocity.Y = Mathf.RandomInt(-8, 3);
+            Main.npc[n].velocity.Y = Mathf.RandomInt(-20, -2);
             Main.npc[n].GetGlobalNPC<ARPGGlobalNPC>().SetBufferProperty("clustered", "true");
         }
 

@@ -164,6 +164,19 @@ namespace AnotherRpgMod.Items
         //;ID,Neighboor1:2,state,level,maxlevel,required,posx:posy,specificvalue1:2:3:5:7;
         //Convert to Json, to save
 
+
+        protected int m_evolutionPoints;
+        protected int m_ascendPoints;
+        protected int m_maxEvolutionPoints;
+        protected int m_maxAscendPoints;
+
+        public int EvolutionPoints { get { return m_evolutionPoints; } set { m_evolutionPoints = value; } }
+        public int AscendPoints { get { return m_ascendPoints; } set { m_ascendPoints = value; } }
+        public int MaxEvolutionPoints { get { return m_maxEvolutionPoints; } set { m_maxEvolutionPoints = value; } }
+        public int MaxAscendPoints { get { return m_maxAscendPoints; } set { m_maxAscendPoints = value; } }
+
+
+
         private int HaveNodeAtPos(Vector2 pos)
         {
             for(int i = 0;i< m_nodeList.Count; i++)
@@ -333,6 +346,9 @@ namespace AnotherRpgMod.Items
 
         public void Reset(bool Complete)
         {
+
+            m_evolutionPoints = m_maxEvolutionPoints;
+            m_ascendPoints = m_maxAscendPoints;
             if (Complete)
             {
                 m_nodeList = new List<ItemNode>();

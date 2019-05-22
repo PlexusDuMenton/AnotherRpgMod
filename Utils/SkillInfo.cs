@@ -116,7 +116,11 @@ namespace AnotherRpgMod.Utils
             }
             if (classType == ClassType.Shinobi)
             {
-                desc += "Grant Ninja Dash";
+                desc += "+50% throw velocity";
+            }
+            if (classType == ClassType.Ninja)
+            {
+                desc += "+20% throw velocity";
             }
             return desc;
         }

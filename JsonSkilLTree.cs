@@ -25,7 +25,7 @@ namespace AnotherRpgMod
     {
         public JsonNode[] jsonList = {
             // BASE TYPE , POSX, POSY, NEIGHTBOORLIST, SPECIFIC TYPE, ISFLATDAMAGE?, VALUEPERLEVEL, LEVEL REQUIREMENT, MAXLEVEL , POINTS PER LEVEL
-            new JsonNode("Class",0,0,true,new int[6]{ 1,2,3,4,5,6},"Tourist",false,0.1f,5,1,1), //0
+            new JsonNode("Class",0,0,true,new int[6]{ 1,2,3,4,5,6},"Tourist",false,0.1f,1,1,1), //0
             new JsonNode("Class",0,250,false,new int[1]{0},"Apprentice",false,0.1f,10,1,1), //1
             new JsonNode("Damage",-100,75,false,new int[4]{0,3,7,8},"Melee",false,0.01f,1,20,1), //2
             new JsonNode("Damage",100,75,false,new int[5]{ 0, 2,4,9,10},"Magic",false,0.01f,1,20,1), //3

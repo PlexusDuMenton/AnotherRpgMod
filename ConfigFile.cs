@@ -75,6 +75,11 @@ namespace AnotherRpgMod
         [DefaultValue(true)]
         public bool DisplayNpcName;
 
+        [Label("Display npc name")]
+        [Tooltip("Display Town Npc information at all time and detailed information when mouse over")]
+        [DefaultValue(true)]
+        public bool DisplayTownName;
+
         public override void PostAutoLoad()
         {
             AnotherRpgMod.visualConfig = this;
