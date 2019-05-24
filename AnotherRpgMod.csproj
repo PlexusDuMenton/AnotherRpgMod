@@ -70,9 +70,6 @@
     <Compile Include="RPGModule\Entities\Enum\NPCModifier.cs" />
     <Compile Include="RPGModule\Entities\Enum\NPCRank.cs" />
     <Compile Include="RPGModule\Entities\NPC\NPCUtils.cs" />
-    <Compile Include="obj\Debug\TemporaryGeneratedFile_036C0B5B-1481-4323-8D20-8F5ADCB23D92.cs" />
-    <Compile Include="obj\Debug\TemporaryGeneratedFile_5937a670-0e60-4077-877b-f7221da3dda1.cs" />
-    <Compile Include="obj\Debug\TemporaryGeneratedFile_E7A71F73-0F8D-4B9B-B56E-8E70B10BC5D3.cs" />
     <Compile Include="RPGModule\Entities\RPGStats.cs" />
     <Compile Include="RPGModule\Entities\StatData.cs" />
     <Compile Include="RPGModule\Enum\Stat.cs" />
@@ -109,6 +106,9 @@
     <Compile Include="Utils\WorldManager.cs" />
   </ItemGroup>
   <ItemGroup>
+    <Reference Include="dbz">
+      <HintPath>..\..\refs\dbz.dll</HintPath>
+    </Reference>
     <Reference Include="log4net">
       <HintPath>..\..\references\log4net.dll</HintPath>
     </Reference>
@@ -128,11 +128,8 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>C:\Windows\Microsoft.NET\assembly\GAC_32\Microsoft.Xna.Framework.Xact\v4.0_4.0.0.0__842cf8be1de50553\Microsoft.Xna.Framework.Xact.dll</HintPath>
     </Reference>
-    <Reference Include="Newtonsoft.Json, Version=11.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
-      <HintPath>packages\Newtonsoft.Json.11.0.2\lib\net45\Newtonsoft.Json.dll</HintPath>
-    </Reference>
-    <Reference Include="ref">
-      <HintPath>..\..\Mod Reader\Tremor\ref.dll</HintPath>
+    <Reference Include="Newtonsoft.Json, Version=12.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+      <HintPath>packages\Newtonsoft.Json.12.0.2\lib\net45\Newtonsoft.Json.dll</HintPath>
     </Reference>
     <Reference Include="ReLogic">
       <HintPath>..\..\references\ReLogic.dll</HintPath>
@@ -141,13 +138,13 @@
     <Reference Include="System.Windows.Forms" />
     <Reference Include="Terraria, Version=1.3.5.1, Culture=neutral, processorArchitecture=x86">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\..\..\..\Program Files (x86)\Steam\steamapps\common\Terraria\Terraria.exe</HintPath>
+      <HintPath>E:\SteamSoft\steamapps\common\Terraria\Terraria.exe</HintPath>
     </Reference>
     <Reference Include="ThoriumMod">
-      <HintPath>..\..\Mod Reader\ThoriumMod.dll</HintPath>
+      <HintPath>..\..\refs\ThoriumMod.dll</HintPath>
     </Reference>
-    <Reference Include="Windows">
-      <HintPath>..\..\Mod Reader\DBZMOD\Windows.dll</HintPath>
+    <Reference Include="Tremor">
+      <HintPath>..\..\refs\Tremor.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup>
@@ -156,6 +153,10 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="OtherModSources\" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="build.txt" />
+    <Content Include="description.txt" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>

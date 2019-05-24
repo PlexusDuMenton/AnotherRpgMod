@@ -42,13 +42,7 @@ namespace AnotherRpgMod
     public class VisualConfig : ModConfig
     {
         // You MUST specify a MultiplayerSyncMode.
-        public override MultiplayerSyncMode Mode
-        {
-            get
-            {
-                return MultiplayerSyncMode.UniquePerPlayer;
-            }
-        }
+        public override ConfigScope Mode => ConfigScope.ClientSide;
 
         [Label("HealthBar Offset")]
         [Tooltip("Health Bar Offset on the Y axis")]
@@ -80,17 +74,19 @@ namespace AnotherRpgMod
         [DefaultValue(true)]
         public bool DisplayTownName;
 
-        public override void PostAutoLoad()
+
+        public override void OnLoaded()
         {
             AnotherRpgMod.visualConfig = this;
         }
-
-        public override void PostSave()
+        public override void OnChanged()
         {
             AnotherRpgMod.visualConfig = this;
-            AnotherRpgMod.Instance.healthBar.OnInitialize();
-            AnotherRpgMod.Instance.OpenST.OnInitialize();
-            AnotherRpgMod.Instance.openStatMenu.OnInitialize();
+            if (AnotherRpgMod.Instance!= null) { 
+                AnotherRpgMod.Instance.healthBar.OnInitialize();
+                AnotherRpgMod.Instance.OpenST.OnInitialize();
+                AnotherRpgMod.Instance.openStatMenu.OnInitialize();
+            }
         }
     }
 
@@ -99,13 +95,7 @@ namespace AnotherRpgMod
     {
 
         // You MUST specify a MultiplayerSyncMode.
-        public override MultiplayerSyncMode Mode
-        {
-            get
-            {
-                return MultiplayerSyncMode.ServerDictates;
-            }
-        }
+        public override ConfigScope Mode => ConfigScope.ServerSide;
 
         [Label("Npc Progression")]
         [Tooltip("Npc level enable/Disable")]
@@ -185,13 +175,11 @@ namespace AnotherRpgMod
         [DefaultValue(1)]
         public float ItemXpMultiplier;
 
-
-        public override void PostAutoLoad()
+        public override void OnLoaded()
         {
             AnotherRpgMod.gpConfig = this;
         }
-
-        public override void PostSave()
+        public override void OnChanged()
         {
             AnotherRpgMod.gpConfig = this;
         }

@@ -169,7 +169,7 @@ namespace AnotherRpgMod.RPGModule.Entities
 
         public static int GetExp(NPC npc)
         {
-            return Mathf.CeilInt(Math.Pow(npc.lifeMax / 8 + npc.damage*1.2 + npc.defense * 1.7f, 1.02f));
+            return Mathf.CeilInt(Math.Pow(npc.lifeMax / 8 + npc.damage*1.2 + npc.defense * 1.7f, 0.9f));
         }
 
         private static NPCModifier AddRandomModifier(List<NPCModifier> pool)
@@ -538,26 +538,30 @@ namespace AnotherRpgMod.RPGModule.Entities
                 if (npc.boss)
                 {
                     if (npc.damage > 0) { 
-                        if (Mathf.HugeCalc(Mathf.FloorInt(npc.damage * Mathf.Pow(0.3f + level * 0.012f + tier * 0.02f, 0.90f)), 1) < 250000)
-                        npc.damage = Mathf.HugeCalc(Mathf.FloorInt(npc.damage * Mathf.Pow(0.3f + level * 0.012f + tier * 0.02f, 0.90f)     ), 1);
+                        if (Mathf.HugeCalc(Mathf.FloorInt(npc.damage * Mathf.Pow(0.3f + level * 0.012f + tier * 0.02f, 1.05f)), 1) < 250000)
+                        npc.damage = Mathf.HugeCalc(Mathf.FloorInt(npc.damage * Mathf.Pow(0.3f + level * 0.012f + tier * 0.02f, 1.05f)     ), 1);
                         else
                         {
                             npc.damage = Mathf.FloorInt(250000 * Mathf.Logx(1 + level * 0.10f + tier * 0.30f, 7.5f));
                         }
                     }
 
-                    npc.lifeMax = Mathf.HugeCalc(Mathf.FloorInt(npc.lifeMax * (0.5f + level * 0.02f + tier*0.03)), 1);
+                    npc.lifeMax = Mathf.HugeCalc(Mathf.FloorInt(Mathf.Pow(npc.lifeMax * (0.5f + level * 0.02f + tier*0.03),1.1f)), 1);
                 }
                 else
                 {
                     if (npc.damage > 0)
                         npc.damage = Mathf.HugeCalc(Mathf.FloorInt(npc.damage * Mathf.Pow(0.3f + level * 0.02f + tier * 0.04f, 0.85f)), 1);
-                    npc.lifeMax = Mathf.HugeCalc(Mathf.FloorInt(npc.lifeMax * (0.2f + level * 0.065f + tier * 0.1f)), 1);
+                    npc.lifeMax = Mathf.HugeCalc(Mathf.FloorInt(npc.lifeMax * (0.2f + level * 0.1f + tier * 0.125f)), 1);
                 }
 
                 npc.value = npc.value * (1 + (level + tier) * 0.01f) * Mathf.Clamp((int)rank,1,5);
                 if (npc.defense > 0)
                     npc.defense = Mathf.HugeCalc(Mathf.FloorInt(npc.defense * (1 + level * 0.01f + tier * 0.02f)), npc.defense);
+                if (npc.defense > 5)
+                    npc.defense -= 5;
+                else
+                    npc.defense = 0;
 
                 npc.life = npc.lifeMax;
 

@@ -608,6 +608,8 @@ namespace AnotherRpgMod.Items
 
             rarity = (Rarity)tag.GetInt("rarity");
             modifier = (Modifier)tag.GetInt("modifier");
+            if (m_itemTree == null || tag == null)
+                return;
 
             if (tag.GetIntArray("evolutionInfo")!= null && tag.GetIntArray("evolutionInfo").Length == 4)
             {
@@ -929,17 +931,33 @@ namespace AnotherRpgMod.Items
             //AnotherRpgMod.Instance.Logger.Info(item.Name);
             //AnotherRpgMod.Instance.Logger.Info(treeToString(m_itemTree));
 
-            return new TagCompound
+            if (statsArray == null || m_itemTree == null)
             {
-                {"Exp", xp},
-                {"level",level },
-                {"ascendedLevel",ascendedLevel },
-                {"rarity",(int)rarity },
-                {"modifier",(int)modifier },
-                {"stats", statsArray},
-                {"tree", treeToString(m_itemTree)},
-                {"evolutionInfo", new int[4]{ m_itemTree.EvolutionPoints, m_itemTree.MaxEvolutionPoints, m_itemTree.AscendPoints, m_itemTree.MaxAscendPoints } }
-            };
+                return new TagCompound
+                {
+                    {"Exp", xp},
+                    {"level",level },
+                    {"ascendedLevel",ascendedLevel },
+                    {"rarity",(int)rarity },
+                    {"modifier",(int)modifier },
+                    {"stats", statsArray},
+                    {"tree", ""},
+                    {"evolutionInfo", new int[1]{ 0} }
+                };
+            }
+            else { 
+                return new TagCompound
+                {
+                    {"Exp", xp},
+                    {"level",level },
+                    {"ascendedLevel",ascendedLevel },
+                    {"rarity",(int)rarity },
+                    {"modifier",(int)modifier },
+                    {"stats", statsArray},
+                    {"tree", treeToString(m_itemTree)},
+                    {"evolutionInfo", new int[4]{ m_itemTree.EvolutionPoints, m_itemTree.MaxEvolutionPoints, m_itemTree.AscendPoints, m_itemTree.MaxAscendPoints } }
+                };
+            }
         }
 
         public override bool ConsumeAmmo(Item item, Player player)
@@ -1292,7 +1310,7 @@ namespace AnotherRpgMod.Items
                 _xp *= 1 + (long)ModifierManager.GetModifierBonus(Modifier.SelfLearning, this) * (long)0.01f;
                 _xp *= 1 + (long)bonusXp;
             }
-            xp += Mathf.Clamp(_xp * (Int64)Config.gpConfig.ItemXpMultiplier - level, (Int64)0, Int64.MaxValue);
+            xp += (long)Mathf.Clamp(_xp * Config.gpConfig.ItemXpMultiplier - level, 0, long.MaxValue);
             while (xp >= GetExpToNextLevel(level, ascendedLevel))
             {
                 LevelUp(player, item);
