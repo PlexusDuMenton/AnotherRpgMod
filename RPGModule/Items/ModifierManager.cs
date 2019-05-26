@@ -346,7 +346,7 @@ namespace AnotherRpgMod.Items
                     value = .0f;
                     break;
                 case Rarity.Inferior:
-                    value = Mathf.Random(1, 2) * ((Mathf.Random(0, 2) < 1)? 1:-1) ;
+                    value = Mathf.Random(1, 2);
                     break;
                 case Rarity.Superior:
                     value = Mathf.Random(2, 3);
