@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using AnotherRpgMod.Utils;
 
 namespace AnotherRpgMod.Items
 {
@@ -17,10 +18,14 @@ namespace AnotherRpgMod.Items
 
         public Rarity DrawRarity()
         {
-            float totalWeight = 0;
+            int bossKilled = WorldManager.BossDefeated;
+
+                float totalWeight = 0;
             for (int i = 0; i < weights.Length; i++)
                 totalWeight += weights[i].weight;
-            float rn = Utils.Mathf.Random(0, totalWeight);
+            float rn = Mathf.Random(0, totalWeight);
+
+            rn += bossKilled * totalWeight * 0.01f;
             float actualWeight = 0;
             for (int i = 0; i < weights.Length; i++)
             {
@@ -28,7 +33,7 @@ namespace AnotherRpgMod.Items
                     return weights[i].rarity;
                 actualWeight += weights[i].weight;
             }
-            return weights[0].rarity;
+            return weights[weights.Length-1].rarity;
 
 
         }

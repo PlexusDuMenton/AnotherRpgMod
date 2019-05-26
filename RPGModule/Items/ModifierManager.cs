@@ -244,6 +244,33 @@ namespace AnotherRpgMod.Items
                     new RarityWeight(Rarity.Mythical,0.75f)
                 })
             },
+            { 14 ,
+                new RarityWeightManager(new RarityWeight[3]{
+                    new RarityWeight(Rarity.Epic,1.75f),
+                    new RarityWeight(Rarity.Legendary,1.75f),
+                    new RarityWeight(Rarity.Mythical,1.25f)
+                })
+            },
+            { 15 ,
+                new RarityWeightManager(new RarityWeight[3]{
+                    new RarityWeight(Rarity.Epic,1.5f),
+                    new RarityWeight(Rarity.Legendary,2f),
+                    new RarityWeight(Rarity.Mythical,1.5f)
+                })
+            },
+            { 16 ,
+                new RarityWeightManager(new RarityWeight[3]{
+                    new RarityWeight(Rarity.Epic,1),
+                    new RarityWeight(Rarity.Legendary,1.5f),
+                    new RarityWeight(Rarity.Mythical,3f)
+                })
+            },
+            { 17 ,
+                new RarityWeightManager(new RarityWeight[2]{
+                    new RarityWeight(Rarity.Legendary,2f),
+                    new RarityWeight(Rarity.Mythical,5f)
+                })
+            },
             { -12 ,
                 new RarityWeightManager(new RarityWeight[4]{
                     new RarityWeight(Rarity.MasterPiece,2.1f),
@@ -324,9 +351,20 @@ namespace AnotherRpgMod.Items
 
         public static Rarity GetRarity(Item item)
         {
-            if (rarityConversion.ContainsKey(item.rare))
-                return rarityConversion[item.rare].DrawRarity();
-            else return rarityConversion[5].DrawRarity();
+            int rarity = item.rare;
+            if (rarity >= -1) { 
+                if (Main.hardMode)
+                {
+                    rarity++;
+                }
+                if (NPC.downedMoonlord)
+                {
+                    rarity++;
+                }
+            }
+            if (rarityConversion.ContainsKey(rarity))
+                return rarityConversion[rarity].DrawRarity();
+            else return rarityConversion[17].DrawRarity();
         }
 
         
