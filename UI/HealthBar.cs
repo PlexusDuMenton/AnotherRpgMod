@@ -245,7 +245,6 @@ namespace AnotherRpgMod.UI
         {
             int mouseY = Main.lastMouseY - (int)buffPanel.Top.Pixels;
             int mouseX = Main.lastMouseX - (int)buffPanel.Left.Pixels;
-            AnotherRpgMod.Instance.Logger.Info("ToolTip");
             icon.color = new Color(1, 1, 1, 1f);
             string buffDesc = Lang.GetBuffDescription(id);
             if (id == 26 && Main.expertMode)

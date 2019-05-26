@@ -69,7 +69,7 @@ namespace AnotherRpgMod
         [DefaultValue(true)]
         public bool DisplayNpcName;
 
-        [Label("Display npc name")]
+        [Label("Display Town names")]
         [Tooltip("Display Town Npc information at all time and detailed information when mouse over")]
         [DefaultValue(true)]
         public bool DisplayTownName;

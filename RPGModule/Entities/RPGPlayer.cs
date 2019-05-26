@@ -696,7 +696,6 @@ namespace AnotherRpgMod.RPGModule.Entities
                     player.maxMinions += skilltree.GetSummonSlot();
                     player.maxMinions += GetMaxMinion();
 
-
                     //MODED DAMAGE
                     if (AnotherRpgMod.LoadedMods[SupportedMod.Thorium])
                     {
@@ -769,9 +768,17 @@ namespace AnotherRpgMod.RPGModule.Entities
 
     }
 
+    public float GetArmorPenetrationMult()
+        {
+            return 1f + Stats.GetStat(Stat.Dex) * 0.01f;
+        }
 
-    
-    public override void PostUpdateEquips()
+    public int GetArmorPenetrationAdd()
+        {
+            return Mathf.FloorInt( Stats.GetStat(Stat.Dex) * 0.1f);
+        }
+
+        public override void PostUpdateEquips()
     {
            
         if (Config.gpConfig.RPGPlayer)
@@ -802,6 +809,11 @@ namespace AnotherRpgMod.RPGModule.Entities
                 player.rangedDamage *= GetDamageMult(DamageType.Ranged, 2);
                 player.magicDamage *= GetDamageMult(DamageType.Magic, 2);
                 player.minionDamage *= GetDamageMult(DamageType.Summon, 2);
+
+                player.armorPenetration = Mathf.FloorInt( player.armorPenetration*GetArmorPenetrationMult());
+                player.armorPenetration += GetArmorPenetrationAdd();
+
+
                 if (skilltree.ActiveClass != null)
                 {
                     player.accRunSpeed *= (1 + JsonCharacterClass.GetJsonCharList.GetClass(skilltree.ActiveClass.GetClassType).MovementSpeed);

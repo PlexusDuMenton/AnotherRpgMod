@@ -335,7 +335,7 @@ namespace AnotherRpgMod.Items
         private static ItemStat GenRandomStat(Rarity rarity,bool accesories = false)
         {
             float value = 0;
-            int rn = Utils.Mathf.RandomInt(0, 7);
+            int rn = Mathf.RandomInt(0, 8);
             Stat stat = (Enum.GetValues(typeof(Stat)) as Stat[])[rn];
             switch (rarity)
             {

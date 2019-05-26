@@ -34,12 +34,12 @@ namespace AnotherRpgMod.Utils
                         Text += "\n Also Slighty Increase Ki Damage";
                     break;
                 case Stat.Agi:
-                    Text = "Agility : Increase Ranged,\n Melee\n and Critical Damage.";
+                    Text = "Agility : Increase Ranged,\n Melee\nand Critical Damage.";
                     if (AnotherRpgMod.LoadedMods[SupportedMod.Thorium])
                         Text += "\n Also Increase Symphonic Damage";
                     break;
                 case Stat.Dex:
-                    Text = "Dexterity : Increase Throw\n and Ranged Damage,\n Critical Chance.";
+                    Text = "Dexterity : Increase Throw\nRanged Damage\nArmor Penetration\n Critical Chance.";
                     if (AnotherRpgMod.LoadedMods[SupportedMod.Tremor])
                         Text += "\n Also Increase Alchemic Damage";
                     break;
