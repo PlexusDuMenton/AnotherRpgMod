@@ -83,7 +83,7 @@ namespace AnotherRpgMod
         {
             AnotherRpgMod.visualConfig = this;
             if (AnotherRpgMod.Instance!= null) { 
-                AnotherRpgMod.Instance.healthBar.OnInitialize();
+                AnotherRpgMod.Instance.healthBar.Reset();
                 AnotherRpgMod.Instance.OpenST.OnInitialize();
                 AnotherRpgMod.Instance.openStatMenu.OnInitialize();
             }

@@ -295,25 +295,14 @@ namespace AnotherRpgMod.UI
 
         public override void OnInitialize()
         {
-            Erase();
+            LoadTexture();
+            Reset();
 
-            buffTTPanel = new UIElement();
-            buffTTPanel.Left.Set(10 * scale, 0f);
-            buffTTPanel.Top.Set(Main.screenHeight - baseUiHeight + YDefaultOffSet + 185 * scale, 0f);
-            buffTTPanel.Width.Set(0, 0f);
-            buffTTPanel.Height.Set(0, 0f);
 
-            buffPanel = new UIElement();
-            buffPanel.Left.Set(10 * scale, 0f);
-            buffPanel.Top.Set(Main.screenHeight - baseUiHeight + YDefaultOffSet + 185 * scale, 0f);
-            buffPanel.Width.Set(1000, 0f);
-            buffPanel.Height.Set(400, 0f);
-            YDefaultOffSet = -Config.vConfig.HealthBarYoffSet;
-            scale = Config.vConfig.HealthBarScale;
+        }
 
-            player = Main.player[Main.myPlayer];
-
-            
+        public void LoadTexture()
+        {
 
             float[] baseUiOffset =
             {
@@ -335,6 +324,35 @@ namespace AnotherRpgMod.UI
 
             };
 
+            Overlay = new UIOverlay(ModContent.GetTexture("AnotherRpgMod/Textures/UI/OverlayHealthBar"));
+        }
+
+        public void Reset()
+        {
+            Erase();
+
+            buffTTPanel = new UIElement();
+            buffTTPanel.Left.Set(10 * scale, 0f);
+            buffTTPanel.Top.Set(Main.screenHeight - baseUiHeight + YDefaultOffSet + 185 * scale, 0f);
+            buffTTPanel.Width.Set(0, 0f);
+            buffTTPanel.Height.Set(0, 0f);
+
+            buffPanel = new UIElement();
+            buffPanel.Left.Set(10 * scale, 0f);
+            buffPanel.Top.Set(Main.screenHeight - baseUiHeight + YDefaultOffSet + 185 * scale, 0f);
+            buffPanel.Width.Set(1000, 0f);
+            buffPanel.Height.Set(400, 0f);
+            YDefaultOffSet = -Config.vConfig.HealthBarYoffSet;
+            scale = Config.vConfig.HealthBarScale;
+
+            player = Main.player[Main.myPlayer];
+
+            
+
+            
+
+            
+
 
             MainPanel[0] = new UIElement();
             MainPanel[0].SetPadding(0);
@@ -345,7 +363,7 @@ namespace AnotherRpgMod.UI
             MainPanel[0].Left.Set(0, 0f);
             MainPanel[0].Top.Set(Main.screenHeight - baseUiHeight + YDefaultOffSet, 0f);
 
-            Overlay = new UIOverlay(ModContent.GetTexture("AnotherRpgMod/Textures/UI/OverlayHealthBar"));
+            
             Overlay.ImageScale = scale;
             Overlay.HAlign = 0;
             Overlay.VAlign = 0;
