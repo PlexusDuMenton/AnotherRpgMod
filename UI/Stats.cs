@@ -23,6 +23,7 @@ namespace AnotherRpgMod.UI
         public float scale = Config.vConfig.HealthBarScale;
         public float yOffSet = Config.vConfig.HealthBarYoffSet;
         public bool hiden = false;
+        Texture2D Button;
 
         public void Erase()
         {
@@ -49,6 +50,17 @@ namespace AnotherRpgMod.UI
 
         public override void OnInitialize()
         {
+            LoadTexture();
+            Reset();
+        }
+
+        public void LoadTexture()
+        {
+            Button = ModContent.GetTexture("AnotherRpgMod/Textures/UI/skill_tree");
+        }
+
+        public void Reset()
+        {
             Erase();
             yOffSet = Config.vConfig.HealthBarYoffSet;
             scale = Config.vConfig.HealthBarScale;
@@ -62,7 +74,7 @@ namespace AnotherRpgMod.UI
             OpenSTPanel.HAlign = 0;
             OpenSTPanel.VAlign = 0;
 
-            Texture2D Button = ModContent.GetTexture("AnotherRpgMod/Textures/UI/skill_tree");
+            
             OpenStatButton OpenButton = new OpenStatButton(Button);
             OpenButton.Left.Set(0, 0f);
             OpenButton.Top.Set(0, 0f);
@@ -94,7 +106,7 @@ namespace AnotherRpgMod.UI
         public UIElement OpenStatsPanel;
         public float scale = Config.vConfig.HealthBarScale;
         public float yOffSet = Config.vConfig.HealthBarYoffSet;
-
+        Texture2D Button;
         public bool hiden = false;
 
 
@@ -123,7 +135,17 @@ namespace AnotherRpgMod.UI
 
         public override void OnInitialize()
         {
+            LoadTexture();
+            Reset();
+        }
 
+        public void LoadTexture()
+        {
+            Button = ModContent.GetTexture("AnotherRpgMod/Textures/UI/character");
+        }
+
+        public void Reset()
+        {
             Erase();
             yOffSet = Config.vConfig.HealthBarYoffSet;
             scale = Config.vConfig.HealthBarScale;
@@ -137,7 +159,6 @@ namespace AnotherRpgMod.UI
             OpenStatsPanel.HAlign = 0;
             OpenStatsPanel.VAlign = 0;
 
-            Texture2D Button = ModContent.GetTexture("AnotherRpgMod/Textures/UI/character");
             OpenStatButton OpenButton = new OpenStatButton(Button);
             OpenButton.Left.Set(0, 0f);
             OpenButton.Top.Set(0, 0f);
