@@ -394,6 +394,16 @@ namespace AnotherRpgMod.UI
             if (!visible)
                 return;
             regOffSet = new Vector2(evt.MousePosition.X, evt.MousePosition.Y);
+
+            if (Main.keyState.PressingShift())
+            {
+                if ((Main.keyState.IsKeyDown(Microsoft.Xna.Framework.Input.Keys.LeftControl)))
+                {
+                    offSet.X = 0;
+                    offSet.Y = 0;
+                }
+            }
+
             dragging = true;
         }
 

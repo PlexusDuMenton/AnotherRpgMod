@@ -175,7 +175,19 @@ namespace AnotherRpgMod.Items
         public int MaxEvolutionPoints { get { return m_maxEvolutionPoints; } set { m_maxEvolutionPoints = value; } }
         public int MaxAscendPoints { get { return m_maxAscendPoints; } set { m_maxAscendPoints = value; } }
 
-
+        public int GetUsedPoints { get
+            {
+                int value = 0;
+                foreach(ItemNode IN in m_nodeList)
+                {
+                    if (IN.GetState >= 4)
+                    {
+                        value++;
+                    }
+                }
+                return value;
+            }
+        }
 
         private int HaveNodeAtPos(Vector2 pos)
         {

@@ -14,7 +14,7 @@ using ReLogic.Graphics;
 using Terraria.GameInput;
 using Terraria.Localization;
 
-
+using AnotherRpgMod.Items;
 
 
 namespace AnotherRpgMod
@@ -84,6 +84,13 @@ namespace AnotherRpgMod
 
         internal static GamePlayConfig gpConfig;
         internal static VisualConfig visualConfig;
+
+
+        public static ItemUpdate source;
+        public static ItemUpdate Transfer;
+        public static float XPTvalueA;
+        public static float XPTvalueB;
+
 
         public static int PlayerLevel = 0;
         public static Dictionary<SupportedMod, bool> LoadedMods = new Dictionary<SupportedMod, bool>()

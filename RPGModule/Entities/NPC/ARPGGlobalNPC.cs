@@ -163,7 +163,6 @@ namespace AnotherRpgMod.RPGModule.Entities
                     }
                     else { 
                         level = Mathf.CeilInt(NPCUtils.GetBaseLevel(npc) * Config.gpConfig.NpclevelMultiplier);
-                    
                         if (npc.townNPC || (npc.damage == 0))
                             tier = Mathf.CeilInt(NPCUtils.GetTierAlly(npc, level) * Config.gpConfig.NpclevelMultiplier);
                         else if (Config.gpConfig.NPCProgress)
@@ -282,7 +281,7 @@ namespace AnotherRpgMod.RPGModule.Entities
 
                 if (HaveModifier(NPCModifier.Berserker))
                 {
-                    npc.damage = baseDamage * (2-(npc.life/npc.lifeMax));
+                    npc.damage = Mathf.RoundInt((float)baseDamage * (2-((float)npc.life/ (float)npc.lifeMax)));
                 }
 
                 //MPPacketHandler.SendNpcUpdate(mod,npc);

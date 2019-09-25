@@ -12,7 +12,43 @@ using AnotherRpgMod.Utils;
 using AnotherRpgMod.Items;
 namespace AnotherRpgMod.Command
 {
-    
+    public class SetLevel : ModCommand
+    {
+        public override CommandType Type
+        {
+            get { return CommandType.Chat; }
+        }
+
+        public override string Command
+        {
+            get { return "setlevel"; }
+        }
+
+        public override string Usage
+        {
+            get { return "/setlevel <level>"; }
+        }
+
+        public override string Description
+        {
+            get { return "Sets your character level to the chosen value"; }
+        }
+
+        public override void Action(CommandCaller caller, string input, string[] args)
+        {
+            RPGPlayer character = caller.Player.GetModPlayer<RPGPlayer>(mod);
+            int level = Int32.Parse(args[0]) - 1;
+            level = Mathf.Clamp(level, 1, 9999);
+
+            character.ResetLevel();
+
+            for (int i = 0; i < level; i++)
+            {
+                character.commandLevelup();
+            }
+        }
+    }
+
     public class Level : ModCommand
     {
         public override CommandType Type
@@ -32,7 +68,7 @@ namespace AnotherRpgMod.Command
 
         public override string Description
         {
-            get { return "Sets your character level to the chosen value"; }
+            get { return "Levelup X time"; }
         }
 
         public override void Action(CommandCaller caller, string input, string[] args)
@@ -47,12 +83,6 @@ namespace AnotherRpgMod.Command
             {
                 character.commandLevelup();
             }
-
-            for(int i = 0; i < 8; i++)
-            {
-                Main.NewText((Stat)i + " : " + character.GetStat((Stat)i), 255, 223, 63);
-            }
-            
             
         }
     }
@@ -358,4 +388,157 @@ namespace AnotherRpgMod.Command
             }
         }
     }
+
+
+
+
+    public class ItemName : ModCommand
+    {
+        public override CommandType Type
+        {
+            get { return CommandType.Chat; }
+        }
+
+        public override string Command
+        {
+            get { return "iname"; }
+        }
+
+        public override string Usage
+        {
+            get { return "/iname <slot>"; }
+        }
+
+        public override string Description
+        {
+            get { return "Get Item Name from slot (to confirm XP transfer)"; }
+        }
+
+        public override void Action(CommandCaller caller, string input, string[] args)
+        {
+            Player player = caller.Player;
+            RPGPlayer character = player.GetModPlayer<RPGPlayer>(mod);
+            if (args.Length == 0)
+            {
+                Main.NewText(Description);
+                return;
+            }
+            if (int.TryParse(args[0], out int slot) == false)
+            {
+                Main.NewText("Slot Number invalid");
+                return;
+            }
+            ItemUpdate item = player.HeldItem.GetGlobalItem<ItemUpdate>();
+            ItemUpdate Source = player.inventory[slot].GetGlobalItem<ItemUpdate>();
+            Main.NewText(player.inventory[slot].Name);
+
+
+        }
+    }
+
+    public class XpTransfer : ModCommand
+    {
+        public override CommandType Type
+        {
+            get { return CommandType.Chat; }
+        }
+
+        public override string Command
+        {
+            get { return "xpt"; }
+        }
+
+        public override string Usage
+        {
+            get { return "/xpt <slot>"; }
+        }
+
+        public override string Description
+        {
+            get { return "eXPerience Transfer from the slot to the held item, have 75% loss"; }
+        }
+
+        public override void Action(CommandCaller caller, string input, string[] args)
+        {
+            Player player = caller.Player;
+            RPGPlayer character = player.GetModPlayer<RPGPlayer>(mod);
+            if (args.Length == 0)
+            {
+                Main.NewText(Description);
+                return;
+            }
+            if (int.TryParse(args[0], out int slot) == false) { 
+                Main.NewText("Slot Number invalid");
+                return;
+            }
+            ItemUpdate item = player.HeldItem.GetGlobalItem<ItemUpdate>();
+            ItemUpdate Source = player.inventory[slot].GetGlobalItem<ItemUpdate>();
+
+            if (item == Source)
+            {
+                Main.NewText("Slot number And Held Items are the same");
+                return;
+            }
+
+
+            AnotherRpgMod.source = Source;
+            AnotherRpgMod.Transfer = item;
+            AnotherRpgMod.XPTvalueA = ItemExtraction.GetTotalEarnedXp(Source);
+            AnotherRpgMod.XPTvalueB = ItemExtraction.GetTotalEarnedXp(item);
+
+            float xp = ItemExtraction.GetExtractedXp(false, Source);
+
+            Main.NewText("Transfering "+ xp + " exp from " + player.inventory[slot].Name + " to " + player.HeldItem.Name);
+
+            Source.ResetLevelXp();
+            item.xPTransfer(xp,player,player.HeldItem);
+
+        }
+    }
+
+    public class UndoXpTransfer : ModCommand
+    {
+        public override CommandType Type
+        {
+            get { return CommandType.Chat; }
+        }
+
+        public override string Command
+        {
+            get { return "undoxpt"; }
+        }
+
+        public override string Usage
+        {
+            get { return "/undoxpt"; }
+        }
+
+        public override string Description
+        {
+            get { return "Undo The last Exp Transfer (I know you naughty boi would make a mistake ;))"; }
+        }
+
+        public override void Action(CommandCaller caller, string input, string[] args)
+        {
+            Player player = caller.Player;
+            RPGPlayer character = player.GetModPlayer<RPGPlayer>(mod);
+            if (AnotherRpgMod.source == null)
+                return;
+            if (AnotherRpgMod.Transfer == null)
+                return;
+
+            AnotherRpgMod.source.ResetLevelXp(false);
+            AnotherRpgMod.Transfer.ResetLevelXp(false);
+            AnotherRpgMod.source.SilentxPTransfer(AnotherRpgMod.XPTvalueA);
+            AnotherRpgMod.Transfer.SilentxPTransfer(AnotherRpgMod.XPTvalueB);
+
+            AnotherRpgMod.source = null;
+            AnotherRpgMod.Transfer = null;
+            AnotherRpgMod.XPTvalueA = 0;
+            AnotherRpgMod.XPTvalueB = 0;
+
+
+        }
+    }
+
 }

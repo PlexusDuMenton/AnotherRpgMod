@@ -30,7 +30,7 @@ namespace AnotherRpgMod.Items
         string[] AscendName =
         {
             "",
-            "Limit Breaked",
+            "Limit Broken",
             "Mortal ",
             "Raised ",
             "Unleashed ",
@@ -76,15 +76,54 @@ namespace AnotherRpgMod.Items
             "...Well, here something for you, Item node rarity increase as you go deep into the tree, so some impossible to get node...",
             "...Will appear often at deep layer, but I guess you've seen it...",
             "...Good Luck...",
-            "........",
-            ".......",
-            "......",
-            ".....",
-            "....",
+            "...",
             "..",
             ".",
             "",
             "One Punch Man",
+            "...Well, speaking of One Punch Man, maybe I should make a list of suggestion for manga to read ?",
+            "If you like cool fight, I realy sugest to read Kengan Asura (and Kengan Omega)",
+            "One of the popular manga out there is actualy a manhua titled 'Solo Leveling', you are playing a rpg mod, so you should definetly like it",
+            "Another manhua similar to solo leveling but taking a different story is 'I Am the sorcerer King'",
+            "Totaly different genre, but you should also read Dr.Stone, especialy if you like science",
+            "hmm... You realy like thos text ? Well ...",
+            "Player - Is this a discution ?",
+            "Discution - Ascension Text",
+            "Yea I mess arround, but guy, if you reach this far you most likely used an exploit, and are actively looking for this !",
+            "So I'm doing this : NIGERUNDAYO ........",
+            "...",
+            "Yea that jojo reference, Watch jojo you kid !",
+            "You next sentence will be : 'Does this wall of text ever end ?'",
+            "Does this wall of text ever end ?",
+            "Hue ! How do you know ?",
+            "Simple ! I am the one writing these text",
+            "well it was fun, I'll find more stuff to talk about",
+            "oh yea, do you want some cool music sugestion ?",
+            "then you should definetly look after 'M2U' realy original stuff",
+            "Shiro Sagisu is also nice to listen to, he composed ost of Evangelion",
+            "Look after Keichii Okabe, he made the ost of Nier, Drakengard and a few other game !",
+            "ElectroSwing is also way to go, Parov stellar and Caravane Palace being classic",
+            "...",
+            "Do you know I'm actualy working for a game named 'QANGA' made by the IolaCorp",
+            "Sort of survival game in a post-apo sci-fi game where you play as human trapped in robot",
+            "Yea, that the reason, update are so scarce, that and MAINLY my lazyness, but please let me find some excuses",
+            "...",
+            "Another funFact, I've made a mod on dota 2 back in 2015, it was my first mod ever, It actualy was REALY sucessful",
+            "The name was 'Epic Boss Fight' and got more than 5 million subscriber, and even snatched most played mod from valve custom mod back then",
+            "now it's totaly broken and unplayable hahahaha.... volvo broke it I promise !",
+            "The TRUE last text for ascended is 'Infinity +1', no lie !",
+            "I will also randomly add new text with update without any changelog, there is nothing to gain, you ... well you will just make me laught to see you looking for all that",
+            "I mean, only because it's not that easy to find doesn't mean it's interesting, of you should read it, I even made some advertisement for a game I work on as employee Hahaha",
+            "...",
+            "Have you player CivIdle ? That a game I work on my freetime When I'm not lazy, Ready manhua, Working on AnRPG or other random stuff, You can easily find the link on discord",
+            "What is it ? A simply Idle uncomplete Game where you lead a civilization !",
+            "The link ? SERIOUSLY ?!!! CHECK ON DISCORD DAMN IT !",
+            "...",
+            "Yes... lower ascending name are inspired from chiness ArtMartial Manhua",
+            "...",
+            "Infinity +1",
+               
+
         };
 
 
@@ -227,6 +266,11 @@ namespace AnotherRpgMod.Items
             leech = 0;
             bonusXp = 0;
 
+            if (m_itemTree == null)
+            {
+                m_itemTree = new ItemSkillTree();
+                m_itemTree.Init(this);
+            }
             m_itemTree.ApplyFlatPassives(item);
             m_itemTree.ApplyMultiplierPassives(item);
             m_itemTree.ApplyOtherPassives(item);
@@ -447,15 +491,23 @@ namespace AnotherRpgMod.Items
                         writer.Write(0);
                     }
                 }
+
+                string itemTree = "";
+                if (HaveTree(item) && m_itemTree != null && m_itemTree.GetSize > 0)
+                {
+                    itemTree = ItemSkillTree.ConvertToString(m_itemTree);
+                }
+                else
+                {
+                    m_itemTree = new ItemSkillTree();
+                    m_itemTree.Init(this);
+                    itemTree = ItemSkillTree.ConvertToString(m_itemTree);
+                }
+
+                writer.Write(itemTree);
             }
             
-            string itemTree = "";
-            if (HaveTree(item) && m_itemTree != null && m_itemTree.GetSize > 0)
-            {
-                itemTree = ItemSkillTree.ConvertToString(m_itemTree);
-            }
-                
-            writer.Write(itemTree);
+            
             base.NetSend(item, writer);
         }
 
@@ -541,6 +593,7 @@ namespace AnotherRpgMod.Items
                         break;
                 }
             }
+
             base.NetReceive(item, reader);
         }
 
@@ -593,6 +646,7 @@ namespace AnotherRpgMod.Items
             base.ModifyHitNPC(item, player, target, ref damage, ref knockBack, ref crit);
         }
 
+
         public override void Load(Item item, TagCompound tag)
         {
             if (init)
@@ -600,6 +654,7 @@ namespace AnotherRpgMod.Items
             //item.r
             if (!NeedsSaving(item))
                 return;
+
             string itemTreeSave;
 
             xp = tag.GetAsLong("Exp");
@@ -608,10 +663,26 @@ namespace AnotherRpgMod.Items
 
             rarity = (Rarity)tag.GetInt("rarity");
             modifier = (Modifier)tag.GetInt("modifier");
+
+
+
             if (m_itemTree == null)
                 m_itemTree = new ItemSkillTree();
 
-            if (tag.GetIntArray("evolutionInfo")!= null && tag.GetIntArray("evolutionInfo").Length == 4)
+            itemTreeSave = tag.Get<string>("tree");
+
+            
+
+            if (itemTreeSave != "")
+            {
+                m_itemTree = ItemSkillTree.ConvertToTree(itemTreeSave,this);
+            }else
+            {
+                m_itemTree = new ItemSkillTree();
+                m_itemTree.Init(this);
+            }
+
+            if (tag.GetIntArray("evolutionInfo") != null && tag.GetIntArray("evolutionInfo").Length == 4)
             {
                 m_itemTree.EvolutionPoints = tag.GetIntArray("evolutionInfo")[0];
                 m_itemTree.MaxEvolutionPoints = tag.GetIntArray("evolutionInfo")[1];
@@ -623,27 +694,8 @@ namespace AnotherRpgMod.Items
                 level = 0;
                 ascendedLevel = 0;
                 xp = 0;
-                //modifier = Modifier.None;
             }
 
-            
-
-            //
-
-
-
-            itemTreeSave = tag.Get<string>("tree");
-
-
-            if (itemTreeSave != "")
-            {
-                m_itemTree = ItemSkillTree.ConvertToTree(itemTreeSave,this);
-            }else
-            {
-                m_itemTree = new ItemSkillTree();
-                m_itemTree.Init(this);
-            }
-            
             List<ItemStat> itemstatslist = new List<ItemStat>();
         
 
@@ -695,10 +747,11 @@ namespace AnotherRpgMod.Items
             if (stats.Stats == null)
                 stats.Stats = new List<ItemStat>();
             init = true;
-
-
+            
             item.SetNameOverride(SetName(item));
 
+            
+            
         }
 
         public override void ModifyTooltips(Item item, List<TooltipLine> tooltips)
@@ -854,6 +907,7 @@ namespace AnotherRpgMod.Items
                                 };
                                 tooltips.Add(infott);
                             }
+                            /*
                             if (m_itemTree.AscendPoints > 0)
                             {
                                 TooltipLine infotta = new TooltipLine(mod, "pointsAscendInfo", m_itemTree.AscendPoints + " Ascend Points left !!!")
@@ -863,6 +917,7 @@ namespace AnotherRpgMod.Items
                                 };
                                 tooltips.Add(infotta);
                             }
+                            */
                         }
                         else
                         {
@@ -933,11 +988,16 @@ namespace AnotherRpgMod.Items
 
 
             string treeToStringVal = "";
-            int[] evInfo = new int[1] { 0 };
+            int[] evInfo = new int[4] { 0,0,0,0 };
             if (m_itemTree != null)
             {
                 treeToStringVal = treeToString(m_itemTree);
-                evInfo = new int[4] { m_itemTree.EvolutionPoints, m_itemTree.MaxEvolutionPoints, m_itemTree.AscendPoints, m_itemTree.MaxAscendPoints };
+                if (m_itemTree.MaxEvolutionPoints >= level -1)
+                    evInfo = new int[4] { GetEvolutionPoints, GetMaxEvolutionPoints, GetAscendPoints, GetMaxAscendPoints };
+                else
+                {
+                    evInfo = new int[4] { level - 1 - m_itemTree.GetUsedPoints, level-1, m_itemTree.AscendPoints, ascendedLevel };
+                }
             }
 
             return new TagCompound
@@ -1211,6 +1271,15 @@ namespace AnotherRpgMod.Items
             AnotherRpgMod.Instance.ItemTreeUI.Open(this);
         }
 
+        public void ResetLevelXp(bool ascend = true)
+        {
+            level = 0;
+            xp = 0;
+            if (ascend)
+                ascendedLevel = Mathf.Clamp(ascendedLevel,0,1);
+            m_itemTree.Reset(false);
+        }
+
         public void Ascend()
         {
             ascendedLevel++;
@@ -1276,6 +1345,21 @@ namespace AnotherRpgMod.Items
             return (prefix + baseName + sufix);
         }
 
+        public void SilentLevelUp()
+        {
+            xp -= GetExpToNextLevel(level, ascendedLevel);
+            level++;
+            m_itemTree.MaxEvolutionPoints++;
+            m_itemTree.EvolutionPoints++;
+
+            if (level == GetCapLevel() && ascendedLevel == 0)
+                Main.NewText("Your item has reached its limit", Color.Red);
+            if (level > GetCapLevel() * (ascendedLevel + 1))
+            {
+                Ascend();
+            }
+        }
+
         public void LevelUp(Player player, Item item)
         {
             xp -= GetExpToNextLevel(level, ascendedLevel);
@@ -1309,6 +1393,27 @@ namespace AnotherRpgMod.Items
                 LevelUp(player, item);
             }
         }
+
+        public void xPTransfer(float _xp, Player player, Item item)
+        {
+
+            xp += (long)Mathf.Clamp(_xp, 0, long.MaxValue - xp);
+            while (xp >= GetExpToNextLevel(level, ascendedLevel))
+            {
+                LevelUp(player, item);
+            }
+        }
+
+        public void SilentxPTransfer(float _xp)
+        {
+
+            xp += (long)Mathf.Clamp(_xp, 0, long.MaxValue - xp);
+            while (xp >= GetExpToNextLevel(level, ascendedLevel))
+            {
+                SilentLevelUp();
+            }
+        }
+
         public void EquipedUpdateModifier(Item item, Player player)
         {
             if (ModifierManager.HaveModifier(Modifier.Thorny, modifier))

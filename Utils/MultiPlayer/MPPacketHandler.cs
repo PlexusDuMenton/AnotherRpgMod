@@ -143,6 +143,9 @@ namespace AnotherRpgMod.Utils
 
                         NPC npc = Main.npc[(int)tags[DataTag.npcId]];
 
+                        if (npc.GetGlobalNPC<ARPGGlobalNPC>() == null)
+                            AnotherRpgMod.Instance.Logger.Info(npc.GivenName);
+
                         //npc.SetDefaults(npc.type);
                         if (npc.GetGlobalNPC<ARPGGlobalNPC>().StatsCreated == true)
                             return;
@@ -196,6 +199,7 @@ namespace AnotherRpgMod.Utils
                         //ErrorLogger.Log("LOG FROM SERVER");
                         AnotherRpgMod.Instance.Logger.Info((string)tags[DataTag.buffer]);
                     }
+
                     break;
                 case Message.AskNpc:
                     if (Main.netMode == 2)

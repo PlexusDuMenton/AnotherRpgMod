@@ -53,7 +53,7 @@ namespace AnotherRpgMod.RPGModule.Entities
 
             if (npc.type == 68 || npc.type == 70 | npc.type == 72)
                 return 1;
-            int maxLevel = (int)(AnotherRpgMod.PlayerLevel * 1.5f + 100);
+            int maxLevel = (AnotherRpgMod.PlayerLevel + Config.gpConfig.LimitNPCGrowthValue);
             int baselevel = Mathf.HugeCalc((int)((Mathf.Pow(npc.lifeMax / 35, 1.05f) + Mathf.Pow(npc.damage * 0.2f, 1.15f) + Mathf.Pow(npc.defense, 1.3f))),-1);
             
             if (npc.boss)
@@ -110,7 +110,8 @@ namespace AnotherRpgMod.RPGModule.Entities
             baselevel = WorldManager.GetWorldLevelMultiplier(baselevel);
             if (baselevel < -1)
                 return 0;
-            Mathf.Clamp(baselevel,0, maxLevel);
+            if (Config.gpConfig.LimitNPCGrowth)
+                baselevel = Mathf.Clamp(baselevel,0, maxLevel);
             return baselevel;
         }
         //Get Tier bonus from world

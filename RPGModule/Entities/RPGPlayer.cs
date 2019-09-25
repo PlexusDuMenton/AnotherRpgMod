@@ -422,6 +422,10 @@ namespace AnotherRpgMod.RPGModule.Entities
         public override void ModifyHitNPCWithProj(Projectile proj, NPC target, ref int damage, ref float knockback, ref bool crit, ref int hitDirection)
         {
             damage = (int)(damage * DamageMultiplierFromModifier(target, damage));
+
+            int pen = proj.penetrate;
+            if (pen == 0) pen++;
+
             if (Config.gpConfig.RPGPlayer)
             {
                 if (crit)
@@ -434,15 +438,15 @@ namespace AnotherRpgMod.RPGModule.Entities
                 if (target.type != 488)
                 {
                     if (player.HeldItem.summon)
-                        AddWeaponXp(damage / proj.penetrate, player.HeldItem,1);
+                        AddWeaponXp(damage / pen, player.HeldItem,1);
                     else
-                        AddWeaponXp(damage / proj.penetrate, player.HeldItem, 0.5f);
+                        AddWeaponXp(damage / pen, player.HeldItem, 0.5f);
                             
                 }
                         
             }else if(!proj.minion) {
                 if (target.type != 488)
-                    AddWeaponXp(damage / proj.penetrate, player.HeldItem);
+                    AddWeaponXp(damage / pen, player.HeldItem);
 
             }
                 
@@ -787,6 +791,9 @@ namespace AnotherRpgMod.RPGModule.Entities
             {
                 m_virtualRes = 0;
                 armor = player.statDefense;
+
+                 player.statLifeMax2 = Mathf.Clamp((int)(GetHealthMult() * player.statLifeMax2 * GetHealthPerHeart() / 20) + 10, 10, int.MaxValue);
+                    /*
                 if (Main.netMode == 1)
                 {
                     player.statLifeMax2 = Mathf.Clamp((int)(GetHealthMult() * player.statLifeMax2 * GetHealthPerHeart() / 20) + 10,10,Int16.MaxValue);
@@ -801,7 +808,7 @@ namespace AnotherRpgMod.RPGModule.Entities
                 {
                     player.statLifeMax2 = Mathf.Clamp((int)(GetHealthMult() * player.statLifeMax2 * GetHealthPerHeart() / 20) + 10, 10, int.MaxValue);
                 }
-                
+                */
                 player.statManaMax2 = (int)(player.statManaMax2 * GetManaPerStar() / 20) + 10;
                 player.statDefense = (int)(GetDefenceMult() * player.statDefense * GetArmorMult());
                 player.meleeDamage *= GetDamageMult(DamageType.Melee, 2);
@@ -1048,6 +1055,16 @@ namespace AnotherRpgMod.RPGModule.Entities
         public void commandLevelup()
         {
             SilentLevelUp();
+        }
+
+        public void ResetLevel()
+        {
+            ResetSkillTree();
+            totalPoints = 0;
+            freePoints = 0;
+            skillPoints = 0;
+            level = 1;
+            Stats.Reset(1);
         }
         private void SilentLevelUp()
         {

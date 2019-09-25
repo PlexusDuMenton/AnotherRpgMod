@@ -4,7 +4,7 @@ A very active mod that have almost daily update !
 
 Rpg mod that add Level, Stats , and even weapon upgrade ! 
 
-[c/ff0737:PLEASE BEFORE COMING COMPLAIN OPEN THE CONFIG FILE !]
+PLEASE BEFORE COMING COMPLAIN OPEN THE CONFIG FILE !
 [c/ff0000:ESPECIALY FOR NPC NAME]
 
 Join Discord : https://discord.gg/UQueeQE ! (link also on webpage)
@@ -15,9 +15,69 @@ Join Discord : https://discord.gg/UQueeQE ! (link also on webpage)
 
 Changelog : 
 
+-1.3.2.1
+Fixed the "Limit NPC Growth" Config
+Added the "Limit Npc Growth Value" to define the max value
+Fixed Multiplier being clamped from 0 to 1 (now 0.1-50)
+Healthbar scale can no longer be 0 (0.1 min now)
 
-- Pre -1.3 - UNBALANCING BALANCE
- FUCKED UP ALL BALANCE SO NOW GROWTHING IS SLOWER SINCE IT GOES OVER CERTAIN NUMBER TOO FAST
+-1.3.2
+Weapon Xp Transfer (via Command)
+	/xpt <Slot>
+	:Transfer Xp from slot to Held, 75% xp loss
+	/iname <slot>
+	:Display the name of item in the slot (to check if it's the right one you want to transfer to)
+	/undoxpt
+	:Undo the last exp transfer (may have some bug, but still better than nothing, avoid to abuse it)
+Added a LOT of new funny text for impossible ascending name
+
+-1.3.1.2
+Fix another Crash when using ranged weapon without 0 penetration
+Fix Some Crash in related to some item not having item tree.
+Know bug : Item Tree value change when reload the first time
+
+-1.3.1.1
+Fix Crash when leaving/saving, sorry for the issue
+
+-1.3.1
+Update to Tmod 0.11.3 (not realy sure it change anything)
+Fix Evolution Points bug (also ascending points reset but they have no use yet :p )
+Fix Server error on Non-equipement item ("Above IOException error caused by ItemUpdate from the AnotherRpgMod mod while reading")
+
+
+[c/ff0737:-1.3] - [c/efc737: KUALITY ITAIM UPDAT]
+Ingame config (look in the menu)
+Added two new command
+    /rarity - Reroll rarity and modifier for 33% of the item value
+    /itemtree - Reroll Item tree for the entire item value
+FIXED MULTIPLAYER DESYNC (Definetive edition)
+COMPLETE OVERALL OF THE ITEM LEVELING SYSTEM (can be toggle to old system in config option) :
+Added Item Tree, Each item have a skill tree (look in the bind to open it)
+Changed the way item Gain XP
+Changed how Life Leech work, Cap the lifeleech as Health regen (10%) over a time, also added healthbar effect when in effect :
+https://i.imgur.com/we4jgzk.png
+HugeBalance Overall :
+
+    Reduction of player Health, Damage, Regen
+    Reduction of ennemies Health, Damage, Regen, Armor
+    Reduced armor of enemy by 5 in the early game
+    Huge reduction of xp, especialy for late game
+
+Others player class and level are now displayed in multiplyer
+Deleted Vanilla UI
+Buff are now displayer over healthbar
+FIXED massive health lose when using health draining buff/debuff (so fixing kaioken and poison massive health drop)
+Clean up a lot of mess, order stuff, better naming
+Added DBZ mod,Tremor and Thorium Compatibility
+Added Description when overing Stat
+Huge Reduction on number overall the game and balance
+Fixed spirit not apearing as an item bonus stats
+Dex now give armor penetration
+Inferior ranked item no longer give negative stats
+Killing unique boss increase odd of getting better rarity on item
+Reaching hardmode and defeating moonlord Increase "base rarity" for rarity roll on item
+
+
 
 -1.2.0.3
 Attempt at fixing Game Crash in MP when taking an item out of Reforge

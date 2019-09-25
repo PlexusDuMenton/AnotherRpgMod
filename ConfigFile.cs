@@ -52,14 +52,14 @@ namespace AnotherRpgMod
         public float HealthBarYoffSet;
 
         [Label("Health Bar Scale")]
-        [Range(0f, 3f)]
+        [Range(0.1f, 3f)]
         [Increment(.25f)]
         [DefaultValue(0.75f)]
         public float HealthBarScale;
 
         [Label("Other UI Scale")]
         [Tooltip("Used for the scale of all other UI element from Another RPG Mod")]
-        [Range(0.25f, 3f)]
+        [Range(0.1f, 3f)]
         [Increment(.25f)]
         [DefaultValue(0.75f)]
         public float UI_Scale;
@@ -143,9 +143,16 @@ namespace AnotherRpgMod
         public bool ItemModifier;
 
         [Label("Limit NPC growth")]
-        [Tooltip("Not realy sure if work properly, but prevent npc from level over 100 that the player level (and a bit more) to spawn")]
+        [Tooltip("If activated prevent npc to have level too high than player based on Limit NPC growth Value")]
         [DefaultValue(true)]
         public bool LimitNPCGrowth;
+
+        [Increment(50)]
+        [Label("Limit NPC growth Value")]
+        [Tooltip("If Limit Npc Growth is actiaved, limit npc level by your level + this value")]
+        [Range(0, int.MaxValue)]
+        [DefaultValue(100)]
+        public int LimitNPCGrowthValue;
 
         [Label("Item Tree")]
         [Tooltip("Enable Skill Tree evolution for Item")]
@@ -158,21 +165,24 @@ namespace AnotherRpgMod
         public int XPReductionDelta;
 
         [Label("Xp Multiplier")]
-        [Range(0f, 5f)]
+        [Tooltip("Multiply all xp gain for player by this value")]
+        [Range(0.1F, 50F)]
         [Increment(.25f)]
-        [DefaultValue(1)]
+        [DefaultValue(1f)]
         public float XpMultiplier;
 
         [Label("Npc Level Multiplier")]
-        [Range(0f, 3f)]
-        [Increment(.1f)]
-        [DefaultValue(1)]
+        [Tooltip("Multiply all npc level by this value")]
+        [Range(0.1F, 50F)]
+        [Increment(.25f)]
+        [DefaultValue(1f)]
         public float NpclevelMultiplier;
 
         [Label("Item Xp Multiplier")]
-        [Range(0f, 5f)]
+        [Tooltip("Multiply all xp gain for weapon by this value")]
+        [Range(0.1F, 50F)]
         [Increment(.25f)]
-        [DefaultValue(1)]
+        [DefaultValue(1f)]
         public float ItemXpMultiplier;
 
         public override void OnLoaded()

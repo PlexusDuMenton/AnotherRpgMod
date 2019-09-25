@@ -14,12 +14,10 @@ namespace AnotherRpgMod.Items
             int level = item.Level;
             int ascLevel = item.Ascention;
 
-            for(int i = 0; i < item.Ascention; i++)
+
+            for (int j = 0; j < item.Level; j++)
             {
-                for (int j = 0; j < item.Level; j++)
-                {
-                    xp += item.GetExpToNextLevel(i, j);
-                }
+                xp += item.GetExpToNextLevel(j, ascLevel);
             }
 
             return xp;
