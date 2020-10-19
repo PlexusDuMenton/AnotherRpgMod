@@ -232,7 +232,7 @@ namespace AnotherRpgMod.UI
                 {
                     Main.player[Main.myPlayer].hideMisc[1] = true;
                 }
-                Main.PlaySound(12, -1, -1, 1, 1f, 0f);
+                Main.PlaySound(SoundID.MenuTick, -1, -1, 1, 1f, 0f);
                 if (!flag)
                 {
                     Main.player[Main.myPlayer].DelBuff(id);
@@ -329,6 +329,9 @@ namespace AnotherRpgMod.UI
 
         public void Reset()
         {
+
+
+
             Erase();
 
             buffTTPanel = new UIElement();
@@ -344,6 +347,24 @@ namespace AnotherRpgMod.UI
             buffPanel.Height.Set(400, 0f);
             YDefaultOffSet = -Config.vConfig.HealthBarYoffSet;
             scale = Config.vConfig.HealthBarScale;
+
+            float[] baseUiOffset =
+            {
+                (105*scale),
+                (69*scale ),
+                (46*scale ),
+                (33*scale ),
+                (357*scale )
+            };
+
+            RessourceTexture[Mode.Leech].position.Y = Main.screenHeight + YDefaultOffSet - baseUiOffset[0];
+            RessourceTexture[Mode.HP].position.Y = Main.screenHeight + YDefaultOffSet - baseUiOffset[0];
+            RessourceTexture[Mode.MANA].position.Y = Main.screenHeight + YDefaultOffSet - baseUiOffset[1];
+            RessourceTexture[Mode.XP].position.Y = Main.screenHeight + YDefaultOffSet - baseUiOffset[2];
+            RessourceTexture[Mode.Weapon].position.Y = Main.screenHeight + YDefaultOffSet - baseUiOffset[3];
+            RessourceTexture[Mode.Breath].position.Y = Main.screenHeight + YDefaultOffSet - baseUiOffset[4];
+
+            
 
             player = Main.player[Main.myPlayer];
 

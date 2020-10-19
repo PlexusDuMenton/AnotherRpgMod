@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Terraria;
+using AnotherRpgMod.Utils;
 
 namespace AnotherRpgMod.Items
 {
@@ -50,13 +51,13 @@ namespace AnotherRpgMod.Items
 
         public override void LoadValue(string saveValue)
         {
-            power = float.Parse(saveValue);
+            power = saveValue.SafeFloatParse();
             SetPower(power);
         }
 
         public override string GetSaveValue()
         {
-            return FlatDef.ToString();
+            return power.ToString();
         }
 
     }

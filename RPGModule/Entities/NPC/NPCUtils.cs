@@ -51,7 +51,7 @@ namespace AnotherRpgMod.RPGModule.Entities
         public static int GetBaseLevel(NPC npc)
         {
 
-            if (npc.type == 68 || npc.type == 70 | npc.type == 72)
+            if (npc.type == NPCID.DungeonGuardian || npc.type == NPCID.SpikeBall | npc.type == NPCID.BlazingWheel)
                 return 1;
             int maxLevel = (AnotherRpgMod.PlayerLevel + Config.gpConfig.LimitNPCGrowthValue);
             int baselevel = Mathf.HugeCalc((int)((Mathf.Pow(npc.lifeMax / 35, 1.05f) + Mathf.Pow(npc.damage * 0.2f, 1.15f) + Mathf.Pow(npc.defense, 1.3f))),-1);
@@ -243,7 +243,11 @@ namespace AnotherRpgMod.RPGModule.Entities
                         maxModifier -= 1;
                 }
             }
-            else if (npc.type == 13 || npc.type == 14 || npc.type == 15){
+
+           
+
+            else if (npc.type == NPCID.EaterofWorldsHead || npc.type == NPCID.EaterofWorldsBody || npc.type == NPCID.EaterofWorldsTail)
+            {
                 modifiersPool.Remove(NPCModifier.Cluster);
                 modifiersPool.Remove(NPCModifier.Size);
                 if (maxModifier == (Enum.GetValues(typeof(NPCModifier)) as NPCModifier[]).Length)
@@ -491,21 +495,21 @@ namespace AnotherRpgMod.RPGModule.Entities
             {
                 if (npc.HasBuff(BuffID.OnFire))
                 {
-                    DoTDamage += Mathf.Clamp(  Mathf.Logx(npc.lifeMax,1.002f) * 0.25f * DELTATIME , 0 , npc.lifeMax*0.05f * DELTATIME);
+                    DoTDamage += Mathf.Clamp(  Mathf.Logx(npc.lifeMax,1.01f) * 0.25f * DELTATIME , 0 , npc.lifeMax*0.003f * DELTATIME);
                 }
                 if (npc.HasBuff(BuffID.Burning))
                 {
-                    DoTDamage += Mathf.Clamp(Mathf.Logx(npc.lifeMax, 1.002f) * 0.05f * DELTATIME, 0, npc.lifeMax * 0.02f * DELTATIME);
+                    DoTDamage += Mathf.Clamp(Mathf.Logx(npc.lifeMax, 1.01f) * 0.05f * DELTATIME, 0, npc.lifeMax * 0.002f * DELTATIME);
                 }
                 if (npc.HasBuff(BuffID.Frostburn))
                 {
 
-                    DoTDamage += Mathf.Clamp(Mathf.Logx(npc.lifeMax, 1.002f) * 0.25f * DELTATIME, 0, npc.lifeMax * 0.05f * DELTATIME);
+                    DoTDamage += Mathf.Clamp(Mathf.Logx(npc.lifeMax, 1.01f) * 0.25f * DELTATIME, 0, npc.lifeMax * 0.004f * DELTATIME);
                 }
                 if (npc.HasBuff(BuffID.Venom))
                 {
 
-                    DoTDamage += Mathf.Clamp(Mathf.Logx(npc.lifeMax, 1.002f) * 0.25f * DELTATIME, 0, npc.lifeMax * 0.05f * DELTATIME);
+                    DoTDamage += Mathf.Clamp(Mathf.Logx(npc.lifeMax, 1.01f) * 0.25f * DELTATIME, 0, npc.lifeMax * 0.005f * DELTATIME);
                 }
             }
             return DoTDamage;

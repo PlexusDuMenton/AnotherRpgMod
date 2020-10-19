@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Terraria;
+using AnotherRpgMod.Utils;
 
 namespace AnotherRpgMod.Items
 {
@@ -43,11 +44,12 @@ namespace AnotherRpgMod.Items
         public override void SetPower(float value)
         {
             UseTimeReduction = Utils.Mathf.Clamp(Utils.Mathf.RoundInt(value), 1, 10);
+            power = value;
         }
 
         public override void LoadValue(string saveValue)
         {
-            power = float.Parse(saveValue);
+            power = saveValue.SafeFloatParse();
             SetPower(power);
         }
 

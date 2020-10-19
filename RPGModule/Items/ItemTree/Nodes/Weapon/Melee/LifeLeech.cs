@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using AnotherRpgMod.Utils;
 using Terraria;
 
 namespace AnotherRpgMod.Items
@@ -34,7 +35,7 @@ namespace AnotherRpgMod.Items
         {
             get
             {
-                return "Convert " + (leech * Utils.Mathf.Clamp(GetLevel, 1, GetMaxLevel)) + "% Damage into health";
+                return "Restore " + (leech * Utils.Mathf.Clamp(GetLevel, 1, GetMaxLevel)) + "% Health each attack";
             }
         }
 
@@ -48,11 +49,12 @@ namespace AnotherRpgMod.Items
         public override void SetPower(float value)
         {
             leech = Utils.Mathf.Clamp(Utils.Mathf.Round(value*0.5f,2), 0.5f, 50);
+            power = value;
         }
 
         public override void LoadValue(string saveValue)
         {
-            power = float.Parse(saveValue);
+            power = saveValue.SafeFloatParse();
             SetPower(power);
         }
 

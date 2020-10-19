@@ -15,7 +15,7 @@ using Terraria.GameInput;
 using Terraria.Localization;
 
 using AnotherRpgMod.Items;
-
+using Terraria.Graphics;
 
 namespace AnotherRpgMod
 {
@@ -28,7 +28,6 @@ namespace AnotherRpgMod
         Summon,
         Symphonic, //thorium
         Radiant, //thorium
-        Alchemic, //tremor
         KI,
 
     }
@@ -48,7 +47,6 @@ namespace AnotherRpgMod
     enum SupportedMod
     {
         Thorium,
-        Tremor, //only suported mod for now
         Calamity,
         DBZMOD
     }
@@ -91,13 +89,15 @@ namespace AnotherRpgMod
         public static float XPTvalueA;
         public static float XPTvalueB;
 
+        public static Vector2 zoomValue = new Vector2(1,1);
+
+        private float lastUpdateScreenScale = Main.screenHeight;
 
         public static int PlayerLevel = 0;
         public static Dictionary<SupportedMod, bool> LoadedMods = new Dictionary<SupportedMod, bool>()
         {
             {SupportedMod.Thorium,false },
             {SupportedMod.Calamity,false },
-            {SupportedMod.Tremor,false }, 
             {SupportedMod.DBZMOD,false },
             //{SupportedMod.Spirit,false }
 
@@ -123,7 +123,6 @@ namespace AnotherRpgMod
             JsonCharacterClass.Init();
             LoadedMods[SupportedMod.Thorium] = ModLoader.GetMod("ThoriumMod") != null;
             LoadedMods[SupportedMod.Calamity] = ModLoader.GetMod("CalamityMod") != null;
-            LoadedMods[SupportedMod.Tremor] = ModLoader.GetMod("TremorMod") != null;
             LoadedMods[SupportedMod.DBZMOD] = ModLoader.GetMod("DBZMOD") != null;
             
             StatsHotKey = RegisterHotKey("Open Stats Menu", "C");
@@ -187,15 +186,36 @@ namespace AnotherRpgMod
 			};
 		}
 
+        public override void PostUpdateEverything()
+        {
+            //Update UI when screen Size Change
+            if (lastUpdateScreenScale != Main.screenHeight)
+            {
+                AnotherRpgMod.Instance.healthBar.Reset();
+                AnotherRpgMod.Instance.OpenST.Reset();
+                AnotherRpgMod.Instance.openStatMenu.Reset();
+            }
+            lastUpdateScreenScale = Main.screenHeight;
+            base.PostUpdateEverything();
+        }
+
         public override void UpdateUI(GameTime gameTime)
         {
             if (customstats != null)
                 customstats.Update(gameTime);
         }
 
+
+
+        public override void ModifyTransformMatrix(ref SpriteViewMatrix Transform)
+        {
+            zoomValue = Transform.Zoom;
+            base.ModifyTransformMatrix(ref Transform);
+        }
+
         public override void ModifyInterfaceLayers(List<GameInterfaceLayer> layers)
         {
-            if (Main.netMode == 2)
+            if (Main.netMode == NetmodeID.Server)
                 return;
 
 
@@ -205,7 +225,7 @@ namespace AnotherRpgMod
                 layers.RemoveAt(ressourceid);
             }
 
-            //Vanilla: Emote Bubbles
+            //Vanilla: MouseOver
             int mouseid = layers.FindIndex(layer => layer.Name.Equals("Vanilla: Mouse Over"));
             if (mouseid != -1)
             {
@@ -217,7 +237,7 @@ namespace AnotherRpgMod
                             NPCInfo.Draw(Main.spriteBatch);
                         return true;
                     },
-                    InterfaceScaleType.UI)
+                    InterfaceScaleType.None)
                 );
             }
 
@@ -252,7 +272,7 @@ namespace AnotherRpgMod
                             OpenST.Draw(Main.spriteBatch);
                         }
                         return true;
-                    }, InterfaceScaleType.UI)
+                    }, InterfaceScaleType.None)
                 );
             }
             
@@ -260,9 +280,6 @@ namespace AnotherRpgMod
             int id = layers.FindIndex(layer => layer.Name.Equals("Vanilla: Inventory"));
             if (id != -1)
             {
-                //layers.RemoveAt(id);
-
-                    //Add you own layer
                     layers.Insert(id, new LegacyGameInterfaceLayer(
                         "AnotherRpgMod: Custom Health Bar",
                         delegate
@@ -281,7 +298,7 @@ namespace AnotherRpgMod
 
                             }
                             return true;
-                        }, InterfaceScaleType.UI)
+                        }, InterfaceScaleType.None)
                     );
             }
 
@@ -306,7 +323,7 @@ namespace AnotherRpgMod
 
                         return true;
                     },
-                    InterfaceScaleType.UI)
+                    InterfaceScaleType.None)
                 );
             }
 
@@ -450,7 +467,7 @@ namespace AnotherRpgMod
                     {
                         Main.player[Main.myPlayer].hideMisc[1] = true;
                     }
-                    Main.PlaySound(12, -1, -1, 1, 1f, 0f);
+                    Main.PlaySound(SoundID.MenuTick, -1, -1, 1, 1f, 0f);
                     if (!flag)
                     {
                         Main.player[Main.myPlayer].DelBuff(i);

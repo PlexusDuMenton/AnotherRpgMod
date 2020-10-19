@@ -3,17 +3,26 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using AnotherRpgMod.Utils;
 using Terraria;
+using AnotherRpgMod.Utils;
 
 namespace AnotherRpgMod.Items
 {
-    class SuperAdditionalDamageNode : ItemNode
+    class AscendedAdditionalDamageNode : ItemNode
     {
-        new protected string m_Name = "(Rare) Additional Damage";
+        new protected string m_Name = "(Ascended) Additional Damage";
         new protected string m_Desc = "Add";
-        new public float rarityWeight = 0.2f;
-        
+        new public float rarityWeight = 0.05f;
+        new protected bool m_isAscend = true;
+
+        public override bool IsAscend
+        {
+            get
+            {
+                return m_isAscend;
+            }
+        }
+
         public override NodeCategory GetNodeCategory 
         {
             get
@@ -46,9 +55,9 @@ namespace AnotherRpgMod.Items
 
         public override void SetPower(float value)
         {
-            FlatDamage = Utils.Mathf.Clamp((int)Utils.Mathf.Pow(value*4,1.2f),8,999);
+            FlatDamage = Utils.Mathf.Clamp((int)Utils.Mathf.Pow(value*10,1.2f),8,999);
             m_MaxLevel = 1;
-            m_RequiredPoints = Utils.Mathf.FloorInt(1 + power * 0.75f)*5;
+            m_RequiredPoints = 1;
             power = value;
         }
 
@@ -62,6 +71,8 @@ namespace AnotherRpgMod.Items
         {
             return power.ToString();
         }
+
+
 
     }
 }

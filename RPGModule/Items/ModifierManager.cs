@@ -34,13 +34,13 @@ namespace AnotherRpgMod.Items
             }
             if (item.melee)
             {
-                if (item.useStyle == 5 && item.noMelee)
+                if (item.useStyle == ItemUseStyleID.HoldingOut && item.noMelee)
                     return WeaponType.Spear;
                 if (item.noMelee)
                     return WeaponType.OtherMelee;
-                if (item.useStyle == 3)
+                if (item.useStyle == ItemUseStyleID.Stabbing)
                     return WeaponType.Stab;
-                if (item.useStyle == 1)
+                if (item.useStyle == ItemUseStyleID.SwingThrow)
                     return WeaponType.Swing;
                 return WeaponType.OtherMelee;
             }

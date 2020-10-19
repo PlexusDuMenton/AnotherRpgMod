@@ -42,7 +42,7 @@ namespace AnotherRpgMod
             new JsonNode("Class",75,-250,false,new int[2]{5,12},"Gunner",false,0.03f,10,1,1), //13
             new JsonNode("Class",-200,-150,false,new int[1]{6},"Ninja",false,0.03f,10,1,1), //14
 
-            new JsonNode("Leech",0,350,false,new int[3]{1,23,25},"Life",false,0.025f,25,5,5), //15
+            new JsonNode("Leech",0,350,false,new int[3]{1,23,25},"Life",false,0.005f,25,5,5), //15
 
             new JsonNode("Class",0,450,false,new int[1]{15},"Regular",false,0.1f,50,1,1), //16
 
@@ -67,7 +67,7 @@ namespace AnotherRpgMod
             new JsonNode("Damage",0,-475,false,new int[2]{27,28},"Ranged",false,0.02f,75,50,4), //32
             new JsonNode("Damage",-500,-400,false,new int[2]{27,29},"Throw",false,0.02f,75,50,4), //33
             new JsonNode("Damage",-400,400,false,new int[3]{22,23,25},"Melee",false,0.02f,75,50,4),//34
-            new JsonNode("Leech",0,550,false,new int[1]{16},"Both",false,0.05f,100,10,10), //35
+            new JsonNode("Leech",0,550,false,new int[1]{16},"Both",false,0.005f,100,10,10), //35
 
             new JsonNode("Stats",550,550,false,new int[1]{30},"Int",false,10,150,10,5), //36
             new JsonNode("Stats",600,-50,false,new int[1]{31},"Spr",false,10,150,10,5), //37

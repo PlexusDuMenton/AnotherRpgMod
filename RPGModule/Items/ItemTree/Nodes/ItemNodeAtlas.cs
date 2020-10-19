@@ -23,34 +23,34 @@ namespace AnotherRpgMod.Utils
         };
 
 
-        //Node abaible for weapons
+        //Node avaible for weapons
         static public List<int> WeaponID = new List<int>()
         {
-            0,1,2,1000
+            0,1,2,1000,10000,10005
         };
 
-        //Node abaible for ranged Weapon only
+        //Node avaible for ranged Weapon only
         static public List<int> RangedID = new List<int>()
         {
-            //100
+            100
         };
 
-        //Node abaible for melee Weapon only
+        //Node avaible for melee Weapon only
         static public List<int> MeleeID = new List<int>()
         {
             50
         };
 
-        //Node abaible for magic Weapon only
+        //Node avaible for magic Weapon only
         static public List<int> MagicID = new List<int>()
         {
-
+            150
         };
 
         //Node abaible for summon Weapon only
         static public List<int> SummonID = new List<int>()
         {
-            0,1
+            0,1,1000,10000,10005
         };
 
 
@@ -64,12 +64,18 @@ namespace AnotherRpgMod.Utils
 
             {100,typeof(AdditionalProjectile) },
 
+            {150,typeof(MagicCostReduction) },
+
             {300,typeof(AdditionalDefenceNode) },
 
 
             {500,typeof(BonusExpNode) },
 
             {1000, typeof(SuperAdditionalDamageNode) },
+
+            {10000, typeof(AscendedAdditionalDamageNode) },
+            {10005, typeof(AscendedAdditionalDamageNodePercent) },
+            
         };
 
         static public object GetCorrectNode(int AtlasID)
@@ -116,7 +122,7 @@ namespace AnotherRpgMod.Utils
             return 0;
         }
 
-        static public List<int> GetAvailibleNodeList(ItemUpdate source,bool ascend)
+        static public List<int> GetAvailibleNodeList(ItemUpdate source, bool acceptAscent = true)
         {
             List<int> IDS = new List<int>();
             IDS.AddRange(CommonID);
@@ -155,20 +161,23 @@ namespace AnotherRpgMod.Utils
                     IDS.AddRange(ArmorID);
                     break;
             }
-            List<int> IDR = new List<int>();
-            foreach (int n in IDS)
+            if (!acceptAscent)
             {
-                if (((ItemNode)GetCorrectNode(n)).IsAscend != ascend)
+                List<int> IDR = new List<int>();
+                foreach (int n in IDS)
                 {
-                    IDR.Add(n);
+                    if (((ItemNode)GetCorrectNode(n)).IsAscend)
+                    {
+                        IDR.Add(n);
+                    }
+                }
+
+                foreach (int n in IDR)
+                {
+                    IDS.Remove(n);
                 }
             }
-
-            foreach (int n in IDR)
-            {
-                IDS.Remove(n);
-            }
-
+            
             return IDS;
         }
     }

@@ -10,6 +10,8 @@ using Terraria.ModLoader;
 using Terraria.UI;
 using System.Collections.Generic;
 using AnotherRpgMod.RPGModule.Entities;
+using System.Diagnostics;
+using log4net.Util;
 
 namespace AnotherRpgMod.Utils
 {
@@ -53,25 +55,32 @@ namespace AnotherRpgMod.Utils
 
             Recalculate();
             GetDetails();
-
-
+            
             UIText npanel;
             for (int i = 0; i < NPCName.Count; i++){
                 if (NPCName[i].Color != Color.Black)
-                    npanel = new UIText(NPCName[i].Text, 0.9f)
+                    npanel = new UIText(NPCName[i].Text, 0.9f * Mathf.Pow(AnotherRpgMod.zoomValue.Y,0.5f))
                     {
                         TextColor = NPCName[i].Color
                     };
                 else
                 {
-                    npanel = new UIText(NPCName[i].Text, 0.75f)
+                    npanel = new UIText(NPCName[i].Text, 0.75f * Mathf.Pow(AnotherRpgMod.zoomValue.Y, 0.5f))
                     {
                         TextColor = Color.DarkGray
                     };
                 }
 
-                npanel.Left.Set(NPCName[i].Position.X + 10,0);
-                npanel.Top.Set(NPCName[i].Position.Y - 3, 0);
+                Vector2 TextPosition = new Vector2(NPCName[i].Position.X + 10, NPCName[i].Position.Y - 3);
+
+                if (AnotherRpgMod.zoomValue != new Vector2(1, 1))
+                {
+                    Vector2 Center = new Vector2(Main.screenWidth*0.5f, Main.screenHeight*0.5f);
+                    TextPosition = (TextPosition - Center) * AnotherRpgMod.zoomValue + Center  ;
+                }
+
+                npanel.Left.Set(TextPosition.X, 0);
+                npanel.Top.Set(TextPosition.Y, 0);
                 ScreenPanel.Append(npanel);
             }
             

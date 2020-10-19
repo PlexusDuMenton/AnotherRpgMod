@@ -8,17 +8,26 @@ using AnotherRpgMod.Utils;
 
 namespace AnotherRpgMod.Items
 {
-    class AdditionalDamageNodePercent : ItemNode
+    class AscendedAdditionalDamageNodePercent : ItemNode
     {
-
-        new protected string m_Name = "Bonus Damage";
+        new protected string m_Name = "(Ascended) Bonus Damage";
         new protected string m_Desc = "+ XX% damage";
-        new public float rarityWeight = 0.8f;
+        new public float rarityWeight = 0.05f;
+        new protected bool m_isAscend = true;
 
-        public override NodeCategory GetNodeCategory
+        public override bool IsAscend
         {
             get
             {
+                return m_isAscend;
+            }
+        }
+
+        public override NodeCategory GetNodeCategory 
+        {
+            get
+            {
+                
                 return NodeCategory.Multiplier;
             }
         }
@@ -31,15 +40,13 @@ namespace AnotherRpgMod.Items
             }
         }
 
-        public override string GetDesc
-        {
-            get
-            {
+        public override string GetDesc { get {
                 return "Add " + (Damage * Utils.Mathf.Clamp(GetLevel, 1, GetMaxLevel)) + "% Damage ";
-            }
-        }
+            } }
 
-        public float Damage;
+        
+
+        public int Damage;
 
         public override void Passive(Item item)
         {
@@ -48,7 +55,9 @@ namespace AnotherRpgMod.Items
 
         public override void SetPower(float value)
         {
-            Damage = Utils.Mathf.Clamp(Utils.Mathf.Round(Utils.Mathf.Pow(value,0.7f),2), 2.5f, 10);
+            Damage = Utils.Mathf.Clamp((int)Utils.Mathf.Pow(value*10,1.2f),8,999);
+            m_MaxLevel = 1;
+            m_RequiredPoints = 1;
             power = value;
         }
 

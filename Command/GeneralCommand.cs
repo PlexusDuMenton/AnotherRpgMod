@@ -10,6 +10,8 @@ using AnotherRpgMod.RPGModule.Entities;
 using AnotherRpgMod.RPGModule;
 using AnotherRpgMod.Utils;
 using AnotherRpgMod.Items;
+using IL.Terraria.Localization;
+
 namespace AnotherRpgMod.Command
 {
     public class SetLevel : ModCommand
@@ -36,7 +38,7 @@ namespace AnotherRpgMod.Command
 
         public override void Action(CommandCaller caller, string input, string[] args)
         {
-            RPGPlayer character = caller.Player.GetModPlayer<RPGPlayer>(mod);
+            RPGPlayer character = caller.Player.GetModPlayer<RPGPlayer>();
             int level = Int32.Parse(args[0]) - 1;
             level = Mathf.Clamp(level, 1, 9999);
 
@@ -73,7 +75,7 @@ namespace AnotherRpgMod.Command
 
         public override void Action(CommandCaller caller, string input, string[] args)
         {
-            RPGPlayer character = caller.Player.GetModPlayer<RPGPlayer>(mod);
+            RPGPlayer character = caller.Player.GetModPlayer<RPGPlayer>();
             int level = Int32.Parse(args[0]);
             level = Mathf.Clamp(level, 0, 9999);
 
@@ -110,7 +112,7 @@ namespace AnotherRpgMod.Command
 
             public override void Action(CommandCaller caller, string input, string[] args)
             {
-                RPGPlayer character = caller.Player.GetModPlayer<RPGPlayer>(mod);
+                RPGPlayer character = caller.Player.GetModPlayer<RPGPlayer>();
                 character.RecalculateStat();
             }
         }
@@ -140,12 +142,11 @@ namespace AnotherRpgMod.Command
         public override void Action(CommandCaller caller, string input, string[] args)
         {
             Player player = caller.Player;
-            RPGPlayer character = player.GetModPlayer<RPGPlayer>(mod);
+            RPGPlayer character = player.GetModPlayer<RPGPlayer>();
             
             ItemUpdate item = player.HeldItem.GetGlobalItem<ItemUpdate>();
             float itemvalue = player.HeldItem.value;
             int cost = Mathf.RoundInt((itemvalue * 0.33333f));
-            AnotherRpgMod.Instance.Logger.Info(cost);
 
             if (player.CanBuyItem(cost))
             {
@@ -278,7 +279,7 @@ namespace AnotherRpgMod.Command
         public override void Action(CommandCaller caller, string input, string[] args)
         {
             Player player = caller.Player;
-            RPGPlayer character = player.GetModPlayer<RPGPlayer>(mod);
+            RPGPlayer character = player.GetModPlayer<RPGPlayer>();
 
             ItemUpdate item = player.HeldItem.GetGlobalItem<ItemUpdate>();
             int cost = player.HeldItem.value;
@@ -417,7 +418,7 @@ namespace AnotherRpgMod.Command
         public override void Action(CommandCaller caller, string input, string[] args)
         {
             Player player = caller.Player;
-            RPGPlayer character = player.GetModPlayer<RPGPlayer>(mod);
+            RPGPlayer character = player.GetModPlayer<RPGPlayer>();
             if (args.Length == 0)
             {
                 Main.NewText(Description);
@@ -461,7 +462,7 @@ namespace AnotherRpgMod.Command
         public override void Action(CommandCaller caller, string input, string[] args)
         {
             Player player = caller.Player;
-            RPGPlayer character = player.GetModPlayer<RPGPlayer>(mod);
+            RPGPlayer character = player.GetModPlayer<RPGPlayer>();
             if (args.Length == 0)
             {
                 Main.NewText(Description);
@@ -521,7 +522,7 @@ namespace AnotherRpgMod.Command
         public override void Action(CommandCaller caller, string input, string[] args)
         {
             Player player = caller.Player;
-            RPGPlayer character = player.GetModPlayer<RPGPlayer>(mod);
+            RPGPlayer character = player.GetModPlayer<RPGPlayer>();
             if (AnotherRpgMod.source == null)
                 return;
             if (AnotherRpgMod.Transfer == null)

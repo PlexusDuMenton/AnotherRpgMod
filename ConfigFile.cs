@@ -86,6 +86,7 @@ namespace AnotherRpgMod
                 AnotherRpgMod.Instance.healthBar.Reset();
                 AnotherRpgMod.Instance.OpenST.Reset();
                 AnotherRpgMod.Instance.openStatMenu.Reset();
+                
             }
         }
     }

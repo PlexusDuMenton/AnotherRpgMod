@@ -26,7 +26,7 @@ namespace AnotherRpgMod.Items
         public ItemSkillTree GetParent { get { return m_SkillTreeParent; } }
         public int GetId { get { return m_ID; } }
 
-        protected float power;
+        public float power;
         protected NodeCategory m_NodeCategory = NodeCategory.Other;
         virtual public NodeCategory GetNodeCategory
         {
@@ -39,7 +39,7 @@ namespace AnotherRpgMod.Items
         protected int m_RequiredPoints;
         protected bool m_isAscend = false;
 
-        public bool IsAscend { get { return m_isAscend; } }
+        virtual public bool IsAscend { get { return m_isAscend; } }
         public int GetRequiredPoints { get { return m_RequiredPoints; } }
 
         protected string m_Name = "Blank";
@@ -60,7 +60,7 @@ namespace AnotherRpgMod.Items
 
         public virtual void SetPower(float value)
         {
-
+            
         }
 
         public void SetPos (float posx, float posy)

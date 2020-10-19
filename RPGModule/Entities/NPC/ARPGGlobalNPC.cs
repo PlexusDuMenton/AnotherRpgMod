@@ -3,6 +3,7 @@ using Microsoft.Xna.Framework;
 using System;
 using System.Collections.Generic;
 using Terraria;
+using Terraria.ID;
 using Terraria.ModLoader;
 
 namespace AnotherRpgMod.RPGModule.Entities
@@ -147,13 +148,13 @@ namespace AnotherRpgMod.RPGModule.Entities
         public void SetInit(NPC npc)
         {
             
-            if (Main.netMode == 2)
+            if (Main.netMode == NetmodeID.Server)
             {
                 Main.npcLifeBytes[npc.type] = 4; //Sadly have to UN-optimise Health of ennemy, because it caused npc to dispear if health was over 128 (for small )
             }
             
-
-            if (Main.netMode != 1)
+            
+            if (Main.netMode != NetmodeID.MultiplayerClient)
             {
                 if (level < 0) {
                     if (!Config.gpConfig.NPCProgress)
@@ -236,7 +237,7 @@ namespace AnotherRpgMod.RPGModule.Entities
                 }
             }
 
-            if (!StatsCreated && Main.netMode != 1) {
+            if (!StatsCreated && Main.netMode != NetmodeID.MultiplayerClient) {
                 StatsCreated = true;
                 SetInit(npc);
                 SetStats(npc);
@@ -247,7 +248,7 @@ namespace AnotherRpgMod.RPGModule.Entities
                 npc.GivenName = NPCUtils.GetNpcNameChange(npc, tier, level, Rank);
             }
 
-            if (Main.netMode == 1)
+            if (Main.netMode == NetmodeID.MultiplayerClient)
             {
                 if (!StatsFrame0)
                 {
@@ -263,7 +264,7 @@ namespace AnotherRpgMod.RPGModule.Entities
 
 
 
-            if (Main.netMode != 1)
+            if (Main.netMode != NetmodeID.MultiplayerClient)
             {
                 
                 debuffDamage += NPCUtils.UpdateDOT(npc);
@@ -349,7 +350,7 @@ namespace AnotherRpgMod.RPGModule.Entities
             if (npc.townNPC) return;
 
             Player player = Array.Find(Main.player, p => p.active);
-            if (Main.netMode == 0)
+            if (Main.netMode == NetmodeID.SinglePlayer)
                 player = Main.LocalPlayer; //if local , well it's simple
             else if (Main.player[npc.target].active)
                 player = Main.player[npc.target];
@@ -374,7 +375,7 @@ namespace AnotherRpgMod.RPGModule.Entities
                 xplevel = int.MaxValue;
             }
             MPPacketHandler.SendXPPacket(mod, XPToDrop, xplevel);
-            if (Main.netMode == 0)
+            if (Main.netMode == NetmodeID.SinglePlayer)
                 player.GetModPlayer<RPGPlayer>().AddXp(XPToDrop, xplevel);
            
 

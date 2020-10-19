@@ -126,7 +126,7 @@ namespace AnotherRpgMod.RPGModule.Entities
 
     public void Leech(int damage)
     {
-        float lifeHeal = damage * GetLifeLeech();
+        float lifeHeal = GetLifeLeech(damage);
         int manaHeal = (int) (player.statManaMax2 * GetManaLeech());
         player.GetModPlayer<RPGPlayer>().ApplyReduction(ref lifeHeal);
 
@@ -187,9 +187,9 @@ namespace AnotherRpgMod.RPGModule.Entities
             BufferLife = newLife - LifeGain;
             player.statLife = LifeGain;
 
-            if (Main.netMode == 1)
+            if (Main.netMode == NetmodeID.MultiplayerClient)
             {
-                NetMessage.SendData(21, -1, -1, null, player.whoAmI, 0f, 0f, 0f, 0, 0, 0);
+                NetMessage.SendData(MessageID.SyncItem, -1, -1, null, player.whoAmI, 0f, 0f, 0f, 0, 0, 0);
             }
         }
         else
@@ -349,9 +349,9 @@ namespace AnotherRpgMod.RPGModule.Entities
                             int heal = (int)(damage * value * 0.01f * ModifierManager.GetModifierBonusAlt(Modifier.BloodSeeker, instance));
                             player.GetModPlayer<RPGPlayer>().ApplyReduction(ref heal);
                             player.statLife = Mathf.Clamp(player.statLife + heal, player.statLife, player.statLifeMax2);
-                            if (Main.netMode == 1)
+                            if (Main.netMode == NetmodeID.MultiplayerClient)
                             {
-                                NetMessage.SendData(21, -1, -1, null, player.whoAmI, 0f, 0f, 0f, 0, 0, 0);
+                                NetMessage.SendData(MessageID.SyncItem, -1, -1, null, player.whoAmI, 0f, 0f, 0f, 0, 0, 0);
                             }
                         }
                     }
@@ -413,7 +413,7 @@ namespace AnotherRpgMod.RPGModule.Entities
                 damage = ApplyPiercing(ModifierManager.GetModifierBonus(Modifier.Piercing, player.HeldItem.GetGlobalItem<ItemUpdate>()), target.defense, damage);
             }
 
-            if (target.type != 488)
+            if (target.type != NPCID.TargetDummy)
                 AddWeaponXp(damage, item);
             Leech(damage);
             MPPacketHandler.SendNpcUpdate(mod, target);
@@ -435,7 +435,7 @@ namespace AnotherRpgMod.RPGModule.Entities
             }
             if (proj.minion)
             {
-                if (target.type != 488)
+                if (target.type != NPCID.TargetDummy)
                 {
                     if (player.HeldItem.summon)
                         AddWeaponXp(damage / pen, player.HeldItem,1);
@@ -445,7 +445,7 @@ namespace AnotherRpgMod.RPGModule.Entities
                 }
                         
             }else if(!proj.minion) {
-                if (target.type != 488)
+                if (target.type != NPCID.TargetDummy)
                     AddWeaponXp(damage / pen, player.HeldItem);
 
             }
@@ -485,9 +485,9 @@ namespace AnotherRpgMod.RPGModule.Entities
                     player.statLife = Mathf.Clamp(player.statLife + damage, 0, player.statLifeMax2);
                     damage = 0;
                 }
-                if (Main.netMode == 1)
+                if (Main.netMode == NetmodeID.MultiplayerClient)
                 {
-                    NetMessage.SendData(21, -1, -1, null, player.whoAmI, 0f, 0f, 0f, 0, 0, 0);
+                    NetMessage.SendData(MessageID.SyncItem, -1, -1, null, player.whoAmI, 0f, 0f, 0f, 0, 0, 0);
                 }
             }
         }
@@ -563,7 +563,7 @@ namespace AnotherRpgMod.RPGModule.Entities
             ManaCost = Mathf.Clamp(ManaCost, 0, player.statMana);
             if (ManaCost == 0)
                 return damage;
-            Main.PlaySound(39);
+            Main.PlaySound(SoundID.Drip);
             int reducedDamage = Mathf.CeilInt(ManaCost * ShieldInfo.ManaPerDamage);
             player.statMana -= Mathf.CeilInt(ManaCost);
             CombatText.NewText(player.getRect(), new Color(64, 196, 255), "-"+ reducedDamage);
@@ -689,7 +689,7 @@ namespace AnotherRpgMod.RPGModule.Entities
                     player.statLife -= BuffDamage;
                 }
 
-                if (Main.netMode != 2)
+                if (Main.netMode != NetmodeID.Server)
                 {
 
                     player.meleeCrit = (int)(player.meleeCrit + GetCriticalChanceBonus());
@@ -705,9 +705,6 @@ namespace AnotherRpgMod.RPGModule.Entities
                     {
                         UpdateThoriumDamage(player);
                     }
-
-                    if (AnotherRpgMod.LoadedMods[SupportedMod.Tremor])
-                        UpdateTremorDamage(player);
 
                     if (AnotherRpgMod.LoadedMods[SupportedMod.DBZMOD])
                     {
@@ -750,11 +747,6 @@ namespace AnotherRpgMod.RPGModule.Entities
 
 
     }
-    private void UpdateTremorDamage(Player player)
-    {
-        Mod Tremor = ModLoader.GetMod("Tremor");
-        player.GetModPlayer<Tremor.MPlayer>().alchemicalDamage *= GetDamageMult(DamageType.Alchemic);
-    }
 
     public void ApplyReduction(ref int damage,bool heal = false)
     {
@@ -787,7 +779,7 @@ namespace AnotherRpgMod.RPGModule.Entities
            
         if (Config.gpConfig.RPGPlayer)
         {
-            if (Main.netMode != 2)
+            if (Main.netMode != NetmodeID.Server)
             {
                 m_virtualRes = 0;
                 armor = player.statDefense;
@@ -985,8 +977,6 @@ namespace AnotherRpgMod.RPGModule.Entities
                         return (GetStatImproved(Stat.Agi) * SECONDARYTATSMULT + GetStatImproved(Stat.Foc) * SECONDARYTATSMULT) *statMultiplier + 0.8f;
                     case DamageType.Radiant:
                         return (GetStatImproved(Stat.Int) * SECONDARYTATSMULT + GetStatImproved(Stat.Spr) * SECONDARYTATSMULT) * statMultiplier + 0.8f;
-                    case DamageType.Alchemic:
-                        return (Stats.GetStat(Stat.Int) * SECONDARYTATSMULT + Stats.GetStat(Stat.Str) * SECONDARYTATSMULT) * statMultiplier + 0.8f;
                 case DamageType.KI:
                         return (GetStatImproved(Stat.Spr) * MAINSTATSMULT + GetStatImproved(Stat.Str) * SECONDARYTATSMULT) * statMultiplier + 0.8f;
                 default:
@@ -1089,7 +1079,7 @@ namespace AnotherRpgMod.RPGModule.Entities
 
         }
 
-        public float GetLifeLeech()
+        public float GetLifeLeech(int damage)
         {
             float value = 0;
             if (player.HeldItem != null && player.HeldItem.damage > 0 && player.HeldItem.maxStack <= 1)
@@ -1103,7 +1093,9 @@ namespace AnotherRpgMod.RPGModule.Entities
                         value = Item.GetLifeLeech*0.01f;
                 }
             }
-            value += skilltree.GetLeech(LeechType.Life) + skilltree.GetLeech(LeechType.Both);
+            value *= player.statLifeMax2;
+
+            value += skilltree.GetLeech(LeechType.Life) * player.statLifeMax2 + skilltree.GetLeech(LeechType.Both) * damage;
             return value;
         }
         public float GetManaLeech()
@@ -1133,7 +1125,7 @@ namespace AnotherRpgMod.RPGModule.Entities
             CombatText.NewText(player.getRect(), new Color(150, 100, 200), "+"+ pointsToGain + " Ability points",true);
             level++;
             Main.NewText(player.name + " Is now level : " + level.ToString() + " .Congratulation !", 255, 223, 63);
-            if (Main.netMode == 1)
+            if (Main.netMode == NetmodeID.MultiplayerClient)
             {
                 SendClientChanges(this);
             }
@@ -1254,7 +1246,6 @@ namespace AnotherRpgMod.RPGModule.Entities
             {
                 return -1;
             }
-        AnotherRpgMod.Instance.Logger.Info((int)skilltree.ActiveClass.GetParent.ID);
             return (int)skilltree.ActiveClass.GetParent.ID;
         }
 

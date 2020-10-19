@@ -18,7 +18,7 @@ namespace AnotherRpgMod.Items
 
         public static bool HaveTree (Item item)
         {
-            if (item.GetGlobalItem<ItemUpdate>().NeedsSaving(item) && !item.accessory)
+            if (item.GetGlobalItem<ItemUpdate>() != null && item.GetGlobalItem<ItemUpdate>().NeedsSaving(item) && !item.accessory)
             {
                 return true;
             }
@@ -126,6 +126,7 @@ namespace AnotherRpgMod.Items
 
         };
 
+        public string ItemName;
 
         protected ItemSkillTree m_itemTree;
         public int GetEvolutionPoints { get { return m_itemTree.EvolutionPoints; } }
@@ -261,7 +262,7 @@ namespace AnotherRpgMod.Items
         }
 
 
-        public void UpdatePassive(Item item)
+        public void UpdatePassive(Item item,Player player)
         {
             leech = 0;
             bonusXp = 0;
@@ -274,6 +275,7 @@ namespace AnotherRpgMod.Items
             m_itemTree.ApplyFlatPassives(item);
             m_itemTree.ApplyMultiplierPassives(item);
             m_itemTree.ApplyOtherPassives(item);
+            m_itemTree.ApplyPlayerPassive(item,player);
         }
 
 
@@ -614,6 +616,7 @@ namespace AnotherRpgMod.Items
                 Main.projectile[projnum].hostile = false;
 
             }
+            /*
             if (!item.summon) { 
                 for (int i = 0; i < ascendedLevel; i++)
                 {
@@ -629,6 +632,9 @@ namespace AnotherRpgMod.Items
                     Main.projectile[projnum].hostile = false;
                 }
             }
+            */
+            m_itemTree.OnShoot(item, player, ref position, ref speedX, ref speedY, ref type, ref damage, ref knockBack);
+
             return true;
         }
 
@@ -640,7 +646,7 @@ namespace AnotherRpgMod.Items
             {
                 damage = (int)(0.5f * damage * rpgPlayer.GetCriticalDamage());
             }
-            if (target.type != 488)
+            if (target.type != NPCID.TargetDummy)
                 rpgPlayer.AddWeaponXp(damage, item);
             rpgPlayer.Leech(damage);
             base.ModifyHitNPC(item, player, target, ref damage, ref knockBack, ref crit);
@@ -656,7 +662,7 @@ namespace AnotherRpgMod.Items
                 return;
 
             string itemTreeSave;
-
+            ItemName = item.Name;
             xp = tag.GetAsLong("Exp");
             level = tag.GetInt("level");
             ascendedLevel = tag.GetInt("ascendedLevel");
@@ -670,8 +676,6 @@ namespace AnotherRpgMod.Items
                 m_itemTree = new ItemSkillTree();
 
             itemTreeSave = tag.Get<string>("tree");
-
-            
 
             if (itemTreeSave != "")
             {
@@ -907,7 +911,6 @@ namespace AnotherRpgMod.Items
                                 };
                                 tooltips.Add(infott);
                             }
-                            /*
                             if (m_itemTree.AscendPoints > 0)
                             {
                                 TooltipLine infotta = new TooltipLine(mod, "pointsAscendInfo", m_itemTree.AscendPoints + " Ascend Points left !!!")
@@ -917,7 +920,6 @@ namespace AnotherRpgMod.Items
                                 };
                                 tooltips.Add(infotta);
                             }
-                            */
                         }
                         else
                         {
@@ -1042,7 +1044,7 @@ namespace AnotherRpgMod.Items
                     baseValue = (int)(item.value * (1 + Mathf.Pow(ascendedLevel, 2f) + level * 0.1f));
                     if (itemType == ItemType.Armor)
                     {
-                        UpdatePassive(item);
+                        UpdatePassive(item,player);
                         item.defense = GetDefense(item);
                         if (ascendedLevel > 0)
                         {
@@ -1074,7 +1076,7 @@ namespace AnotherRpgMod.Items
                 if (NeedsSaving(item) && (level > 0 || ascendedLevel > 0))
                 {
 
-                    UpdatePassive(item);
+                    UpdatePassive(item,player);
 
                     baseValue = (int)(item.value * (1 + Mathf.Pow(ascendedLevel, 1.5f) + level * 0.1f));
                     if (itemType == ItemType.Armor)
@@ -1243,7 +1245,7 @@ namespace AnotherRpgMod.Items
 
         public int GetCapLevel()
         {
-            float powerLevel = BaseDamage * (60/baseUseTime) + Mathf.Pow(baseArmor,1.45f)*4;
+            float powerLevel = BaseDamage * Mathf.Pow(Mathf.Clamp(60/baseUseTime,2,30),0.5f) + Mathf.Pow(baseArmor,1.45f)*4;
 
             if (m_weaponType == WeaponType.Stab)
                 powerLevel *= 0.5f;
@@ -1425,15 +1427,15 @@ namespace AnotherRpgMod.Items
                 for (int j = 0; j < Main.npc.Length; j++)
                 {
                     float damageToApply = ModifierManager.GetModifierBonus(Modifier.VampiricAura, this) * (1f / 60f);
-                    if (Vector2.Distance(Main.npc[j].position, player.position) < 1000 && !Main.npc[j].townNPC)
+                    if (Vector2.Distance(Main.npc[j].position, player.position) < 1000 && !Main.npc[j].townNPC && Main.npc[j].damage > 1)
                     {
                         int heal = Main.npc[j].GetGlobalNPC<ARPGGlobalNPC>().ApplyVampricAura(Main.npc[j], damageToApply);
                         player.GetModPlayer<RPGPlayer>().ApplyReduction(ref heal);
                         player.statLife = Mathf.Clamp(player.statLife + heal, player.statLife, player.statLifeMax2);
 
-                        if (Main.netMode == 1)
+                        if (Main.netMode == NetmodeID.MultiplayerClient)
                         {
-                            NetMessage.SendData(21, -1, -1, null, j, 0f, 0f, 0f, 0, 0, 0);
+                            NetMessage.SendData(MessageID.SyncItem, -1, -1, null, j, 0f, 0f, 0f, 0, 0, 0);
                         }
                     }
                 }

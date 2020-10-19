@@ -40,15 +40,11 @@ namespace AnotherRpgMod.Utils
                     break;
                 case Stat.Dex:
                     Text = "Dexterity : Increase Throw\nRanged Damage\nArmor Penetration\n Critical Chance.";
-                    if (AnotherRpgMod.LoadedMods[SupportedMod.Tremor])
-                        Text += "\n Also Increase Alchemic Damage";
                     break;
                 case Stat.Int:
                     Text = "Inteligence : Increase Magic Damage,\n Mana Regeneration\n and Mana.";
                     if (AnotherRpgMod.LoadedMods[SupportedMod.Thorium])
                         Text += "\n Also Increase Radiant Damage";
-                    if (AnotherRpgMod.LoadedMods[SupportedMod.Tremor])
-                        Text += "\n Also Slighty Increase Alchemic Damage";
                     break;
                 case Stat.Spr:
                     Text = "Spirit : Increase Magic\n and Summon Damage,\n Increase Mana Regeneration.";

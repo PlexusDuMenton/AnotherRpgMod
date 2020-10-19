@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Microsoft.Xna.Framework;
+using AnotherRpgMod.Utils;
 using Terraria;
 
 namespace AnotherRpgMod.Items
@@ -30,7 +31,7 @@ namespace AnotherRpgMod.Items
         {
             get
             {
-                return "- " + (manaCostReduction*100) + "% Manacost";
+                return "- " + (manaCostReduction*100 *Utils.Mathf.Clamp(GetLevel, 1, GetMaxLevel)) + "% Manacost";
             }
         }
 
@@ -39,18 +40,18 @@ namespace AnotherRpgMod.Items
 
         public override void PlayerPassive(Item item, Player player)
         {
-            player.manaCost *= 1 - manaCostReduction;
+            player.manaCost *= 1 - manaCostReduction* GetLevel;
         }
 
         public override void SetPower(float value)
         {
             manaCostReduction = Utils.Mathf.Clamp(Utils.Mathf.Round(value * 0.01f, 2), 0.01f, 0.5f);
-            base.SetPower(value);
+            power = value;
         }
 
         public override void LoadValue(string saveValue)
         {
-            power = float.Parse(saveValue);
+            power = saveValue.SafeFloatParse();
             SetPower(power);
         }
 

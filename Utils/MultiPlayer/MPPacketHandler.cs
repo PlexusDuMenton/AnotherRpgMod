@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using Terraria;
+using Terraria.ID;
 using Terraria.ModLoader;
 using System.IO;
 using AnotherRpgMod.RPGModule.Entities;
@@ -21,7 +22,7 @@ namespace AnotherRpgMod.Utils
 
         static public void SendXPPacket(Mod mod,int XPToDrop,int xplevel)
         {
-            if (Main.netMode == 2)
+            if (Main.netMode == NetmodeID.Server)
             {
                 ModPacket packet = mod.GetPacket();
                 packet.Write((byte)Message.AddXP);
@@ -63,9 +64,10 @@ namespace AnotherRpgMod.Utils
 
         static public void SendNpcSpawn(Mod mod, NPC npc, int Tier, int Level, ARPGGlobalNPC ARPGNPC)
         {
-            if (Main.netMode == 2)
+
+            if (Main.netMode == NetmodeID.Server)
             {
-                NetMessage.SendData(23, -1, -1, null, npc.whoAmI);
+                NetMessage.SendData(MessageID.SyncNPC, -1, -1, null, npc.whoAmI);
 
                 ModPacket packet = mod.GetPacket();
                 
@@ -85,7 +87,7 @@ namespace AnotherRpgMod.Utils
 
         static public void AskNpcInfo(Mod mod, NPC npc)
         {
-            if (Main.netMode == 1)
+            if (Main.netMode == NetmodeID.MultiplayerClient)
             {
                 //AnotherRpgMod.Instance.Logger.Info("ask npc to server");
                 ModPacket packet = mod.GetPacket();
@@ -97,7 +99,7 @@ namespace AnotherRpgMod.Utils
 
         static public void SendNpcUpdate(Mod mod, NPC npc, int ignore = -1)
         {
-            if (Main.netMode == 2)
+            if (Main.netMode == NetmodeID.Server)
             {
                 //NetMessage.SendData(23, -1, ignore, null, npc.whoAmI);
                 
@@ -128,7 +130,7 @@ namespace AnotherRpgMod.Utils
                     
                     if((int)tags[DataTag.playerId] != Main.myPlayer)
                     {
-                        if (Main.netMode != 0)
+                        if (Main.netMode != NetmodeID.SinglePlayer)
                             p.SyncLevel((int)tags[DataTag.amount]);
                         Main.player[(int)tags[DataTag.playerId]].name = p.baseName + " The Lvl." + p.GetLevel() + " " + (string)tags[DataTag.buffer];
                     }
@@ -138,7 +140,7 @@ namespace AnotherRpgMod.Utils
                     Main.LocalPlayer.GetModPlayer<RPGPlayer>().AddXp((int)tags[DataTag.amount], (int)tags[DataTag.level]);
                     break;
                 case Message.SyncNPCSpawn:
-                    if (Main.netMode == 1) {
+                    if (Main.netMode == NetmodeID.MultiplayerClient) {
                         
 
                         NPC npc = Main.npc[(int)tags[DataTag.npcId]];
@@ -179,7 +181,7 @@ namespace AnotherRpgMod.Utils
                     break;
 
                 case Message.SyncNPCUpdate:
-                    if (Main.netMode == 1)
+                    if (Main.netMode == NetmodeID.MultiplayerClient)
                     {
                         NPC npcu = Main.npc[(int)tags[DataTag.npcId]];
 
@@ -194,7 +196,7 @@ namespace AnotherRpgMod.Utils
                     }
                     break;
                 case Message.Log:
-                    if (Main.netMode == 1)
+                    if (Main.netMode == NetmodeID.MultiplayerClient)
                     {
                         //ErrorLogger.Log("LOG FROM SERVER");
                         AnotherRpgMod.Instance.Logger.Info((string)tags[DataTag.buffer]);
@@ -202,7 +204,7 @@ namespace AnotherRpgMod.Utils
 
                     break;
                 case Message.AskNpc:
-                    if (Main.netMode == 2)
+                    if (Main.netMode == NetmodeID.Server)
                     {
                         NPC npc = Main.npc[(int)tags[DataTag.npcId]];
                         if (npc.GetGlobalNPC<ARPGGlobalNPC>() == null)

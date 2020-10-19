@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using AnotherRpgMod.Utils;
 using Microsoft.Xna.Framework;
 using Terraria;
 
@@ -11,12 +12,18 @@ namespace AnotherRpgMod.Items
     class AdditionalProjectile : ItemNodeAdvanced
     {
 
-        new protected string m_Name = "Additional Porjectile";
+        new protected string m_Name = "(Ascended) Multiple Projectile";
         new protected string m_Desc = "+ X Projectile";
         new protected NodeCategory m_NodeCategory = NodeCategory.Other;
-        
+        new protected bool m_isAscend = true;
 
-
+        public override bool IsAscend
+        {
+            get
+            {
+                return m_isAscend;
+            }
+        }
 
         public override string GetName
         {
@@ -30,16 +37,16 @@ namespace AnotherRpgMod.Items
         {
             get
             {
-                return "+ " + (ProjectileAmmount) + " Projectile";
+                return "+ " + (ProjectileAmmount * Utils.Mathf.Clamp(GetLevel, 1, GetMaxLevel)) + " Projectile";
             }
         }
 
-        protected new bool m_isAscend = true;
+        
         public int ProjectileAmmount;
 
         public override void OnShoot(Item item, Player player, ref Vector2 position, ref float speedX, ref float speedY, ref int type, ref int damage, ref float knockBack)
         {
-            for (int i = 0; i < ProjectileAmmount; i++)
+            for (int i = 0; i < ProjectileAmmount* GetLevel; i++)
             {
                 float spread = 10 * 0.0174f; //20 degree cone
                 float baseSpeed = (float)Math.Sqrt(speedX * speedX + speedY * speedY) * (1 + 0.1f * Main.rand.NextFloat());
@@ -56,12 +63,13 @@ namespace AnotherRpgMod.Items
 
         public override void SetPower(float value)
         {
-            base.SetPower(value);
+            ProjectileAmmount = Mathf.FloorInt(Mathf.Pow(value, 0.25f));
+            power = value;
         }
 
         public override void LoadValue(string saveValue)
         {
-            power = float.Parse(saveValue);
+            power = saveValue.SafeFloatParse();
             SetPower(power);
         }
 

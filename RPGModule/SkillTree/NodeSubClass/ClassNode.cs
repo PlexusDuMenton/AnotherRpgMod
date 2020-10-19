@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using Microsoft.Xna.Framework;
 using Terraria;
+using Terraria.ID;
 using AnotherRpgMod.RPGModule.Entities;
 namespace AnotherRpgMod.RPGModule
 {
@@ -81,7 +82,7 @@ namespace AnotherRpgMod.RPGModule
             
 
             UpdateClass();
-            if (Main.netMode == 1)
+            if (Main.netMode == NetmodeID.MultiplayerClient)
                 player.SendClientChanges(player);
         }
 

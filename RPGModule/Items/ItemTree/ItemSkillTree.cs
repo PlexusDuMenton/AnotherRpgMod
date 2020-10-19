@@ -206,7 +206,7 @@ namespace AnotherRpgMod.Items
             {
                 if (i > 0)
                     save += ";";
-                save += ItemNodeAtlas.GetID(skilltree.GetNode(i).GetType().Name) + ",";
+                save += ItemNodeAtlas.GetID(skilltree.GetNode(i).GetType().Name) + "|";
                 for (int j = 0; j < skilltree.GetNode(i).GetNeighboor.Count; j++)
                 {
                     
@@ -215,12 +215,12 @@ namespace AnotherRpgMod.Items
                         save += ':';
                 }
 
-                save += "," + skilltree.GetNode(i).GetState + ","+ skilltree.GetNode(i).GetLevel+ "," + skilltree.GetNode(i).GetMaxLevel + ","+ skilltree.GetNode(i).GetRequiredPoints + "," + skilltree.GetNode(i).GetPos.X + ":"+ skilltree.GetNode(i).GetPos.Y+",";
-
+                save += "|" + skilltree.GetNode(i).GetState + "|"+ skilltree.GetNode(i).GetLevel+ "|" + skilltree.GetNode(i).GetMaxLevel + "|" + skilltree.GetNode(i).GetRequiredPoints + "|" + skilltree.GetNode(i).GetPos.X + ":"+ skilltree.GetNode(i).GetPos.Y+"|";
+                
                 save += skilltree.GetNode(i).GetSaveValue();
 
             }
-
+            
             return save;
         }
 
@@ -236,14 +236,21 @@ namespace AnotherRpgMod.Items
 
             foreach (string nodeSave in nodeListSave)
             {
-                
                 bufferNode = null;
-                nodeDetails = nodeSave.Split(',');
+                nodeDetails = nodeSave.Split('|');
                 if (nodeDetails.Length != 8)
                 {
-                    AnotherRpgMod.Instance.Logger.Warn("Item tree corrupted, reseting tree");
+                    AnotherRpgMod.Instance.Logger.Error(source.ItemName);
+                    AnotherRpgMod.Instance.Logger.Error("Item tree corrupted, reseting tree");
+                    AnotherRpgMod.Instance.Logger.Error(nodeSave);
                     tree = new ItemSkillTree();
                     tree.Init(source);
+                    tree.Reset(true);
+                    tree.EvolutionPoints = tree.MaxEvolutionPoints;
+                    tree.AscendPoints = tree.MaxAscendPoints;
+
+                    if (tree.AscendPoints > 0)
+                        tree.ExtendTree(Mathf.Clamp(Mathf.CeilInt(Mathf.Pow(source.baseCap / 3f, 0.95)), 5, 99) * tree.AscendPoints);
                     return tree;
                 }
 
@@ -263,6 +270,8 @@ namespace AnotherRpgMod.Items
                 }
                 bufferNode.ForceLockNode(int.Parse(nodeDetails[2]));
                 bufferNode.SetLevel = int.Parse(nodeDetails[3]);
+                
+                
                 if (nodeDetails[7] != "")
                     bufferNode.LoadValue(nodeDetails[7]);
                 tree.AddNode(bufferNode);
@@ -333,6 +342,24 @@ namespace AnotherRpgMod.Items
                 {
                     n.Passive(item);
                 }
+            }
+
+        }
+
+        public void ApplyPlayerPassive(Item item, Player player)
+        {
+            foreach (ItemNode n in m_nodeList)
+            {
+                n.PlayerPassive(item, player);
+            }
+            
+        }
+        public void OnShoot(Item item, Player player, ref Vector2 position, ref float speedX, ref float speedY, ref int type, ref int damage, ref float knockBack)
+        {
+            foreach (ItemNode n in m_nodeList)
+            {
+                if (n is ItemNodeAdvanced m)
+                    m.OnShoot(item, player, ref position, ref speedX, ref speedY, ref type, ref damage, ref knockBack);
             }
 
         }
@@ -473,7 +500,7 @@ namespace AnotherRpgMod.Items
         {
             //Init all value to continue building the tree
             int yPos = GetYPos();
-            List<int> IDS = ItemNodeAtlas.GetAvailibleNodeList(m_ItemSource, false);
+            List<int> IDS = ItemNodeAtlas.GetAvailibleNodeList(m_ItemSource);
             int brancheAmm = Mathf.RandomInt(
                 Mathf.Clamp(GetBranchesCount(), Mathf.RoundInt(MINBRANCH + m_ItemSource.GetCapLevel() * 0.02f),MAXBRANCH)
                 , MAXBRANCH
@@ -560,7 +587,7 @@ namespace AnotherRpgMod.Items
         {
             int NodeGoal = Mathf.CeilInt(Mathf.Pow(m_ItemSource.baseCap/3f,0.95)*1.25f);
             List<int> IDS = ItemNodeAtlas.GetAvailibleNodeList(m_ItemSource,false);
-            int yPos = 0; //Normal skilltree will allways goes down, Ascend will goes up
+            int yPos = 0; //skilltree will allways goes down
             int minbranche = MINBRANCH;
             minbranche = Mathf.Clamp(Mathf.FloorInt(MINBRANCH + m_ItemSource.GetCapLevel() * 0.02f),MINBRANCH,MAXBRANCH);
             int brancheAmm = Mathf.RandomInt(minbranche, MAXBRANCH);
@@ -661,9 +688,8 @@ namespace AnotherRpgMod.Items
                 float power = Mathf.Clamp((position.Y / 250) + (Math.Abs(position.X) / 300) + Mathf.Random(-0.35f, 0.35f),0,45);
                 int level = 3 + (int)power;
                 int requirement = Mathf.FloorInt(1 + power * 0.75f);
-                Node.Init(this,m_nodeList.Count, level, requirement, position); 
+                Node.Init(this,m_nodeList.Count, level, requirement, position);
                 Node.SetPower(1+power);
-
                 if (Source != -1)
                 {
                     Node.AddNeightboor(Source);

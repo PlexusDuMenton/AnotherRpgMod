@@ -25,7 +25,7 @@ namespace AnotherRpgMod.Items
                 totalWeight += weights[i].weight;
             float rn = Mathf.Random(0, totalWeight);
 
-            rn += bossKilled * totalWeight * 0.01f;
+            rn += bossKilled * totalWeight * 0.02f;
             float actualWeight = 0;
             for (int i = 0; i < weights.Length; i++)
             {
