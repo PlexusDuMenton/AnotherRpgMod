@@ -40,7 +40,7 @@ namespace AnotherRpgMod.Command
         {
             RPGPlayer character = caller.Player.GetModPlayer<RPGPlayer>();
             int level = Int32.Parse(args[0]) - 1;
-            level = Mathf.Clamp(level, 1, 9999);
+            level = Mathf.Clamp(level, 0, 9999);
 
             character.ResetLevel();
 

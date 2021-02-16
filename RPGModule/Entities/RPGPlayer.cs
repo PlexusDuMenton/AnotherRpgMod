@@ -13,6 +13,7 @@ using Terraria.ModLoader.IO;
 using Terraria.GameInput;
 using AnotherRpgMod.Items;
 using System.Reflection;
+using Terraria.UI.Chat;
 
 namespace AnotherRpgMod.RPGModule.Entities
 {
@@ -22,6 +23,9 @@ namespace AnotherRpgMod.RPGModule.Entities
         public readonly static UInt16 ACTUALSAVEVERSION = 2;
         private int Exp = 0;
         private int skillPoints = 5;
+
+        private DateTime LastLeech =  DateTime.MinValue;
+
         public void SpentSkillPoints(int value)
         {
             skillPoints -= value;
@@ -39,6 +43,8 @@ namespace AnotherRpgMod.RPGModule.Entities
 
         private bool initiated = false;
 
+        private bool XpLimitMessage = false;
+
         private int level = 1;
         private int armor;
         public int BaseArmor { get { return armor; } }
@@ -47,11 +53,17 @@ namespace AnotherRpgMod.RPGModule.Entities
         public long EquipedItemXp = 0;
         public long EquipedItemMaxXp = 1;
 
+        public float ManaRegenBuffer = 0;
+        public float ManaRegenPerSecond = 0;
+        public int manaShieldDelay = 0;
+
+
         public float statMultiplier = 1;
 
         static public float MAINSTATSMULT = 0.0025f;
         static public float SECONDARYTATSMULT = 0.001f;
         public string baseName = "";
+        
 
         public void SyncLevel(int _level) //only use for sync
         {
@@ -72,7 +84,61 @@ namespace AnotherRpgMod.RPGModule.Entities
         }
         public int GetStatImproved(Stat stat)
         {
-            return Mathf.CeilInt(GetStat(stat) * GetStatImprovementItem(stat));
+            float VampireMultiplier = 1;
+            float DayPerkMultiplier = 1;
+            if (skilltree.HavePerk(Perk.Vampire))
+            {
+                
+                switch (skilltree.nodeList.GetPerk(Perk.Vampire).GetLevel)
+                {
+                    case 1:
+                        if (Main.dayTime)
+                            VampireMultiplier = 0.5f;
+                        else
+                            VampireMultiplier = 1.25f;
+                        break;
+                    case 2:
+                        if (Main.dayTime)
+                            VampireMultiplier = 0.75f;
+                        else
+                            VampireMultiplier = 1.5f;
+                        break;
+                    case 3:
+                        if (Main.dayTime)
+                            VampireMultiplier = 0.9f;
+                        else
+                            VampireMultiplier = 2f;
+                        break;
+                }
+            }
+
+            if (skilltree.HavePerk(Perk.Chlorophyll))
+            {
+
+                switch (skilltree.nodeList.GetPerk(Perk.Chlorophyll).GetLevel)
+                {
+                    case 1:
+                        if (Main.dayTime)
+                            DayPerkMultiplier = 1.25f;
+                        else
+                            DayPerkMultiplier = 0.5f;
+                        break;
+                    case 2:
+                        if (Main.dayTime)
+                            DayPerkMultiplier = 1.5f;
+                        else
+                            DayPerkMultiplier = 0.75f;
+                        break;
+                    case 3:
+                        if (Main.dayTime)
+                            DayPerkMultiplier = 2f;
+                        else
+                            DayPerkMultiplier = 0.9f;
+                        break;
+                }
+            }
+            return Mathf.CeilInt(GetStat(stat) * GetStatImprovementItem(stat) * VampireMultiplier * DayPerkMultiplier);
+
         }
         public int GetStat(Stat s)
         {
@@ -104,7 +170,7 @@ namespace AnotherRpgMod.RPGModule.Entities
 
 
     public float GetLifeLeechLeft { get { return HealthRegenLeech * LifeLeechDuration * player.statLifeMax2; } }
-    private float HealthRegenLeech = 0.1f;
+    private float HealthRegenLeech = 0.02f;
 
     private float LifeLeechDuration;
     public float LifeLeechMaxDuration = 3;
@@ -126,45 +192,55 @@ namespace AnotherRpgMod.RPGModule.Entities
 
     public void Leech(int damage)
     {
-        float lifeHeal = GetLifeLeech(damage);
+
+        TimeSpan CD = TimeSpan.FromSeconds(Config.gpConfig.LifeLeechCD);
+        if (LastLeech + CD < DateTime.Now)
+            {
+                LastLeech = DateTime.Now;
+                float lifeHeal = GetLifeLeech(damage);
+                player.GetModPlayer<RPGPlayer>().ApplyReduction(ref lifeHeal);
+
+                if (lifeHeal > 0)
+                {
+                    if (lifeHeal < 1)
+                        lifeHeal = 1;
+                    float duration = lifeHeal / (player.statLifeMax2 * HealthRegenLeech);
+                    float buffer = 0;
+                    float totalHeal = 0;
+
+                    if (LifeLeechDuration < 1)
+                    {
+                        buffer = LifeLeechDuration;
+                        LifeLeechDuration = Mathf.Clamp(LifeLeechDuration + duration, LifeLeechDuration, 1);
+                        buffer = LifeLeechDuration - buffer;
+                        totalHeal = lifeHeal * buffer;
+                        duration -= buffer;
+                    }
+                    if (duration > 0)
+                    {
+
+                        int LifeLifeHealInfo = (int)(lifeHeal * 0.2f);
+
+                        duration *= 0.2f;
+
+                        buffer = LifeLeechDuration;
+
+                        LifeLeechDuration = Mathf.Clamp(LifeLeechDuration + duration, LifeLeechDuration, LifeLeechMaxDuration);
+                        buffer = LifeLeechDuration - buffer;
+                        totalHeal += lifeHeal * buffer;
+
+                    }
+                    if (totalHeal < 1)
+                        totalHeal = 1;
+                    CombatText.NewText(player.getRect(), new Color(64, 255, 64), "+" + (int)totalHeal);
+
+                }
+            }
+
+
+        
         int manaHeal = (int) (player.statManaMax2 * GetManaLeech());
-        player.GetModPlayer<RPGPlayer>().ApplyReduction(ref lifeHeal);
-
-        if (lifeHeal > 0)
-        {
-            if (lifeHeal < 1)
-                lifeHeal = 1;
-            float duration = lifeHeal / (player.statLifeMax2 * HealthRegenLeech);
-            float buffer = 0;
-            float totalHeal = 0;
-
-            if (LifeLeechDuration < 1)
-            {
-                buffer = LifeLeechDuration;
-                LifeLeechDuration = Mathf.Clamp(LifeLeechDuration + duration, LifeLeechDuration, 1);
-                buffer = LifeLeechDuration - buffer;
-                totalHeal = lifeHeal * buffer;
-                duration -= buffer;
-            }
-            if (duration > 0)
-            {
-
-                int LifeLifeHealInfo = (int)(lifeHeal * 0.2f);
-                    
-                duration *= 0.2f;
-
-                buffer = LifeLeechDuration;
-
-                LifeLeechDuration = Mathf.Clamp(LifeLeechDuration + duration, LifeLeechDuration, LifeLeechMaxDuration);
-                buffer = LifeLeechDuration - buffer;
-                totalHeal += lifeHeal * buffer;
-
-            }
-            if (totalHeal < 1)
-                totalHeal = 1;
-            CombatText.NewText(player.getRect(), new Color(64, 255, 64), "+" + (int)totalHeal);
-
-        }
+        
 
         if (manaHeal > 0)
         {
@@ -201,7 +277,22 @@ namespace AnotherRpgMod.RPGModule.Entities
 
     }
 
-    int GetBuffAmmount(int[] bufftime)
+
+    public float GetHealthRatio()
+        {
+            float hp = player.statLife;
+            float maxhp = player.statLifeMax2;
+            return hp / maxhp;
+        }
+        public float GetManaRatio()
+        {
+            float mp = player.statMana;
+            float maxmp = player.statManaMax2;
+            return mp / maxmp;
+        }
+
+
+        int GetBuffAmmount(int[] bufftime)
         {
             int count =0;
             for (int i = 0; i < bufftime.Length; i++)
@@ -242,9 +333,15 @@ namespace AnotherRpgMod.RPGModule.Entities
         {
             ItemUpdate instance;
             Item item;
-            for (int i = 0; i <= player.armor.Length; i++)
+            int maxslot = player.armor.Length;
+            if (!Config.gpConfig.VanityGiveStat)
             {
-                if (i == player.armor.Length)
+                maxslot = 9;
+            }
+
+            for (int i = 0; i <= maxslot; i++)
+            {
+                if (i == maxslot)
                     item = player.HeldItem;
                 else
                     item = player.armor[i];
@@ -286,11 +383,11 @@ namespace AnotherRpgMod.RPGModule.Entities
                     }
                     if (ModifierManager.HaveModifier(Modifier.Berserker, instance.modifier))
                     {
-                        value += ModifierManager.GetModifierBonus(Modifier.Berserker, instance)  * (1-(player.statLife/player.statLifeMax2));
+                        value += ModifierManager.GetModifierBonus(Modifier.Berserker, instance)  * (1- GetHealthRatio());
                     }
                     if (ModifierManager.HaveModifier(Modifier.MagicConnection, instance.modifier))
                     {
-                        value += ModifierManager.GetModifierBonus(Modifier.MagicConnection, instance) * 0.01f*player.statMana;
+                        value += ModifierManager.GetModifierBonus(Modifier.MagicConnection, instance) * (1 - GetManaRatio());
                     }
                     if (ModifierManager.HaveModifier(Modifier.Sniper, instance.modifier))
                     {
@@ -362,6 +459,7 @@ namespace AnotherRpgMod.RPGModule.Entities
         }
 
 
+
         int GetMaxMinion()
         {
             int value = 0;
@@ -396,10 +494,12 @@ namespace AnotherRpgMod.RPGModule.Entities
 
         public override void ModifyHitNPC(Item item, NPC target, ref int damage, ref float knockback, ref bool crit)
         {
+            modifyHitGeneral(item, target, ref damage, ref knockback, ref crit);
+        }
+       
 
-
-
-
+        private void modifyHitGeneral(Item item, NPC target, ref int damage, ref float knockback, ref bool crit,int pen = 1,bool projMinion = false)
+        {
             if (Config.gpConfig.RPGPlayer)
             {
                 if (crit)
@@ -408,55 +508,104 @@ namespace AnotherRpgMod.RPGModule.Entities
                 }
             }
             damage = (int)(damage * DamageMultiplierFromModifier(target, damage));
+            
+
             if (ModifierManager.HaveModifier(Modifier.Piercing, player.HeldItem.GetGlobalItem<ItemUpdate>().modifier))
             {
                 damage = ApplyPiercing(ModifierManager.GetModifierBonus(Modifier.Piercing, player.HeldItem.GetGlobalItem<ItemUpdate>()), target.defense, damage);
             }
 
             if (target.type != NPCID.TargetDummy)
-                AddWeaponXp(damage, item);
-            Leech(damage);
-            MPPacketHandler.SendNpcUpdate(mod, target);
-
-        }
-        public override void ModifyHitNPCWithProj(Projectile proj, NPC target, ref int damage, ref float knockback, ref bool crit, ref int hitDirection)
-        {
-            damage = (int)(damage * DamageMultiplierFromModifier(target, damage));
-
-            int pen = proj.penetrate;
-            if (pen == 0) pen++;
-
-            if (Config.gpConfig.RPGPlayer)
             {
-                if (crit)
-                {
-                    damage = (int)(0.5f * damage * GetCriticalDamage());
-                }
+                
             }
-            if (proj.minion)
+
+            //CupidonPerk
+            float CupidonChance = 0;
+            if (skilltree.HavePerk(Perk.Cupidon))
+            {
+                CupidonChance = skilltree.nodeList.GetPerk(Perk.Cupidon).GetLevel * 0.05f;
+            }
+            if (Mathf.Random(0,1) < CupidonChance)
+            {
+                Item.NewItem(target.getRect(), ItemID.Heart);
+            }
+            //StarGatherer Perk
+            float StarChance = 0;
+            if (skilltree.HavePerk(Perk.StarGatherer))
+            {
+                StarChance = skilltree.nodeList.GetPerk(Perk.StarGatherer).GetLevel * 0.05f;
+            }
+            if (Mathf.Random(0, 1) < StarChance)
+            {
+                Item.NewItem(target.getRect(), ItemID.Star);
+            }
+
+            if (projMinion)
             {
                 if (target.type != NPCID.TargetDummy)
                 {
-                    if (player.HeldItem.summon)
-                        AddWeaponXp(damage / pen, player.HeldItem,1);
+                    if (item.summon)
+                        AddWeaponXp(damage / pen, item, 1);
                     else
-                        AddWeaponXp(damage / pen, player.HeldItem, 0.5f);
-                            
+                        AddWeaponXp(damage / pen, item, 0.5f);
                 }
-                        
-            }else if(!proj.minion) {
+
+            }
+            else if (!projMinion)
+            {
                 if (target.type != NPCID.TargetDummy)
                     AddWeaponXp(damage / pen, player.HeldItem);
-
             }
-                
 
             Leech(damage);
             MPPacketHandler.SendNpcUpdate(mod, target);
+        }
+
+        public override void ModifyHitNPCWithProj(Projectile proj, NPC target, ref int damage, ref float knockback, ref bool crit, ref int hitDirection)
+        {
+            int pen = proj.penetrate;
+            if (pen == 0) pen++;
+            modifyHitGeneral(player.HeldItem, target, ref damage, ref knockback, ref crit, pen) ;
 
         }
-            
+
         #endregion
+
+        private void DemonEaterPerk()
+        {
+            if (skilltree.HavePerk(Perk.DemonEater))
+            {
+
+                int heal = (int)(0.05f * skilltree.nodeList.GetPerk(Perk.DemonEater).GetLevel * player.statLifeMax2);
+                player.statLife = Mathf.Clamp(heal + player.statLife, player.statLife, player.statLifeMax2);
+
+                CombatText.NewText(player.getRect(), new Color(64, 255, 64), "+" + (int)heal);
+            }
+        }
+
+        public override void GetHealLife(Item item, bool quickHeal, ref int healValue)
+        {
+
+            if (skilltree.HavePerk(Perk.Biologist))
+            {
+                float bonus = 1 + 0.2f * skilltree.nodeList.GetPerk(Perk.Biologist).GetLevel;
+                healValue = Mathf.RoundInt(healValue * bonus);
+            }
+            base.GetHealLife(item, quickHeal, ref healValue);
+        }
+
+        public override void OnHitNPC(Item item, NPC target, int damage, float knockback, bool crit)
+        {
+            DemonEaterPerk();
+            base.OnHitNPC(item, target, damage, knockback, crit);
+        }
+
+        public override void OnHitNPCWithProj(Projectile proj, NPC target, int damage, float knockback, bool crit)
+        {
+            DemonEaterPerk();
+            base.OnHitNPCWithProj(proj, target, damage, knockback, crit);
+        }
 
         #region ARMORXP
         private void AddArmorXp(int damage, float multiplier = 1)
@@ -478,11 +627,14 @@ namespace AnotherRpgMod.RPGModule.Entities
         {
             if (skilltree.ActiveClass != null)
             {
-                if (Mathf.RandomInt(0, 99) * 0.01f < JsonCharacterClass.GetJsonCharList.GetClass(skilltree.ActiveClass.GetClassType).Dodge)
+                float rand = Mathf.Random(0, 1);
+                if (rand < JsonCharacterClass.GetJsonCharList.GetClass(skilltree.ActiveClass.GetClassType).Dodge)
                 {
-                    int heal = damage;
-                    player.GetModPlayer<RPGPlayer>().ApplyReduction(ref damage);
-                    player.statLife = Mathf.Clamp(player.statLife + damage, 0, player.statLifeMax2);
+                    CombatText.NewText(player.getRect(), new Color(64, 255, 150), "Dodged");
+                    player.ShadowDodge();
+                    //qint heal = damage;
+                    //player.GetModPlayer<RPGPlayer>().ApplyReduction(ref damage);
+                    //player.statLife = Mathf.Clamp(player.statLife + damage, 0, player.statLifeMax2);
                     damage = 0;
                 }
                 if (Main.netMode == NetmodeID.MultiplayerClient)
@@ -491,24 +643,51 @@ namespace AnotherRpgMod.RPGModule.Entities
                 }
             }
         }
+
+
+        private void ModifyHitByGeneral(ref int damage)
+        {
+            dodge(ref damage);
+            if (damage == 0)
+                return;
+
+            if (skilltree.HavePerk(Perk.TheGambler))
+            {
+                if (Mathf.Random(0, 1) < 0.5f)
+                {
+                    CombatText.NewText(player.getRect(), new Color(64, 255, 64), "+" + damage);
+                    player.statLife = Mathf.Clamp(player.statLife + damage, 0, player.statLifeMax2);
+                    damage = 0;
+                    return;
+                }
+                else
+                {
+                    damage *= 2;
+                }
+            }
+            ApplyReduction(ref damage);
+            damage = ManaShieldReduction(damage);
+
+        }
+
         public override void ModifyHitByNPC(NPC npc, ref int damage, ref bool crit)
         {
-            ApplyReduction(ref damage);
 
+            ModifyHitByGeneral(ref damage);
             base.ModifyHitByNPC(npc, ref damage, ref crit);
         }
         public override void ModifyHitByProjectile(Projectile proj, ref int damage, ref bool crit)
         {
-            ApplyReduction(ref damage);
+            ModifyHitByGeneral(ref damage);
             base.ModifyHitByProjectile(proj, ref damage, ref crit);
         }
 
         public override void OnHitByNPC(NPC npc, int damage, bool crit)
         {
             AddArmorXp(damage);
-            dodge(ref damage);
+            
 
-            damage = ManaShieldReduction(damage);
+            
 
             if (damage > player.statLife)
             {
@@ -518,11 +697,10 @@ namespace AnotherRpgMod.RPGModule.Entities
 
             base.OnHitByNPC(npc, damage, crit);
         }
+
         public override void OnHitByProjectile(Projectile proj, int damage, bool crit)
         {
             AddArmorXp(damage);
-            dodge(ref damage);
-            damage = ManaShieldReduction(damage);
 
             if (damage > player.statLife)
             {
@@ -550,15 +728,22 @@ namespace AnotherRpgMod.RPGModule.Entities
             
         public int ManaShieldReduction(int damage)
         {
-            if (skilltree.ActiveClass == null)
+            if (skilltree.ActiveClass == null || manaShieldDelay > 0 ||GetManaRatio() < 0.1f)
             {
                 return damage;
             }
+
             ManaShieldInfo ShieldInfo = GetManaShieldInfo();
             if (ShieldInfo.DamageAbsorbtion == 0 || damage == 1)
                 return damage;
 
-            float maxDamageAbsorbed = damage * ShieldInfo.DamageAbsorbtion;
+            float defenseMult = 0.5f;
+            if (Main.expertMode)
+                defenseMult = 0.75f;
+
+            int damageafterArmor = (int)(damage - player.statDefense * defenseMult);
+
+            float maxDamageAbsorbed = damageafterArmor * ShieldInfo.DamageAbsorbtion;
             float ManaCost = maxDamageAbsorbed / ShieldInfo.ManaPerDamage;
             ManaCost = Mathf.Clamp(ManaCost, 0, player.statMana);
             if (ManaCost == 0)
@@ -566,7 +751,11 @@ namespace AnotherRpgMod.RPGModule.Entities
             Main.PlaySound(SoundID.Drip);
             int reducedDamage = Mathf.CeilInt(ManaCost * ShieldInfo.ManaPerDamage);
             player.statMana -= Mathf.CeilInt(ManaCost);
-            CombatText.NewText(player.getRect(), new Color(64, 196, 255), "-"+ reducedDamage);
+            manaShieldDelay = 120;
+            player.manaRegenDelay = 120;
+            CombatText.NewText(player.getRect(), new Color(64, 196, 255), "-"+ Mathf.CeilInt(ManaCost));
+
+
             return damage - reducedDamage;
         }
 
@@ -579,6 +768,27 @@ namespace AnotherRpgMod.RPGModule.Entities
         public float GetDefenceMult()
         {
                 return (GetStatImproved(Stat.Vit) * 0.0055f + GetStatImproved(Stat.Cons) * 0.012f) * statMultiplier + 1f ;
+        }
+
+        public override void OnConsumeMana(Item item, int manaConsumed)
+        {
+            if (skilltree.HavePerk(Perk.BloodMage))
+            {
+                switch (skilltree.nodeList.GetPerk(Perk.BloodMage).GetLevel)
+                {
+                    case 1:
+                        player.statLife = Mathf.Clamp(player.statLife - manaConsumed, 1, player.statLifeMax2);
+                        break;
+                    case 2:
+                        player.statLife = Mathf.Clamp(player.statLife - manaConsumed * 3, 1, player.statLifeMax2);
+                        break;
+                    case 3:
+                        player.statLife = Mathf.Clamp(player.statLife - manaConsumed * 9, 1, player.statLifeMax2);
+                        break;
+                }
+                    
+            }
+            base.OnConsumeMana(item, manaConsumed);
         }
 
         public bool IsSaved()
@@ -610,7 +820,15 @@ namespace AnotherRpgMod.RPGModule.Entities
             float value = 1;
             ItemUpdate instance;
             Item item;
-            for (int i = 0;i< player.armor.Length; i++)
+            if (!Config.gpConfig.ItemRarity)
+                return value;
+            int maxslot = player.armor.Length;
+            if (!Config.gpConfig.VanityGiveStat)
+            {
+                maxslot = 9;
+            }
+
+            for (int i = 0;i< maxslot; i++)
             {
                 item = player.armor[i];
                     
@@ -620,16 +838,16 @@ namespace AnotherRpgMod.RPGModule.Entities
                         value += instance.GetStat(s)*0.01f;
                         
                 }   
-            }
+            }   
             return value;
         }
         public float GetHealthPerHeart()
         {
-                return (GetStatImproved(Stat.Vit) * 0.5f + GetStatImproved(Stat.Cons) * 0.3f)* statMultiplier + 10;
+                return (GetStatImproved(Stat.Vit) * 0.5f + GetStatImproved(Stat.Cons) * 0.25f)* statMultiplier + 10;
         }
         public float GetManaPerStar()
         {
-                return (GetStatImproved(Stat.Foc) * 0.15f + GetStatImproved(Stat.Int) * 0.075f) * statMultiplier;
+                return (GetStatImproved(Stat.Foc) * 0.2f + GetStatImproved(Stat.Int) * 0.05f) * statMultiplier + 10;
         }
 
         public override void SyncPlayer(int toWho, int fromWho, bool newPlayer)
@@ -698,7 +916,13 @@ namespace AnotherRpgMod.RPGModule.Entities
                     player.rangedCrit = (int)(player.rangedCrit + GetCriticalChanceBonus());
 
                     player.maxMinions += skilltree.GetSummonSlot();
-                    player.maxMinions += GetMaxMinion();
+                    if (!Config.gpConfig.ItemTree)
+                        player.maxMinions += GetMaxMinion();
+
+                    player.lifeRegen = Mathf.FloorInt(GetHealthRegen());
+                    player.manaRegen = 0;
+
+                    
 
                     //MODED DAMAGE
                     if (AnotherRpgMod.LoadedMods[SupportedMod.Thorium])
@@ -774,7 +998,9 @@ namespace AnotherRpgMod.RPGModule.Entities
             return Mathf.FloorInt( Stats.GetStat(Stat.Dex) * 0.1f);
         }
 
-        public override void PostUpdateEquips()
+
+
+    public override void PostUpdateEquips()
     {
            
         if (Config.gpConfig.RPGPlayer)
@@ -809,8 +1035,38 @@ namespace AnotherRpgMod.RPGModule.Entities
                 player.magicDamage *= GetDamageMult(DamageType.Magic, 2);
                 player.minionDamage *= GetDamageMult(DamageType.Summon, 2);
 
+                
+
+
                 player.armorPenetration = Mathf.FloorInt( player.armorPenetration*GetArmorPenetrationMult());
                 player.armorPenetration += GetArmorPenetrationAdd();
+
+                manaShieldDelay = Mathf.Clamp(manaShieldDelay - 1, 0, manaShieldDelay);
+                player.manaCost *= (float)Math.Sqrt(GetDamageMult(DamageType.Magic, 2));
+
+                
+                ManaRegenPerSecond = Mathf.FloorInt(GetManaRegen());
+                float manaRegenTick = (ManaRegenPerSecond / 60) + ManaRegenBuffer;
+                int manaRegenThisTick = Mathf.Clamp(Mathf.FloorInt(manaRegenTick), 0, int.MaxValue);
+                    ManaRegenBuffer = Mathf.Clamp(manaRegenTick - manaRegenThisTick, 0, int.MaxValue);
+                player.statMana = Mathf.Clamp(player.statMana + manaRegenThisTick, player.statMana, player.statManaMax2);
+                
+                if (skilltree.HavePerk(Perk.BloodMage))
+                {
+                    switch (skilltree.nodeList.GetPerk(Perk.BloodMage).GetLevel)
+                    {
+                        case 1:
+                                player.manaCost *= 0.5f;
+                            break;
+                        case 2:
+                                player.manaCost *= 0.25f;
+                                break;
+                        case 3:
+                                player.manaCost *= 0.1f;
+                                break;
+                    }
+
+                }
 
 
                 if (skilltree.ActiveClass != null)
@@ -819,31 +1075,74 @@ namespace AnotherRpgMod.RPGModule.Entities
                     player.moveSpeed *= (1 + JsonCharacterClass.GetJsonCharList.GetClass(skilltree.ActiveClass.GetClassType).MovementSpeed);
                     player.maxRunSpeed *= (1 + JsonCharacterClass.GetJsonCharList.GetClass(skilltree.ActiveClass.GetClassType).MovementSpeed);
                     player.meleeSpeed *= 1 + JsonCharacterClass.GetJsonCharList.GetClass(skilltree.ActiveClass.GetClassType).Speed;
-                    player.manaCost *= 1 - JsonCharacterClass.GetJsonCharList.GetClass(skilltree.ActiveClass.GetClassType).ManaCost;
+                    player.manaCost *= 1 + JsonCharacterClass.GetJsonCharList.GetClass(skilltree.ActiveClass.GetClassType).ManaCost;
 
 
                     if (skilltree.ActiveClass.GetClassType == ClassType.Ninja)
                     {
                         player.thrownVelocity *= 1.2f;
                     }
-
-                    if (skilltree.ActiveClass.GetClassType == ClassType.Shinobi)
+                    else if (skilltree.ActiveClass.GetClassType == ClassType.Shinobi)
                     {
                         player.thrownVelocity *= 1.5f;
                     }
-                }
+                    else if (skilltree.ActiveClass.GetClassType == ClassType.Rogue)
+                    {
+                        player.thrownVelocity *= 1.75f;
+                    }
+                    else if (skilltree.ActiveClass.GetClassType == ClassType.Assassin)
+                    {
+                        player.thrownVelocity *= 2f;
+                    }
+                    else if (skilltree.ActiveClass.GetClassType == ClassType.ShadowDancer)
+                    {
+                        player.thrownVelocity *= 2.5f;
+                    }
+                    else if (skilltree.ActiveClass.GetClassType == ClassType.AscendedShadowDancer)
+                    {
+                        player.thrownVelocity *= 3f;
+                    }
+                    }
             }
-            player.lifeRegen += Mathf.FloorInt(GetHealthRegen());
-            player.manaRegenBonus += Mathf.FloorInt(GetManaRegen());
+            
+            
         }
+        PostUpdatePerk();
         UpdateModifier();
         //Issue : After one use of item , player can no longer do anything wiht item&inventory
         //ErrorLogger.Log(player.can);
         CustomPostUpdates();
     }
 
+    private void PostUpdatePerk()
+        {
+            if (skilltree.HavePerk(Perk.Masochist))
+            {
+                int def = player.statDefense;
+                player.statDefense = 0;
+                player.allDamage *= 1 + def * 0.01f * skilltree.nodeList.GetPerk(Perk.Masochist).GetLevel;
+            }
 
-        
+            if (skilltree.HavePerk(Perk.Berserk))
+            {
+                float PerkMultiplier = 1 + 0.01f * skilltree.nodeList.GetPerk(Perk.Berserk).GetLevel * (1 - GetHealthRatio());
+                player.allDamage *= PerkMultiplier;
+            }
+
+            if (skilltree.HavePerk(Perk.Survivalist))
+            {
+                player.allDamage *= 0.5f;
+
+                player.statDefense = Mathf.CeilInt(player.statDefense * ( 1 + .2f * skilltree.nodeList.GetPerk(Perk.Survivalist).GetLevel));
+            }
+            if (skilltree.HavePerk(Perk.ManaOverBurst))
+            {
+                float bonusmanacost = player.statMana * (0.1f + ((float)skilltree.nodeList.GetPerk(Perk.ManaOverBurst).GetLevel - 1) * 0.15f);
+                float multiplier = 1 + (1 - 1 / (bonusmanacost / 1000 + 1));
+                player.magicDamage *= multiplier;
+            }
+        }
+      
 
     public void SpendPoints(Stat _stat,int ammount)
     {
@@ -870,43 +1169,62 @@ namespace AnotherRpgMod.RPGModule.Entities
         return 1.4f+X;
     }
 
-    public override void ProcessTriggers(TriggersSet triggersSet)
-    {
-        if (Config.gpConfig.RPGPlayer)
+        public override void UpdateAutopause()
         {
-            if (AnotherRpgMod.StatsHotKey.JustPressed)
-            {
-                Main.PlaySound(SoundID.MenuOpen);
-                UI.Stats.Instance.LoadChar();
-                UI.Stats.visible = !UI.Stats.visible;
-            }
-            if (AnotherRpgMod.SkillTreeHotKey.JustPressed)
-            {
-                Main.PlaySound(SoundID.MenuOpen);
 
+            //Main.npcChatRelease;
+            if (!Main.drawingPlayerChat)
+                HandleTrigger();
 
-                UI.SkillTreeUi.visible = !UI.SkillTreeUi.visible;
-                if (UI.SkillTreeUi.visible)
-                    UI.SkillTreeUi.Instance.LoadSkillTree();
-            }
+            base.UpdateAutopause();
         }
-            
-        if (AnotherRpgMod.ItemTreeHotKey.JustPressed && Config.gpConfig.ItemTree)
+
+        private void HandleTrigger()
         {
-            Main.PlaySound(SoundID.MenuOpen);
-            UI.ItemTreeUi.visible = !UI.ItemTreeUi.visible;
-            if (UI.ItemTreeUi.visible)
+            if (Config.gpConfig.RPGPlayer)
             {
-                    
-                if (ItemUpdate.HaveTree(player.HeldItem))
-                    UI.ItemTreeUi.Instance.Open(player.HeldItem.GetGlobalItem<ItemUpdate>());
-                else
+                if (AnotherRpgMod.StatsHotKey.JustPressed)
+                {
+                    Main.PlaySound(SoundID.MenuOpen);
+                    UI.Stats.Instance.LoadChar();
+                    UI.Stats.visible = !UI.Stats.visible;
+                }
+                if (AnotherRpgMod.SkillTreeHotKey.JustPressed)
+                {
+                    Main.PlaySound(SoundID.MenuOpen);
+
+
+                    UI.SkillTreeUi.visible = !UI.SkillTreeUi.visible;
+                    if (UI.SkillTreeUi.visible)
+                        UI.SkillTreeUi.Instance.LoadSkillTree();
+                }
+            }
+
+            if (AnotherRpgMod.ItemTreeHotKey.JustPressed && Config.gpConfig.ItemTree)
+            {
+                if (ItemUpdate.NeedSavingStatic(player.HeldItem))
+                {
+                    Main.PlaySound(SoundID.MenuOpen);
+                    UI.ItemTreeUi.visible = !UI.ItemTreeUi.visible;
+                    if (UI.ItemTreeUi.visible)
+                    {
+
+                        if (ItemUpdate.HaveTree(player.HeldItem))
+                            UI.ItemTreeUi.Instance.Open(player.HeldItem.GetGlobalItem<ItemUpdate>());
+                        else
+                            UI.ItemTreeUi.visible = false;
+                    }
+                }
+                else if (UI.ItemTreeUi.visible)
                     UI.ItemTreeUi.visible = false;
-            }
 
+            }
         }
 
-    }
+        public override void ProcessTriggers(TriggersSet triggersSet)
+        {
+            HandleTrigger();
+        }
         public float GetBonusHeal()
         {
             if (Config.gpConfig.RPGPlayer)
@@ -916,18 +1234,34 @@ namespace AnotherRpgMod.RPGModule.Entities
         public float GetBonusHealMana()
         {
             if (Config.gpConfig.RPGPlayer)
-                return GetManaPerStar() / 20;
+                return (float)Math.Sqrt(GetManaPerStar() / 20);
             return 1;
         }
 
         public float GetHealthRegen()
         {
-            return (GetStatImproved(Stat.Vit) + GetStatImproved(Stat.Cons)) * 0.02f * statMultiplier;
+            float RegenMultiplier = 1f;
+            if (skilltree.HavePerk(Perk.Chlorophyll))
+            {
+                RegenMultiplier = 0.25f + 0.25f * skilltree.nodeList.GetPerk(Perk.Chlorophyll).GetLevel;
+            }
+
+            return (GetStatImproved(Stat.Vit) + GetStatImproved(Stat.Cons)) * 0.02f * statMultiplier * RegenMultiplier;
         }
         public float GetManaRegen()
         {
-            return (GetStatImproved(Stat.Int) + GetStatImproved(Stat.Spr)) * 0.01f * statMultiplier;
+            float RegenMultiplier = 1f;
+            if (skilltree.HavePerk(Perk.Chlorophyll))
+            {
+                RegenMultiplier = 0.25f + 0.25f * skilltree.nodeList.GetPerk(Perk.Chlorophyll).GetLevel;
+            }
+            if (player.manaRegenDelay > 0)
+                RegenMultiplier *= 0.5f;
+
+            return (GetStatImproved(Stat.Int) + GetStatImproved(Stat.Spr)) * 0.02f * statMultiplier * RegenMultiplier;
         }
+
+        
 
         public bool HaveRangedWeapon()
         {
@@ -985,7 +1319,8 @@ namespace AnotherRpgMod.RPGModule.Entities
             }
             else if ( skill == 2 )
             {
-                return skilltree.GetDamageMult(type) * statMultiplier * GetDamageMult(type, 0) ;
+
+                return skilltree.GetDamageMult(type) * statMultiplier * GetDamageMult(type, 0);
             } 
             else
             {
@@ -1028,8 +1363,23 @@ namespace AnotherRpgMod.RPGModule.Entities
         {
             if (Config.gpConfig.RPGPlayer)
             {
+
+                
+
                 exp = (int)(exp * GetXpMult());
                 exp = ReduceExp(exp, _level);
+
+                if (level >= 1000 && !skilltree.IsLimitBreak())
+                {
+
+                    if (!XpLimitMessage)
+                    {
+                        XpLimitMessage = true;
+                        Main.NewText("You character has Reached the limit of his mortal body and is unable to gain more power !");
+                    }
+                    exp = 0;
+                }
+
                 if (exp >= XPToNextLevel() * 0.1f)
                 {
                     CombatText.NewText(player.getRect(), new Color(50, 26, 255), exp + " XP !!");
@@ -1038,6 +1388,9 @@ namespace AnotherRpgMod.RPGModule.Entities
                 {
                     CombatText.NewText(player.getRect(), new Color(127, 159, 255), exp + " XP");
                 }
+
+                
+
                 this.Exp += exp;
                 CheckExp();
             }
@@ -1091,6 +1444,21 @@ namespace AnotherRpgMod.RPGModule.Entities
                         value = Item.leech;
                     else
                         value = Item.GetLifeLeech*0.01f;
+                }
+            }
+            if (skilltree.HavePerk(Perk.Vampire) && !Main.dayTime)
+            {
+                switch (skilltree.nodeList.GetPerk(Perk.Vampire).GetLevel)
+                {
+                    case 1:
+                        value += 0.005f;
+                        break;
+                    case 2:
+                        value += 0.0075f;
+                        break;
+                    case 3:
+                        value += 0.01f;
+                        break;
                 }
             }
             value *= player.statLifeMax2;
@@ -1198,6 +1566,8 @@ namespace AnotherRpgMod.RPGModule.Entities
             
             skilltree = new SkillTree();
             skillPoints = level - 1;
+
+            UI.SkillTreeUi.Instance.LoadSkillTree();
             return;
         }
 
@@ -1206,32 +1576,35 @@ namespace AnotherRpgMod.RPGModule.Entities
             Reason CanUp;
             if (skilltree.nodeList.nodeList.Count < _skillLevel.Length)
             {
+                AnotherRpgMod.Instance.Logger.Warn("Saved skill tree and Actual skill tree are of diferent size");
                 ResetSkillTree();
             }
             for (int i = 0; i < _skillLevel.Length; i++)
             {
 
                     
-
-                CanUp = skilltree.nodeList.nodeList[i].CanUpgrade(_skillLevel[i]* skilltree.nodeList.nodeList[i].GetCostPerLevel, level);
-                if (!(CanUp == Reason.LevelRequirement || CanUp == Reason.MaxLevelReach))
-                {
-                    for (int U = 0; U < _skillLevel[i]; U++)
+                if (_skillLevel[i] > 0) { 
+                    CanUp = skilltree.nodeList.nodeList[i].CanUpgrade(_skillLevel[i]* skilltree.nodeList.nodeList[i].GetCostPerLevel, level);
+                    if (!(CanUp == Reason.LevelRequirement || CanUp == Reason.MaxLevelReach))
                     {
-                        if (skillPoints- skilltree.nodeList.nodeList[i].GetCostPerLevel >= 0) { 
-                            skillPoints -= skilltree.nodeList.nodeList[i].GetCostPerLevel;
-                            if (skilltree.nodeList.nodeList[i].GetNodeType != NodeType.Class)
-                                skilltree.nodeList.nodeList[i].Upgrade();
-                            else
-                                skilltree.nodeList.nodeList[i].Upgrade(true);
+                        for (int U = 0; U < _skillLevel[i]; U++)
+                        {
+                            if (skillPoints- skilltree.nodeList.nodeList[i].GetCostPerLevel >= 0) { 
+                                skillPoints -= skilltree.nodeList.nodeList[i].GetCostPerLevel;
+                                if (skilltree.nodeList.nodeList[i].GetNodeType != NodeType.Class)
+                                    skilltree.nodeList.nodeList[i].Upgrade();
+                                else
+                                    skilltree.nodeList.nodeList[i].Upgrade(true);
 
+                            }
                         }
                     }
-                }
-                else
-                {
-                    //ResetSkillTree();
-                    return;
+                    else
+                    {
+                        AnotherRpgMod.Instance.Logger.Warn("Can't level up node at rank : " + i);
+                        //ResetSkillTree();
+                        return;
+                    }
                 }
             }
         }
@@ -1260,6 +1633,8 @@ namespace AnotherRpgMod.RPGModule.Entities
                 AnotherRpgMod.Instance.Logger.Warn("save skillTree reset");
                 skilltree = new SkillTree();
             }
+            AnotherRpgMod.Instance.Logger.Info("Saving this skilltree");
+            AnotherRpgMod.Instance.Logger.Info(SkillTree.SKILLTREEVERSION);
             return new TagCompound {
                 {"Exp", Exp},
                 {"level", level},
@@ -1297,8 +1672,16 @@ namespace AnotherRpgMod.RPGModule.Entities
             freePoints = tag.GetInt("freePoints");
             skillPoints = level - 1;
 
+            
+            
             if (tag.GetInt("AnRPGSkillVersion") != SkillTree.SKILLTREEVERSION)
+            {
+                AnotherRpgMod.Instance.Logger.Warn(tag.GetInt("AnRPGSkillVersion"));
+                AnotherRpgMod.Instance.Logger.Warn(SkillTree.SKILLTREEVERSION);
                 AnotherRpgMod.Instance.Logger.Warn("AnRPG SkillTree Is Outdated, reseting skillTree");
+
+            }
+                
             else
             {
                 LoadSkills(tag.GetIntArray("skillLevel"));

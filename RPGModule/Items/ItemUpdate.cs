@@ -30,7 +30,7 @@ namespace AnotherRpgMod.Items
         string[] AscendName =
         {
             "",
-            "Limit Broken",
+            "Limit Broken ",
             "Mortal ",
             "Raised ",
             "Unleashed ",
@@ -56,72 +56,78 @@ namespace AnotherRpgMod.Items
             "Devil Horror Collection ",
             "Cosmic Horror Collection ",
             "Eldritch Horror Collection ",
-            "........",
-            "...H...",
-            "..Hello.",
-            "..Why are you keep using it ?..",
-            "..This is beyond any limit...",
-            "..What are you trying to achieve like this ?..",
-            "..Do you want Power ? You have it, wealth ? You have it too, WHAT IS THE POINTS OF THIS ?..",
-            "..Oh you do it for the Text ?..",
-            "..Do you realy think I want to speak to your ?..",
-            "..Ah, you can stop here, there won't be more, honestly, I'm surprised you didn't get an int overflow yet..",
-            "..Good bye..",
-            "........",
-            "........",
-            "........",
-            "........",
-            ".....................",
-            "...What are you doing ?! Did I fix this stupid overflow bug...",
-            "...Well, here something for you, Item node rarity increase as you go deep into the tree, so some impossible to get node...",
-            "...Will appear often at deep layer, but I guess you've seen it...",
-            "...Good Luck...",
-            "...",
-            "..",
-            ".",
+            "........ ",
+            "...H... ",
+            "..Hello. ",
+            "..Why are you keep using it ?.. ",
+            "..This is beyond any limit... ",
+            "..What are you trying to achieve like this ?.. ",
+            "..Do you want Power ? You have it, wealth ? You have it too, WHAT IS THE POINTS OF THIS ?.. ",
+            "..Oh you do it for the Text ?.. ",
+            "..Do you realy think I want to speak to your ?.. ",
+            "..Ah, you can stop here, there won't be more, honestly, I'm surprised you didn't get an int overflow yet.. ",
+            "..Good bye.. ",
+            "........ ",
+            "........ ",
+            "........ ",
+            "........ ",
+            "....LIFE ANSWER..... ",
+            "...What are you doing ?! Did I fix this stupid overflow bug... ",
+            "...Well, here something for you, Item node rarity increase as you go deep into the tree... ",
+            "...So some impossible to get node will appear often at deep layer, but I guess you've seen it... ",
+            "...Good Luck... ",
+            "... ",
+            ".. ",
+            ". ",
             "",
-            "One Punch Man",
-            "...Well, speaking of One Punch Man, maybe I should make a list of suggestion for manga to read ?",
-            "If you like cool fight, I realy sugest to read Kengan Asura (and Kengan Omega)",
-            "One of the popular manga out there is actualy a manhua titled 'Solo Leveling', you are playing a rpg mod, so you should definetly like it",
-            "Another manhua similar to solo leveling but taking a different story is 'I Am the sorcerer King'",
-            "Totaly different genre, but you should also read Dr.Stone, especialy if you like science",
-            "hmm... You realy like thos text ? Well ...",
-            "Player - Is this a discution ?",
-            "Discution - Ascension Text",
-            "Yea I mess arround, but guy, if you reach this far you most likely used an exploit, and are actively looking for this !",
-            "So I'm doing this : NIGERUNDAYO ........",
-            "...",
-            "Yea that jojo reference, Watch jojo you kid !",
-            "You next sentence will be : 'Does this wall of text ever end ?'",
-            "Does this wall of text ever end ?",
-            "Hue ! How do you know ?",
-            "Simple ! I am the one writing these text",
-            "well it was fun, I'll find more stuff to talk about",
-            "oh yea, do you want some cool music sugestion ?",
-            "then you should definetly look after 'M2U' realy original stuff",
-            "Shiro Sagisu is also nice to listen to, he composed ost of Evangelion",
-            "Look after Keichii Okabe, he made the ost of Nier, Drakengard and a few other game !",
-            "ElectroSwing is also way to go, Parov stellar and Caravane Palace being classic",
-            "...",
-            "Do you know I'm actualy working for a game named 'QANGA' made by the IolaCorp",
-            "Sort of survival game in a post-apo sci-fi game where you play as human trapped in robot",
-            "Yea, that the reason, update are so scarce, that and MAINLY my lazyness, but please let me find some excuses",
-            "...",
-            "Another funFact, I've made a mod on dota 2 back in 2015, it was my first mod ever, It actualy was REALY sucessful",
-            "The name was 'Epic Boss Fight' and got more than 5 million subscriber, and even snatched most played mod from valve custom mod back then",
-            "now it's totaly broken and unplayable hahahaha.... volvo broke it I promise !",
-            "The TRUE last text for ascended is 'Infinity +1', no lie !",
-            "I will also randomly add new text with update without any changelog, there is nothing to gain, you ... well you will just make me laught to see you looking for all that",
-            "I mean, only because it's not that easy to find doesn't mean it's interesting, of you should read it, I even made some advertisement for a game I work on as employee Hahaha",
-            "...",
-            "Have you player CivIdle ? That a game I work on my freetime When I'm not lazy, Ready manhua, Working on AnRPG or other random stuff, You can easily find the link on discord",
-            "What is it ? A simply Idle uncomplete Game where you lead a civilization !",
-            "The link ? SERIOUSLY ?!!! CHECK ON DISCORD DAMN IT !",
-            "...",
-            "Yes... lower ascending name are inspired from chiness ArtMartial Manhua",
-            "...",
-            "Infinity +1",
+            "One Punch Man ",
+            "...Well, speaking of One Punch Man, maybe I should make a list of suggestion for manga to read ? ",
+            "If you like cool fight, I realy sugest to read Kengan Asura (and Kengan Omega) ",
+            "One of the popular manga out there is actualy a manhua titled 'Solo Leveling', you are playing a rpg mod, so you should definetly like it ",
+            "Another manhua similar to solo leveling but taking a different story is 'I Am the sorcerer King' ",
+            "Totaly different genre, but you should also read Dr.Stone, especialy if you like science ",
+            "hmm... You realy like thos text ? Well ... ",
+            "Player - Is this a discution ? ",
+            "Discution - Ascension Text ",
+            "Yea I mess arround, but guy, if you reach this far you most likely used an exploit, and are actively looking for this ! ",
+            "So I'm doing this : NIGERUNDAYO ........ ",
+            "... ",
+            "Yea that jojo reference, Watch jojo you boi ! ",
+            "You next sentence will be : 'Does this wall of text ever end ?' ",
+            "Does this wall of text ever end ? ",
+            "Hue ! How do you know ? ",
+            "Simple ! I am the one writing these text ",
+            "well it was fun, I'll find more stuff to talk about ",
+            "69 LOL",
+            "oh yea, do you want some cool music sugestion ? ",
+            "then you should definetly look after 'M2U' realy original stuff ",
+            "Shiro Sagisu is also nice to listen to, he composed ost of Evangelion ",
+            "Look after Keichii Okabe, he made the ost of Nier, Drakengard and a few other game ! ",
+            "ElectroSwing is also way to go, Parov stellar and Caravane Palace being classic ",
+            "... ",
+            "Do you know I'm actualy working for a game named 'QANGA' made by the IolaCorp ",
+            "Sort of survival game in a post-apo sci-fi game where you play as human trapped in robot ",
+            "Yea, that the reason, update are so scarce, that and MAINLY my lazyness, but please let me find some excuses ",
+            "... ",
+            "Another funFact, I've made a mod on dota 2 back in 2015, it was my first mod ever, It actualy was REALY sucessful ",
+            "The name was 'Epic Boss Fight' and got more than 5 million subscriber, and even snatched most played mod from valve custom mod back then ",
+            "now it's totaly broken and unplayable hahahaha.... volvo broke it I promise ! ",
+            "The TRUE last text for ascended is 'Infinity +1', no lie ! ",
+            "I will also randomly add new text with update without any changelog, there is nothing to gain, you ... well you will just make me laught to see you looking for all that ",
+            "I mean, only because it's not that easy to find doesn't mean it's interesting, of you should read it, I even made some advertisement for a game I work on as employee Hahaha ",
+            "... ",
+            "Have you player CivIdle ? That a game I work on my freetime When I'm not lazy, Ready manhua, Working on AnRPG or other random stuff, You can easily find the link on discord ",
+            "What is it ? A simply Idle uncomplete Game where you lead a civilization ! ",
+            "The link ? SERIOUSLY ?!!! CHECK ON DISCORD DAMN IT ! ",
+            "... ",
+            "Yes... lower ascending name are inspired from chiness ArtMartial Manhua ",
+            "... ",
+            "... ",
+            "...here a new text for 1.5, never knew I would come back at this, but here we goes... ",
+            "I've finaly added some player ascend ",
+            "Once you reach level 1000 you can obtain the Limit Break skill tree node ",
+            "Allowing exp gain after level 1000 and unlocking ascended class ",
+            "Infinity +1 ",
                
 
         };
@@ -146,6 +152,7 @@ namespace AnotherRpgMod.Items
 
 
         bool init = false;
+        bool AscendLimit = false;
         int ascendedLevel = 0;
         int baseHealLife = 0;
         int baseHealMana = 0;
@@ -161,6 +168,7 @@ namespace AnotherRpgMod.Items
         public float DefenceBuffer = 0;
         public float DefenceFlatBuffer = 0;
         public float UseTimeBuffer = 0;
+        public float ShootTimeBuffer = 0;
         public float leech= 0;
         public float bonusXp = 0;
 
@@ -179,6 +187,7 @@ namespace AnotherRpgMod.Items
         public Int64 GetMaxXp { get { return GetExpToNextLevel(level,ascendedLevel); } }
 
         int baseDamage = 0;
+        int baseShootTime = 1;
         public int BaseDamage { get { return baseDamage; } }
 
         int baseArmor = 0;
@@ -218,6 +227,23 @@ namespace AnotherRpgMod.Items
             if (item.headSlot > 0 || item.legSlot > 0 || item.bodySlot > 0 || item.accessory)
                 return true;
             return false;
+        }
+
+        public override bool OnPickup(Item item, Player player)
+        {
+            InitItem(item);
+            return base.OnPickup(item, player);
+        }
+
+        public override void Update(Item item, ref float gravity, ref float maxFallSpeed)
+        {
+            InitItem(item);
+            base.Update(item, ref gravity, ref maxFallSpeed);
+        }
+
+        static public bool NeedSavingStatic(Item item)
+        {
+            return (item.maxStack == 1 && (item.damage > 0 || item.headSlot > 0 || item.legSlot > 0 || item.bodySlot > 0 || item.accessory));
         }
 
         public override bool NeedsSaving(Item item)
@@ -293,11 +319,13 @@ namespace AnotherRpgMod.Items
                 DamageBuffer = DamageFlatBuffer;
                 m_itemTree.ApplyMultiplierPassives(item);
                 m_itemTree.ApplyOtherPassives(item);
-                _damage = (int)DamageBuffer;
+                _damage = (int)(DamageBuffer * (1 + ModifierManager.GetRarityDamageBoost(rarity) * 0.01f));
             }
             else
             {
-                _damage = (int)(((float)_damage * (1f + ascendedLevel * 0.1f + (float)level / 100f)) * (1 + ModifierManager.GetRarityDamageBoost(rarity) * 0.01f));
+                _damage = Mathf.CeilInt(
+                    ((float)_damage * (1f + (float)ascendedLevel * 0.1f + (float)level / 100f)
+                     * (1 + ModifierManager.GetRarityDamageBoost(rarity) * 0.01f)));
             }
             return _damage;
         }
@@ -321,7 +349,26 @@ namespace AnotherRpgMod.Items
             return _use;
 
         }
+        public int GetShoot(Item item)
+        {
+            int _use = baseShootTime;
+            ShootTimeBuffer = _use;
+            if (Config.gpConfig.ItemTree)
+            {
+                if (m_itemTree == null || item == null)
+                    return _use;
+                m_itemTree.ApplyMultiplierPassives(item);
+                m_itemTree.ApplyOtherPassives(item);
+                _use = (int)ShootTimeBuffer;
+            }
+            else
+            {
+                float _useReduction = Mathf.Pow(0.95, ascendedLevel) * Mathf.Pow(0.995, level);
+                _use = Mathf.FloorInt(_use * _useReduction);
+            }
+            return _use;
 
+        }
         public int GetDefense(Item item)
         {
             
@@ -405,9 +452,10 @@ namespace AnotherRpgMod.Items
         
         #endregion
 
+        
 
 
-        private void InitItem(Item item, RPGPlayer character)
+        private void InitItem(Item item)
         {
 
             m_weaponType = ModifierManager.GetWeaponType(item);
@@ -517,7 +565,8 @@ namespace AnotherRpgMod.Items
         {
             if (NeedsSaving(item))
             {
-                Message msg = (Message)reader.ReadByte();
+                Message msg;
+                msg = (Message)reader.ReadByte();
                 Dictionary<ItemDataTag, object> tags = new Dictionary<ItemDataTag, object>();
                 foreach (ItemDataTag tag in itemDataTags[msg])
                 {
@@ -542,8 +591,10 @@ namespace AnotherRpgMod.Items
 
                         else if (itemType == ItemType.Weapon)
                         {
-                            if (item.pick > 0 || item.axe > 0 || item.hammer > 0)
+                            if (item.pick > 0 || item.axe > 0 || item.hammer > 0) { 
                                 item.useTime = GetUse(item);
+                                item.useAnimation = item.useTime;
+                            }
                             else
                                 item.damage = GetDamage(item);
                         }
@@ -589,7 +640,7 @@ namespace AnotherRpgMod.Items
 
 
                         if ((string)tags[ItemDataTag.itemTree] != "")
-                            m_itemTree = ItemSkillTree.ConvertToTree((string)tags[ItemDataTag.itemTree], this);
+                            m_itemTree = ItemSkillTree.ConvertToTree((string)tags[ItemDataTag.itemTree], this,level,ascendedLevel);
 
                         init = true;
                         break;
@@ -602,20 +653,21 @@ namespace AnotherRpgMod.Items
         public override bool Shoot(Item item, Player player, ref Vector2 position, ref float speedX, ref float speedY, ref int type, ref int damage, ref float knockBack)
         {
             int Projectileid = type;
-            if (ModifierManager.HaveModifier(Modifier.Random, modifier))
-            {
-                Projectileid = Mathf.RandomInt(1, 500);
-                float spread = 10 * 0.0174f; //20 degree cone
-                float baseSpeed = (float)Math.Sqrt(speedX * speedX + speedY * speedY) * (1 + 0.1f * Main.rand.NextFloat());
-                double baseAngle = Math.Atan2(speedX, speedY);
-                double randomAngle = baseAngle + (Main.rand.NextFloat() - 0.5f) * spread;
-                float spdX = baseSpeed * (float)Math.Sin(randomAngle);
-                float spdY = baseSpeed * (float)Math.Cos(randomAngle);
-                int projnum = Projectile.NewProjectile(position.X, position.Y, spdX, spdY, Projectileid, damage, knockBack, player.whoAmI);
-                Main.projectile[projnum].friendly = true;
-                Main.projectile[projnum].hostile = false;
+            if (m_itemTree != null) { 
+                if (ModifierManager.HaveModifier(Modifier.Random, modifier))
+                {
+                    Projectileid = Mathf.RandomInt(1, 500);
+                    float spread = 10 * 0.0174f; //20 degree cone
+                    float baseSpeed = (float)Math.Sqrt(speedX * speedX + speedY * speedY) * (1 + 0.1f * Main.rand.NextFloat());
+                    double baseAngle = Math.Atan2(speedX, speedY);
+                    double randomAngle = baseAngle + (Main.rand.NextFloat() - 0.5f) * spread;
+                    float spdX = baseSpeed * (float)Math.Sin(randomAngle);
+                    float spdY = baseSpeed * (float)Math.Cos(randomAngle);
+                    int projnum = Projectile.NewProjectile(position.X, position.Y, spdX, spdY, Projectileid, damage, knockBack, player.whoAmI);
+                    Main.projectile[projnum].friendly = true;
+                    Main.projectile[projnum].hostile = false;
 
-            }
+                }
             /*
             if (!item.summon) { 
                 for (int i = 0; i < ascendedLevel; i++)
@@ -633,8 +685,9 @@ namespace AnotherRpgMod.Items
                 }
             }
             */
-            m_itemTree.OnShoot(item, player, ref position, ref speedX, ref speedY, ref type, ref damage, ref knockBack);
-
+            
+                m_itemTree.OnShoot(item, player, ref position, ref speedX, ref speedY, ref type, ref damage, ref knockBack);
+            }
             return true;
         }
 
@@ -648,7 +701,7 @@ namespace AnotherRpgMod.Items
             }
             if (target.type != NPCID.TargetDummy)
                 rpgPlayer.AddWeaponXp(damage, item);
-            rpgPlayer.Leech(damage);
+            //rpgPlayer.Leech(damage);
             base.ModifyHitNPC(item, player, target, ref damage, ref knockBack, ref crit);
         }
 
@@ -679,7 +732,7 @@ namespace AnotherRpgMod.Items
 
             if (itemTreeSave != "")
             {
-                m_itemTree = ItemSkillTree.ConvertToTree(itemTreeSave,this);
+                m_itemTree = ItemSkillTree.ConvertToTree(itemTreeSave,this,0,0);
             }else
             {
                 m_itemTree = new ItemSkillTree();
@@ -729,7 +782,10 @@ namespace AnotherRpgMod.Items
             else if (itemType == ItemType.Weapon)
             {
                 if (item.pick > 0 || item.axe > 0 || item.hammer > 0)
+                {
                     item.useTime = GetUse(item);
+                    item.useAnimation = item.useTime;
+                }
                 else
                     item.damage = GetDamage(item);
             }
@@ -822,12 +878,12 @@ namespace AnotherRpgMod.Items
                                 TooltipLine Stt;
                                 RPGPlayer p = Main.LocalPlayer.GetModPlayer<RPGPlayer>();
                                 if (GetStatSlot(i) > 0)
-                                    Stt = new TooltipLine(mod, "statsInfo" + i, Enum.GetName(typeof(Stat), stats.Stats[i].stat) + " +" + GetStatSlot(i) + " % ( +" + Mathf.Round(p.GetStat(stats.Stats[i].stat) * GetStatSlot(i) * 0.01f, 1) + " )")
+                                    Stt = new TooltipLine(mod, "statsInfo" + i, Enum.GetName(typeof(Stat), stats.Stats[i].stat) + " +" + Mathf.Round(GetStatSlot(i),2) + " % ( +" + Mathf.Round(p.GetStat(stats.Stats[i].stat) * GetStatSlot(i) * 0.01f, 1) + " )")
                                     {
                                         overrideColor = Color.LimeGreen
                                     };
                                 else
-                                    Stt = new TooltipLine(mod, "statsInfo" + i, Enum.GetName(typeof(Stat), stats.Stats[i].stat) + " -" + Math.Abs(GetStatSlot(i)) + " % ( " + Mathf.Round(p.GetStat(stats.Stats[i].stat) * GetStatSlot(i) * 0.01f, 1) + " )")
+                                    Stt = new TooltipLine(mod, "statsInfo" + i, Enum.GetName(typeof(Stat), stats.Stats[i].stat) + " -" + Math.Abs(Mathf.Round(GetStatSlot(i),2)) + " % ( " + Mathf.Round(p.GetStat(stats.Stats[i].stat) * GetStatSlot(i) * 0.01f, 1) + " )")
                                     {
                                         overrideColor = Color.PaleVioletRed
                                     };
@@ -1053,8 +1109,9 @@ namespace AnotherRpgMod.Items
                         }
                     }
                 }
+                
             }
-            InitItem(item, character);
+            InitItem(item);
 
         }
 
@@ -1069,7 +1126,7 @@ namespace AnotherRpgMod.Items
             {
                 AscendToolTip = new List<TooltipLine>();
                 
-                InitItem(item, character);
+                InitItem(item);
 
 
 
@@ -1093,6 +1150,7 @@ namespace AnotherRpgMod.Items
                         if (item.pick > 0 || item.axe > 0 || item.hammer > 0)
                         {
                             item.useTime = GetUse(item);
+                            item.useAnimation = item.useTime;
                         }
                         else
                             item.damage = GetDamage(item);
@@ -1113,6 +1171,7 @@ namespace AnotherRpgMod.Items
                                 {
                                     AscendToolTip.Add(new TooltipLine(mod, "AscdAutoSwingBonus", "+ 40% attack speed") { isModifier = true });
                                     item.useTime = Mathf.CeilInt(baseUseTime * 0.6f);
+                                    item.useAnimation = item.useTime;
                                 }
                                 if (baseMana > 0)
                                 {
@@ -1164,6 +1223,16 @@ namespace AnotherRpgMod.Items
                                 }
                             }
                         }
+
+                        int manacostGain = 0;
+
+                        if (character.GetskillTree.HavePerk(Perk.ManaOverBurst) && item.magic && item.mana > 0)
+                        {
+                            
+                            manacostGain = Mathf.CeilInt((player.statMana * (0.1f + ((float)character.GetskillTree.nodeList.GetPerk(Perk.ManaOverBurst).GetLevel - 1) * 0.15f))/ (float)Math.Sqrt(character.GetDamageMult(DamageType.Magic, 2)));
+                        }
+                        item.mana = baseMana + manacostGain;
+
                     }
                 }
 
@@ -1245,14 +1314,16 @@ namespace AnotherRpgMod.Items
 
         public int GetCapLevel()
         {
-            float powerLevel = BaseDamage * Mathf.Pow(Mathf.Clamp(60/baseUseTime,2,30),0.5f) + Mathf.Pow(baseArmor,1.45f)*4;
+
+            float powerLevel = BaseDamage * Mathf.Pow(Mathf.Clamp(60/ Mathf.Min(baseUseTime,1),2,30),0.5f) + Mathf.Pow(baseArmor,1.45f)*4;
 
             if (m_weaponType == WeaponType.Stab)
                 powerLevel *= 0.5f;
 
             if (baseAutoReuse)
                 powerLevel *= 1.2f;
-            powerLevel *= (1 - Mathf.Log2((float)rarity) * 0.05f);
+            if (Config.gpConfig.ItemRarity)
+                powerLevel *= (1 - Mathf.Log2((float)rarity) * 0.05f);
             return 5 *GetTier(powerLevel);
         }
 
@@ -1278,12 +1349,30 @@ namespace AnotherRpgMod.Items
             level = 0;
             xp = 0;
             if (ascend)
-                ascendedLevel = Mathf.Clamp(ascendedLevel,0,1);
+                ascendedLevel = 0;
             m_itemTree.Reset(false);
+            m_itemTree.AscendPoints = 0;
+            m_itemTree.MaxAscendPoints = 0;
+            m_itemTree.EvolutionPoints = 0;
+            m_itemTree.MaxEvolutionPoints = 0;
         }
 
         public void Ascend()
         {
+
+            
+            if (ascendedLevel >= WorldManager.GetMaximumAscend())
+            {
+                if (!AscendLimit)
+                {
+                    AscendLimit = true;
+                    Main.NewText("Your weapon have reached it's maximum power, the world can't handle anymore", 144, 32, 185);
+                }
+                return;
+            }
+                
+            
+
             ascendedLevel++;
             m_itemTree.MaxAscendPoints++;
             m_itemTree.AscendPoints++;
@@ -1332,7 +1421,7 @@ namespace AnotherRpgMod.Items
 
             int maxascend = Mathf.Clamp(ascendedLevel, 0, AscendName.Length - 1);
             string prefix = "";
-            if (rarity != Rarity.NONE)
+            if (rarity != Rarity.NONE && Config.gpConfig.ItemRarity)
                 prefix += Enum.GetName(typeof(Rarity), rarity) + " ";
             prefix += AscendName[maxascend];
             string sufix = "";
@@ -1349,6 +1438,13 @@ namespace AnotherRpgMod.Items
 
         public void SilentLevelUp()
         {
+            
+
+            if (level >= (GetCapLevel() * (ascendedLevel + 1)) && ascendedLevel >= WorldManager.GetMaximumAscend())
+            {
+                return;
+            }
+
             xp -= GetExpToNextLevel(level, ascendedLevel);
             level++;
             m_itemTree.MaxEvolutionPoints++;
@@ -1364,6 +1460,13 @@ namespace AnotherRpgMod.Items
 
         public void LevelUp(Player player, Item item)
         {
+            
+
+            if (level >= (GetCapLevel() * (ascendedLevel + 1)) && ascendedLevel >= WorldManager.GetMaximumAscend())
+            {
+                return;
+            }
+
             xp -= GetExpToNextLevel(level, ascendedLevel);
             if (itemType == ItemType.Armor)
                 CombatText.NewText(player.getRect(), new Color(255, 26, 255), "Armor upgrade !", true);
@@ -1384,33 +1487,54 @@ namespace AnotherRpgMod.Items
 
         public void AddExp(Int64 _xp, Player player, Item item)
         {
+            
+
             if (ModifierManager.HaveModifier(Modifier.SelfLearning, modifier) && !Main.dayTime)
             {
                 _xp *= 1 + (long)ModifierManager.GetModifierBonus(Modifier.SelfLearning, this) * (long)0.01f;
                 _xp *= 1 + (long)bonusXp;
             }
-            xp += (long)Mathf.Clamp(_xp * Config.gpConfig.ItemXpMultiplier - level, 0, long.MaxValue);
-            while (xp >= GetExpToNextLevel(level, ascendedLevel))
+            if (!canLevelUpMore())
+            {
+                xp = (long)Mathf.Clamp(xp + _xp * Config.gpConfig.ItemXpMultiplier, 0, GetExpToNextLevel(level, ascendedLevel));
+            }
+            else 
+                xp += (long)Mathf.Clamp(_xp * Config.gpConfig.ItemXpMultiplier, 0, long.MaxValue);
+            while (xp >= GetExpToNextLevel(level, ascendedLevel) && canLevelUpMore())
             {
                 LevelUp(player, item);
+                if (!canLevelUpMore())
+                {
+                    xp = (long)Mathf.Clamp(xp, 0, GetExpToNextLevel(level, ascendedLevel));
+                }
             }
+        }
+
+
+        public bool canLevelUpMore()
+        {
+            if (level < (GetCapLevel() * (ascendedLevel + 1)))
+                return true;
+            else
+                return ascendedLevel < WorldManager.GetMaximumAscend();
         }
 
         public void xPTransfer(float _xp, Player player, Item item)
         {
 
             xp += (long)Mathf.Clamp(_xp, 0, long.MaxValue - xp);
-            while (xp >= GetExpToNextLevel(level, ascendedLevel))
+            while (xp >= GetExpToNextLevel(level, ascendedLevel) && canLevelUpMore())
             {
                 LevelUp(player, item);
             }
         }
 
-        public void SilentxPTransfer(float _xp)
+        public void SilentxPTransfer(float _xp, bool silent = true)
         {
 
             xp += (long)Mathf.Clamp(_xp, 0, long.MaxValue - xp);
-            while (xp >= GetExpToNextLevel(level, ascendedLevel))
+            
+            while (xp >= GetExpToNextLevel(level, ascendedLevel) && canLevelUpMore())
             {
                 SilentLevelUp();
             }

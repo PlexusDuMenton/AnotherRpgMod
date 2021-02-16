@@ -453,6 +453,8 @@ namespace AnotherRpgMod.Items
 
         public static float GetRarityDamageBoost(Rarity rarity)
         {
+            if (!Config.gpConfig.ItemRarity)
+                return 0;
             float value = 0;
             switch (rarity)
             {
@@ -683,11 +685,16 @@ namespace AnotherRpgMod.Items
 
         static public bool HaveModifier(Modifier _modifier,Modifier list)
         {
+            if (!Config.gpConfig.ItemModifier)
+                return false;
             return ((_modifier & list) == _modifier);
         }
 
         static public float GetModifierBonusAlt(Modifier mod, ItemUpdate itemU)
         {
+            if (!Config.gpConfig.ItemModifier)
+                return 0;
+
             float value = 0;
             switch (mod)
             {
@@ -703,6 +710,8 @@ namespace AnotherRpgMod.Items
 
         static public float GetModifierBonus(Modifier mod, ItemUpdate itemU)
         {
+            if (!Config.gpConfig.ItemModifier)
+                return 0;
             float value = 0;
             switch (mod)
             {
@@ -711,13 +720,13 @@ namespace AnotherRpgMod.Items
                     value = 5 + (itemU.Level * 0.25f) + itemU.Ascention * 1f + Mathf.Log2((float)itemU.rarity)* 2.5f;
                     break;
                 case (Modifier.Berserker):
-                    value = 0.1f + (itemU.Level * 0.005f) + itemU.Ascention * 0.02f + Mathf.Log2((float)itemU.rarity) * 0.05f;
+                    value = (itemU.Level * 0.0025f) + itemU.Ascention * 0.01f + Mathf.Log2((float)itemU.rarity) * 0.025f;
                     break;
                 case (Modifier.MagicConnection):
-                    value = 0.02f + (itemU.Level * 0.001f) + itemU.Ascention * 0.0025f + Mathf.Log2((float)itemU.rarity) * 0.01f;
+                    value = (itemU.Level * 0.0025f) + itemU.Ascention * 0.01f + Mathf.Log2((float)itemU.rarity) * 0.025f;
                     break;
                 case (Modifier.Sniper):
-                    value = 0.05f + (itemU.Level * 0.005f) + itemU.Ascention * 0.01f + Mathf.Log2((float)itemU.rarity) * 0.025f;
+                    value = Mathf.Clamp(0.02f + (itemU.Level * 0.005f) + itemU.Ascention * 0.01f + Mathf.Log2((float)itemU.rarity) * 0.025f,0.05f, Mathf.Log2((float)itemU.rarity)*0.1f);
                     break;
                 case (Modifier.Brawler):
                     value = 15 + (itemU.Level * 0.5f) + itemU.Ascention * 2.5f + Mathf.Log2((float)itemU.rarity) * 5f;
@@ -776,64 +785,64 @@ namespace AnotherRpgMod.Items
             switch (mod)
             {
                 case (Modifier.MoonLight):
-                    desc = "Increase damage during night by " + GetModifierBonus(mod, itemU) + " %";
+                    desc = "Increase damage during night by " + Math.Round(GetModifierBonus(mod, itemU),2) + " %";
                     break;
                 case (Modifier.SunLight):
-                    desc = "Increase damage during Day by " + GetModifierBonus(mod, itemU) + " %";
+                    desc = "Increase damage during Day by " + Math.Round(GetModifierBonus(mod, itemU), 2) + " %";
                     break;
                 case (Modifier.Berserker):
-                    desc = "Increase damage by " + GetModifierBonus(mod, itemU) + " % per missing % of health";
+                    desc = "Increase damage by " + Math.Round(GetModifierBonus(mod, itemU), 2) + " % per missing % of health";
                     break;
                 case (Modifier.MagicConnection):
-                    desc = "Increase damage by " + GetModifierBonus(mod, itemU) + " % per mana points";
+                    desc = "Increase damage by " + Math.Round(GetModifierBonus(mod, itemU), 2) + " % per missing % of mana";
                     break;
                 case (Modifier.Sniper):
-                    desc = "Increase damage by " + GetModifierBonus(mod, itemU) + " % per units of distance";
+                    desc = "Increase damage by " + Math.Round(GetModifierBonus(mod, itemU), 2) + " % per units of distance up to " + Math.Round((float)itemU.rarity*0.1f,2) + "%";
                     break;
                 case (Modifier.Brawler):
-                    desc = "Increase damage by " + GetModifierBonus(mod, itemU) + " % when close to ennemy";
+                    desc = "Increase damage by " + Math.Round(GetModifierBonus(mod, itemU), 2) + " % when close to ennemy";
                     break;
                 case (Modifier.Piercing):
-                    desc = "Pierce " + GetModifierBonus(mod, itemU) + " % of ennemy armor";
+                    desc = "Pierce " + Math.Round(GetModifierBonus(mod, itemU), 2) + " % of ennemy armor";
                     break;
                 case (Modifier.Savior):
-                    desc = "" + GetModifierBonus(mod, itemU) + " % Chance to survive a deadly wound";
+                    desc = "" + Math.Round(GetModifierBonus(mod, itemU), 2) + " % Chance to survive a deadly wound";
                     break;
                 case (Modifier.FireLord):
-                    desc = "Inflict burn debuff to ennemies in a range of " + GetModifierBonus(mod, itemU) + " units";
+                    desc = "Inflict burn debuff to ennemies in a range of " + Math.Round(GetModifierBonus(mod, itemU), 2) + " units";
                     break;
                 case (Modifier.Thorny):
-                    desc = "reflect " + GetModifierBonus(mod, itemU) + " % of damage receive";
+                    desc = "reflect " + Math.Round(GetModifierBonus(mod, itemU), 2) + " % of damage receive";
                     break;
                 case (Modifier.Smart):
-                    desc = "Increase XP gain by " + GetModifierBonus(mod, itemU) + " %";
+                    desc = "Increase XP gain by " + Math.Round(GetModifierBonus(mod, itemU), 2) + " %";
                     break;
                 case (Modifier.SelfLearning):
-                    desc = "Increase Item XP gain by " + GetModifierBonus(mod, itemU) + " %";
+                    desc = "Increase Item XP gain by " + Math.Round(GetModifierBonus(mod, itemU), 2) + " %";
                     break;
                 case (Modifier.VampiricAura):
-                    desc = "Drain " + GetModifierBonus(mod, itemU) + " Health Per Seconds to ennemies arround you";
+                    desc = "Drain " + Math.Round(GetModifierBonus(mod, itemU), 2) + " Health Per Seconds to ennemies arround you";
                     break;
                 case (Modifier.Executor):
-                    desc = "Increase damage by " + GetModifierBonus(mod, itemU) + " % per missing % of ennemies health";
+                    desc = "Increase damage by " + Math.Round(GetModifierBonus(mod, itemU), 2) + " % per missing % of ennemies health";
                     break;
                 case (Modifier.Poisones):
-                    desc = "" + GetModifierBonus(mod, itemU) + " % chance to inflict Poison debuff";
+                    desc = "" + Math.Round(GetModifierBonus(mod, itemU), 2) + " % chance to inflict Poison debuff";
                     break;
                 case (Modifier.Venom):
-                    desc = "Increase damage by " + GetModifierBonus(mod, itemU) + " % against poisoned ennemies";
+                    desc = "Increase damage by " + Math.Round(GetModifierBonus(mod, itemU), 2) + " % against poisoned ennemies";
                     break;
                 case (Modifier.Chaotic):
-                    desc = "Increase damage by " + GetModifierBonus(mod, itemU) + " % per debuff/buff on Player";
+                    desc = "Increase damage by " + Math.Round(GetModifierBonus(mod, itemU), 2) + " % per debuff/buff on Player";
                     break;
                 case (Modifier.Cunning):
-                    desc = "Increase damage by " + GetModifierBonus(mod, itemU) + " % per debuff/buff on Ennemy";
+                    desc = "Increase damage by " + Math.Round(GetModifierBonus(mod, itemU), 2) + " % per debuff/buff on Ennemy";
                     break;
                 case (Modifier.BloodSeeker):
-                    desc = "lifesteal "+ GetModifierBonusAlt(mod, itemU) + " % against ennemies with less than " + GetModifierBonus(mod, itemU) + " % health";
+                    desc = "lifesteal "+ Math.Round(GetModifierBonusAlt(mod, itemU), 2) + " % against ennemies with less than " + Math.Round(GetModifierBonus(mod, itemU),2) + " % health";
                     break;
                 case (Modifier.Cleave):
-                    desc = "" + GetModifierBonus(mod, itemU) + " % AOE damage";
+                    desc = "" + Math.Round(GetModifierBonus(mod, itemU),2) + " % AOE damage";
                     break;
                 case (Modifier.Random):
                     desc = "Shoot a random projectile every time";

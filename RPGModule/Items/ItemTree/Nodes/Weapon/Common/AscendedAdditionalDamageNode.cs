@@ -55,7 +55,7 @@ namespace AnotherRpgMod.Items
 
         public override void SetPower(float value)
         {
-            FlatDamage = Utils.Mathf.Clamp((int)Utils.Mathf.Pow(value*10,1.2f),8,999);
+            FlatDamage = Utils.Mathf.Clamp((int)value*8,8,999);
             m_MaxLevel = 1;
             m_RequiredPoints = 1;
             power = value;

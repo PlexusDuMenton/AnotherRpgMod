@@ -49,15 +49,40 @@ namespace AnotherRpgMod
             ),
             new JsonChrClass(
                 "Apprentice",
-                new float[7]{ 0.15f, 0.15f, 0.15f, 0.15f, 0.15f, 0, 0 },
+                new float[7]{ 0.125f, 0.125f, 0.125f, 0.125f, 0.125f, 0, 0 },
                 0,
                 0.05f,0
             ),
             new JsonChrClass(
                 "Regular",
-                new float[7]{ 0.25f, 0.25f, 0.25f, 0.25f, 0.25f, 0, 0 },
+                new float[7]{ 0.2f, 0.2f, 0.2f, 0.2f, 0.2f, 0, 0 },
                 0,
-                0.2f,0.1f
+                0.15f,0.1f
+            ),
+            new JsonChrClass(
+                "Expert",
+                new float[7]{ 0.4f, 0.4f, 0.4f, 0.4f, 0.4f, 0, 0 },
+                0,
+                0.25f,0.15f,0,-0.05f,0.1f,0.0001f,0.1f
+            ),
+            new JsonChrClass(
+                "Master",
+                new float[7]{ 0.7f, 0.7f, 0.7f, 0.7f, 0.7f, 0, 0 },
+                0,
+                0.4f,0.2f,1,-0.1f,0.15f,0.00025f,0.25f
+            ),
+            new JsonChrClass(
+                "PerfectBeing",
+                new float[7]{ 1, 1, 1, 1, 1, 0, 0 },
+                0,
+                1f,0.25f,1,-0.25f,0.25f,0.0005f,0.5f
+            ),
+            //T6 
+            new JsonChrClass(
+                "Ascended",
+                new float[7]{ 4, 4, 4, 4, 4, 0, 0 },
+                0,
+                1.5f,0.5f,2,-0.75f,0.75f,0.002f,1f
             ),
 
             //Specialist - Tier 1
@@ -65,7 +90,7 @@ namespace AnotherRpgMod
                 "Archer",
                 new float[7]{ 0, 0.2f, 0, 0, 0, 0.25f, 0 },
                 0,
-                0,0,0,0.03f,0,0,0,0
+                -0.15f,0,0,0.03f,0,0,0,0
             ),
                 new JsonChrClass(
                 "Gunner",
@@ -77,11 +102,11 @@ namespace AnotherRpgMod
                 "SwordMan",
                 new float[7]{ 0.6f, 0, 0, 0, 0, 0, 0 },
                 0,
-                -0.2f,0
+                -0.1f,-0.05f,0,0.05f,0,0,0,0,0,0
             ),
                 new JsonChrClass(
                 "Spiritualist",
-                new float[7]{ 0, 0, 0, 0, 0.4f, 0, 0 },
+                new float[7]{ 0, 0, 0, 0, 0.5f, 0, 0 },
                 0,
                 0,0,1,0,0,0,0
             ),
@@ -89,7 +114,7 @@ namespace AnotherRpgMod
                 "Mage",
                 new float[7]{ 0, 0, 0, 0.4f, 0, 0, 0 },
                 0,
-                -0.25f,0,0,-0.2f,0,0,0
+                -0.15f,0,0,-0.2f,0,0,0
             ),
                 new JsonChrClass(
                 "Ninja",
@@ -101,13 +126,13 @@ namespace AnotherRpgMod
                 "Acolyte",
                 new float[7]{ 0, 0, 0, 0.25f, 0, 0, 0 },
                 0,
-                0.1f,0,0,0,0.3f,0.02f,2
+                0.1f,0,0,0,0.2f,.00025f,0.1f
             ),
                 new JsonChrClass(
                 "Cavalier",
-                new float[7]{ 0.2f, 0, 0, 0, 0, 0, 0 },
+                new float[7]{ 0.25f, 0, 0, 0, 0, 0, 0 },
                 0,
-                0.5f,0.2f,-0.05f,0,0,0,0,0,0
+                0.25f,0.1f,0,0,0,0,0,0,0
             ),
                 
             //Specialist - Tier 2
@@ -115,7 +140,7 @@ namespace AnotherRpgMod
                 "Hunter",
                 new float[7]{ 0, 0.4f, 0, 0, 0, 0.4f, 0 },
                 0,
-                0,0,0,0.28f,0,0,0,0
+                -0.3f,0,0,0.08f,0,0,0,0
             ),
                 new JsonChrClass(
                 "Gunslinger",
@@ -127,19 +152,19 @@ namespace AnotherRpgMod
                 "Mercenary",
                 new float[7]{ 1f, 0, 0, 0, 0, 0, 0 },
                 0,
-                -0.35f,0
+                -0.2f,-0.1f,0,0.1f,0,0,0,0,0,0
             ),
                 new JsonChrClass(
                 "Invoker",
-                new float[7]{ 0, 0, 0, 0, 0.75f, 0, 0 },
+                new float[7]{ 0, 0, 0, 0, 0.85f, 0, 0 },
                 0,
-                0,0,2,0,0,0,0
+                -0.1f,0,1,0,0,0,0
             ),
                 new JsonChrClass(
                 "ArchMage",
                 new float[7]{ 0, 0, 0, .75f, 0, 0, 0 },
                 0,
-                -0.35f,0,0,-0.3f,0,0,0
+                -0.2f,0,0,-0.3f,0,0,0
             ),
                 new JsonChrClass(
                 "Shinobi",
@@ -148,19 +173,217 @@ namespace AnotherRpgMod
                 0,0,0,0.1f,0.2f,0,0,0
             ),
                 new JsonChrClass(
-                "Templar",
+                "Monk",
                 new float[7]{ 0.1f, 0, 0, 0.4f, 0, 0, 0 },
                 0,
-                0.2f,0.1f,0,0,0.42f,0.03f,3
+                0.2f,0.1f,0,0,0.35f,0.0005f,0.2f
             ),
                 new JsonChrClass(
                 "Knight",
                 new float[7]{ 0.5f, 0, 0, 0, 0, 0, 0 },
                 0,
-                1f,0.45f,-0.1f,0,0,0,0,0,0
-            )
-            
+                0.4f,0.2f,0,0,0,0,0,0,0
+            ),
 
+            //Specialist - Tier 3
+            new JsonChrClass(
+                "Ranger",
+                new float[7]{ 0, 0.6f, 0, 0, 0, 0.6f, 0 },
+                0,
+                -0.4f,0,0,0.15f,0,0,0,0
+            ),
+                new JsonChrClass(
+                "Spitfire",
+                new float[7]{ 0, 0.5f, 0, 0, 0, 0, 0.5f },
+                0,
+                0,0,0,0,0.45f,0,0,0
+            ),
+                new JsonChrClass(
+                "SwordMaster",
+                new float[7]{ 1.5f, 0, 0, 0, 0, 0, 0 },
+                0,
+                -0.3f,-0.15f,0.1f,0.2f,0,0,0,0,0,0
+            ),
+                new JsonChrClass(
+                "Summoner",
+                new float[7]{ 0, 0, 0, 0, 1.25f, 0, 0 },
+                0,
+                -0.15f,0,2,0,0,0,0
+            ),
+                new JsonChrClass(
+                "Arcanist",
+                new float[7]{ 0, 0, 0, 1.25f, 0, 0, 0 },
+                0,
+                -0.35f,0,0,-0.5f,0,0,0
+            ),
+                new JsonChrClass(
+                "Rogue",
+                new float[7]{ 0, 0, 1f, 0, 0, 0, 0 },
+                0,
+                0,0,0,0.25f,0.4f,0,0,0
+            ),
+                new JsonChrClass(
+                "Templar",
+                new float[7]{ 0.3f, 0, 0, 0.6f, 0, 0, 0 },
+                0,
+                0.3f,0.15f,0,0,0.5f,0.00075f,0.3f
+            ),
+                new JsonChrClass(
+                "IronKnight",
+                new float[7]{ 0.8f, 0, 0, 0, 0, 0, 0 },
+                0,
+                0.5f,0.3f,0,0,0,0,0,0,0
+            ),
+
+            //Specialist - Tier 4
+            new JsonChrClass(
+                "Marksman",
+                new float[7]{ 0, 0.8f, 0, 0, 0, 0.8f, 0 },
+                0,
+                -0.5f,0,0,0.25f,0,0,0,0
+            ),
+                new JsonChrClass(
+                "Sniper",
+                new float[7]{ 0, 0.7f, 0, 0, 0, 0, 0.7f },
+                0,
+                -0.1f,0,0,0.1f,0.6f,0,0,0
+            ),
+                new JsonChrClass(
+                "Champion",
+                new float[7]{ 2f, 0, 0, 0, 0, 0, 0 },
+                0,
+                -0.4f,-0.2f,0.15f,0.35f,0,0,0,0,0,0
+            ),
+                new JsonChrClass(
+                "SoulBinder",
+                new float[7]{ 0, 0, 0, 0, 1.6f, 0, 0 },
+                0,
+                -0.2f,0,0,0,0,2,-0.10f,0.1f,0.00025f,0.1f
+            ),
+                new JsonChrClass(
+                "Warlock",
+                new float[7]{ 0, 0, 0, 1.5f, 0, 0, 0 },
+                0,
+                -0.45f,0,0,-0.7f,0,0,0
+            ),
+                new JsonChrClass(
+                "Assassin",
+                new float[7]{ 0, 0, 1.5f, 0, 0, 0, 0 },
+                0,
+                0,0,0,0.5f,0.5f,0,0,0
+            ),
+                new JsonChrClass(
+                "Paladin",
+                new float[7]{ 0.75f, 0, 0, 0.8f, 0, 0, 0 },
+                0,
+                0.4f,0.25f,0,0,0.65f,0.001f,1
+            ),
+                new JsonChrClass(
+                "Montain",
+                new float[7]{ 1.25f, 0, 0, 0, 0, 0, 0 },
+                0,
+                0.6f,0.4f,-0.05f,0,0,0,0,0,0
+            ),
+
+            //Specialist - Tier 5
+            new JsonChrClass(
+                "WindWalker",
+                new float[7]{ 0, 1.2f, 0, 0, 0, 1.2f, 0 },
+                0,
+                -0.65f,0,0,0.3f,0.3f,0,0,0
+            ),
+                new JsonChrClass(
+                "Hitman",
+                new float[7]{ 0, 1.2f, 0, 0, 0, 0, 1.2f },
+                0,
+                -0.25f,0,0,0.25f,0.75f,0,0,0
+            ),
+                new JsonChrClass(
+                "SwordSaint",
+                new float[7]{ 3f, 0, 0, 0, 0, 0, 0 },
+                0,
+                -0.5f,-0.25f,0.2f,0.5f,0,0,0,0,0,0
+            ),
+                new JsonChrClass(
+                "SoulLord",
+                new float[7]{ 0, 0, 0, 0, 2.5f, 0, 0 },
+                0,
+                -0.3f,0,0.2f,0,0,2,-0.25f,0.2f,0.00035f,0.15f
+            ),
+                new JsonChrClass(
+                "Mystic",
+                new float[7]{ 0, 0, 0, 2.5f, 0, 0, 0 },
+                0,
+                -0.25f,0,0,-0.9f,0.25f,0.0005f,0.25f
+            ),
+                new JsonChrClass(
+                "ShadowDancer",
+                new float[7]{ 0, 0, 2.5f, 0, 0, 0, 0 },
+                0,
+                0,0,0,0.75f,0.75f,0,0,0
+            ),
+                new JsonChrClass(
+                "Deity",
+                new float[7]{ 1f, 0, 0, 1f, 0, 0, 0 },
+                0,
+                0.5f,0.35f,0,0,0.8f,0.002f,0.5f
+            ),
+                new JsonChrClass(
+                "Fortress",
+                new float[7]{ 1.75f, 0, 0, 0, 0, 0, 0 },
+                0,
+                1f,0.5f,-0.05f,0,0,0,0,0,0
+            ),
+
+            //Ascended Specialist / T6
+            new JsonChrClass(
+                "AscendedWindWalker",
+                new float[7]{ 0, 4f, 0, 0, 0, 4f, 0 },
+                0,
+                -0.25f,0,0,0.75f,1f,0,0,0
+            ),
+                new JsonChrClass(
+                "AscendedHitman",
+                new float[7]{ 0, 4f, 0, 0, 0, 0, 4f },
+                0,
+                0.4f,0.4f,0,0.6f,1f,0,0,0
+            ),
+                new JsonChrClass(
+                "AscendedSwordSaint",
+                new float[7]{ 19f, 0, 0, 0, 0, 0, 0 },
+                0,
+                -0.75f,0,0.5f,0.99f,0,0,0,0,0,0
+            ),
+                new JsonChrClass(
+                "AscendedSoulLord",
+                new float[7]{ 0, 0, 0, 0, 9f, 0, 0 },
+                0,
+                1,1f,0.35f,0,0,2,-0.75f,0.75f,0.02f,10
+            ),
+                new JsonChrClass(
+                "AscendedMystic",
+                new float[7]{ 0, 0, 0, 9f, 0, 0, 0 },
+                0,
+                -0.25f,1,0,-1,0,0,0
+            ),
+                new JsonChrClass(
+                "AscendedShadowDancer",
+                new float[7]{ 0, 0, 9f, 0, 0, 0, 0 },
+                0,
+                0,0,0,0.95f,1,0,0,0
+            ),
+                new JsonChrClass(
+                "AscendedDeity",
+                new float[7]{ 4f, 0, 0, 4f, 0, 0, 0 },
+                0,
+                4f,4f,0,0,1,0.5f,100
+            ),
+                new JsonChrClass(
+                "AscendedFortress",
+                new float[7]{ 3f, 0, 0, 0, 0, 0, 0 },
+                0,
+                14f,14f,0,0.1f,0,0,0,0,0
+            ),
         };
     }
 

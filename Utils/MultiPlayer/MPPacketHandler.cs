@@ -164,6 +164,7 @@ namespace AnotherRpgMod.Utils
 
                         WorldManager.BossDefeated = (int)tags[DataTag.WorldTier];
 
+                        npc.GetGlobalNPC<ARPGGlobalNPC>().StatsCreated = true;
                         npc.GetGlobalNPC<ARPGGlobalNPC>().modifier = modifiers;
                         npc.GetGlobalNPC<ARPGGlobalNPC>().SetLevelTier(level, tier, (byte)rank);
                         npc.GetGlobalNPC<ARPGGlobalNPC>().specialBuffer = bufferStack;
@@ -172,7 +173,7 @@ namespace AnotherRpgMod.Utils
                        
                         npc.GivenName = NPCUtils.GetNpcNameChange(npc, tier, level, rank);
 
-                        npc.GetGlobalNPC<ARPGGlobalNPC>().StatsCreated = true;
+                        
 
                         //AnotherRpgMod.Instance.Logger.Info("NPC created with id : " + npc.whoAmI);
                         //AnotherRpgMod.Instance.Logger.Info( "Client Side : \n" + npc.GetGivenOrTypeNetName() + "\nLvl." + (npc.GetGlobalNPC<ARPGGlobalNPC>().getLevel + npc.GetGlobalNPC<ARPGGlobalNPC>().getTier) + "\nHealth : " + npc.life + " / " + npc.lifeMax + "\nDamage : " + npc.damage + "\nDef : " + npc.defense + "\nTier : " + npc.GetGlobalNPC<ARPGGlobalNPC>().getRank + "\n\n");

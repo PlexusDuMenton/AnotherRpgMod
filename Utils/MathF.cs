@@ -25,6 +25,12 @@ namespace AnotherRpgMod.Utils
             else return val;
         }
 
+        public static T Min<T>(this T val, T min) where T : IComparable<T>
+        {
+            if (val.CompareTo(min) < 0) return min;
+            else return val;
+        }
+
         public static int GenNewSeed()
         {
             int seed = Terraria.Main.rand.Next();

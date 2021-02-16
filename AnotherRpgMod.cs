@@ -7,7 +7,7 @@ using Microsoft.Xna.Framework;
 using System.Collections.Generic;
 using Terraria.UI;
 using AnotherRpgMod.UI;
-using AnotherRpgMod.RPGModule.Entities;
+using MonoMod.Cil;
 using AnotherRpgMod.Utils;
 using Microsoft.Xna.Framework.Graphics;
 using ReLogic.Graphics;
@@ -39,7 +39,8 @@ namespace AnotherRpgMod
         SyncNPCUpdate,
         SyncWeapon,
         AskNpc,
-        Log
+        Log,
+        syncWorld,
     };
 
     
@@ -58,6 +59,7 @@ namespace AnotherRpgMod
         public HealthBar healthBar;
 
         public UserInterface customNPCInfo;
+        public UserInterface customNPCName;
         public UserInterface customstats;
         public UserInterface customOpenstats;
         public UserInterface customOpenST;
@@ -73,7 +75,7 @@ namespace AnotherRpgMod
         public ItemTreeUi ItemTreeUI;
 
         public ReworkMouseOver NPCInfo;
-
+        public NPCNameUI NPCName;
 
         public static ModHotKey StatsHotKey;
         public static ModHotKey SkillTreeHotKey;
@@ -81,6 +83,7 @@ namespace AnotherRpgMod
 
 
         internal static GamePlayConfig gpConfig;
+        internal static NPCConfig NPCConfig;
         internal static VisualConfig visualConfig;
 
 
@@ -114,9 +117,36 @@ namespace AnotherRpgMod
             Stats.visible = false;
             base.PreSaveAndQuit();
         }
+
+
+        private void Player_Update(ILContext il)
+        {
+            try
+            {
+                ILCursor cursor = new ILCursor(il);
+                if (!cursor.TryGotoNext(MoveType.Before,
+                                                    i => i.MatchLdfld("Terraria.Player", "statManaMax2"),
+                                                    i => i.MatchLdcI4(400)))
+                {
+                    Logger.Error("Can't find this damn mana instruction D:");
+                    return;
+                }
+
+                cursor.Next.Next.Operand = 100000;
+            }
+            catch
+            {
+                Logger.Error("another mod is editiong TerrariaPlayer StatmanaMax 2, can't edit mana cap");
+            }
+            
+
+            
+        }
+
         public override void Load()
         {
-            
+            IL.Terraria.Player.Update += Player_Update;
+
             Instance = this;
             Instance.Logger.Info("Another Rpg Mod " + Version + " Correctly loaded");
             JsonSkillTree.Init();
@@ -130,11 +160,16 @@ namespace AnotherRpgMod
             ItemTreeHotKey = RegisterHotKey("Open Item Tree", "V");
             if (!Main.dedServ)
             {
-
+                
                 customNPCInfo = new UserInterface();
                 NPCInfo = new ReworkMouseOver();
                 ReworkMouseOver.visible = true;
                 customNPCInfo.SetState(NPCInfo);
+                
+                customNPCName = new UserInterface();
+                NPCName = new NPCNameUI();
+                NPCNameUI.visible = true;
+                customNPCName.SetState(NPCName);
 
                 customResources = new UserInterface();
                 healthBar = new HealthBar();
@@ -189,13 +224,15 @@ namespace AnotherRpgMod
         public override void PostUpdateEverything()
         {
             //Update UI when screen Size Change
-            if (lastUpdateScreenScale != Main.screenHeight)
-            {
-                AnotherRpgMod.Instance.healthBar.Reset();
-                AnotherRpgMod.Instance.OpenST.Reset();
-                AnotherRpgMod.Instance.openStatMenu.Reset();
+            if (Main.netMode != NetmodeID.Server) { 
+                if (lastUpdateScreenScale != Main.screenHeight)
+                {
+                    AnotherRpgMod.Instance.healthBar.Reset();
+                    AnotherRpgMod.Instance.OpenST.Reset();
+                    AnotherRpgMod.Instance.openStatMenu.Reset();
+                }
+                lastUpdateScreenScale = Main.screenHeight;
             }
-            lastUpdateScreenScale = Main.screenHeight;
             base.PostUpdateEverything();
         }
 
@@ -219,7 +256,7 @@ namespace AnotherRpgMod
                 return;
 
 
-            if (HealthBar.visible && Config.gpConfig.RPGPlayer)
+            if (HealthBar.visible && Config.gpConfig.RPGPlayer && Config.vConfig.HideVanillaHB)
             {
                 int ressourceid = layers.FindIndex(layer => layer.Name.Equals("Vanilla: Resource Bars"));
                 layers.RemoveAt(ressourceid);
@@ -230,42 +267,60 @@ namespace AnotherRpgMod
             if (mouseid != -1)
             {
                 layers.Insert(mouseid, new LegacyGameInterfaceLayer(
-                    "AnotherRpgMod: NPC Info detail",
+                    "AnotherRpgMod: NPC Mouse Info",
                     delegate
                     {
-                            customNPCInfo.Update(Main._drawInterfaceGameTime);
-                            NPCInfo.Draw(Main.spriteBatch);
+                        customNPCInfo.Update(Main._drawInterfaceGameTime);
+                        NPCInfo.Draw(Main.spriteBatch);
                         return true;
                     },
-                    InterfaceScaleType.None)
+                    InterfaceScaleType.UI)
+                );
+
+                layers.Insert(mouseid, new LegacyGameInterfaceLayer(
+                    "AnotherRpgMod: NPC Name Info",
+                    delegate
+                    {
+                        customNPCName.Update(Main._drawInterfaceGameTime);
+                        NPCName.Draw(Main.spriteBatch);
+                        return true;
+                    },
+                    InterfaceScaleType.Game)
                 );
             }
 
 
-            int skilltreeid = layers.FindIndex(layer => layer.Name.Equals("Vanilla: Map / Minimap"));
+            int skilltreeid = layers.FindIndex(layer => layer.Name.Equals("Vanilla: Interface Logic 2"));
             if (skilltreeid != -1)
             {
                 //layers.RemoveAt(id);
 
                 //Add you own layer
                 layers.Insert(skilltreeid, new LegacyGameInterfaceLayer(
+                    "AnotherRpgMod: StatWindows",
+                    delegate
+                    {
+                        if (Stats.visible)
+                        {
+
+                            statMenu.Draw(Main.spriteBatch);
+
+                        }
+                        if (OpenStatsButton.visible)
+                        {
+                            customOpenstats.Update(Main._drawInterfaceGameTime);
+                            openStatMenu.Draw(Main.spriteBatch);
+                        }
+
+                        return true;
+                    },
+                    InterfaceScaleType.UI)
+                );
+
+                layers.Insert(skilltreeid, new LegacyGameInterfaceLayer(
                     "AnotherRpgMod: Skill Tree",
                     delegate
                     {
-                        if (SkillTreeUi.visible)
-                        {
-                                //Update CustomBars
-                                customSkillTree.Update(Main._drawInterfaceGameTime);
-                                skillTreeUI.Draw(Main.spriteBatch);
-
-                        }
-                        if (ItemTreeUi.visible)
-                        {
-                            //Update CustomBars
-                            customItemTree.Update(Main._drawInterfaceGameTime);
-                            ItemTreeUI.Draw(Main.spriteBatch);
-
-                        }
                         if (OpenSTButton.visible)
                         {
                             customOpenST.Update(Main._drawInterfaceGameTime);
@@ -274,8 +329,39 @@ namespace AnotherRpgMod
                         return true;
                     }, InterfaceScaleType.None)
                 );
+
+                layers.Insert(skilltreeid, new LegacyGameInterfaceLayer(
+                    "AnotherRpgMod: Skill Tree",
+                    delegate
+                    {
+                        if (ItemTreeUi.visible)
+                        {
+                            //Update Item Tree
+                            customItemTree.Update(Main._drawInterfaceGameTime);
+                            ItemTreeUI.Draw(Main.spriteBatch);
+
+                        }
+                        return true;
+                    }, InterfaceScaleType.None)
+                );
+
+                layers.Insert(skilltreeid, new LegacyGameInterfaceLayer(
+                    "AnotherRpgMod: Skill Tree",
+                    delegate
+                    {
+                        if (SkillTreeUi.visible)
+                        {
+                            //Update Skill Tree
+                            customSkillTree.Update(Main._drawInterfaceGameTime);
+                            skillTreeUI.Draw(Main.spriteBatch);
+
+                        }
+                        return true;
+                    }, InterfaceScaleType.None)
+                );
             }
             
+
 
             int id = layers.FindIndex(layer => layer.Name.Equals("Vanilla: Inventory"));
             if (id != -1)
@@ -287,44 +373,14 @@ namespace AnotherRpgMod
                             if (HealthBar.visible)
                             {
                                 //Update CustomBars
-                                
-
                                 customOpenST.Update(Main._drawInterfaceGameTime);
                                 customOpenstats.Update(Main._drawInterfaceGameTime);
                                 customResources.Update(Main._drawInterfaceGameTime);
                                 healthBar.Draw(Main.spriteBatch);
-                                
-
-
                             }
                             return true;
                         }, InterfaceScaleType.None)
                     );
-            }
-
-            int index = layers.FindIndex(layer => layer.Name.Equals("Vanilla: Map / Minimap"));
-            if (index != -1)
-            {
-                layers.Insert(index, new LegacyGameInterfaceLayer(
-                    "AnotherRpgMod: StatWindows",
-                    delegate
-                    {
-                        if (Stats.visible)
-                        {
-                            
-                            statMenu.Draw(Main.spriteBatch);
-                            
-                        }
-                        if (OpenStatsButton.visible)
-                        {
-                            customOpenstats.Update(Main._drawInterfaceGameTime);
-                            openStatMenu.Draw(Main.spriteBatch);
-                        }
-
-                        return true;
-                    },
-                    InterfaceScaleType.None)
-                );
             }
 
         }

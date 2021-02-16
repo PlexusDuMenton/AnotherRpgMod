@@ -19,6 +19,10 @@ namespace AnotherRpgMod.RPGModule
                 if (node.GetStatType == stat)
                     value += (int)(node.GetValue * node.GetLevel);
             }
+            foreach (LimitBreakNode node in nodeList.GetLBList)
+            {
+                value += (int)(node.GetValue * node.GetLevel);
+            }
             return value;
         }
 
@@ -59,15 +63,7 @@ namespace AnotherRpgMod.RPGModule
             int slot = 0;
             if (ActiveClass == null)
                 return 0;
-            switch (ActiveClass.GetClassType)
-            {
-                case (ClassType.Spiritualist):
-                    slot = 1;
-                    break;
-                case (ClassType.Invoker):
-                    slot = 2;
-                    break;
-            }
+            slot = JsonCharacterClass.GetJsonCharList.GetClass(ActiveClass.GetClassType).Summons;
             return slot;
         }
 
@@ -80,13 +76,13 @@ namespace AnotherRpgMod.RPGModule
                 return 1;
             }
             JsonChrClass actualClass = JsonCharacterClass.GetJsonCharList.GetClass(ActiveClass.GetClassType);
-            value += actualClass.Damage[(int)_type];
+            value *= 1+actualClass.Damage[(int)_type];
             if (_type == DamageType.Ranged)
             {
                 if (pEntity.HaveBow())
-                    value += actualClass.Damage[5];
+                    value *= 1+actualClass.Damage[5];
                 if(pEntity.HaveRangedWeapon() && !pEntity.HaveBow())
-                    value += actualClass.Damage[6];
+                    value *= 1+actualClass.Damage[6];
             }
             return value;
         }
@@ -135,6 +131,17 @@ namespace AnotherRpgMod.RPGModule
             return false;
         }
 
+        public bool IsLimitBreak()
+        {
+            List<LimitBreakNode> list = nodeList.GetLBList;
+            for (int i = 0; i < list.Count; i++)
+            {
+                if (list[i].GetEnable)
+                    return true;
+            }
+            return false;
+        }
+
         public bool HaveImmunity(Immunity _immunity)
         {
             List<ImmunityNode> list = nodeList.GetImmunities;
@@ -175,31 +182,34 @@ namespace AnotherRpgMod.RPGModule
                 {
                     case (NodeType.Damage):
                         damageT = (DamageType)Enum.Parse(typeof(DamageType), actualNode.specificType);
-                        nodeList.AddNode(new DamageNode(damageT, actualNode.flatDamage, NodeType.Damage, actualNode.unlocked, actualNode.valuePerLevel, actualNode.levelRequirement, actualNode.maxLevel, actualNode.pointsPerLevel));
+                        nodeList.AddNode(new DamageNode(damageT, actualNode.flatDamage, NodeType.Damage, actualNode.unlocked, actualNode.valuePerLevel, actualNode.levelRequirement, actualNode.maxLevel, actualNode.pointsPerLevel, actualNode.ascended));
                         break;
                     case (NodeType.Class):
                         classT = (ClassType)Enum.Parse(typeof(ClassType), actualNode.specificType);
-                        nodeList.AddNode(new ClassNode(classT, NodeType.Class, actualNode.unlocked, actualNode.valuePerLevel, actualNode.levelRequirement, 1, actualNode.pointsPerLevel));
+                        nodeList.AddNode(new ClassNode(classT, NodeType.Class, actualNode.unlocked, actualNode.valuePerLevel, actualNode.levelRequirement, 1, actualNode.pointsPerLevel, actualNode.ascended));
                         break;
                     case (NodeType.Speed):
                         damageT = (DamageType)Enum.Parse(typeof(DamageType), actualNode.specificType);
-                        nodeList.AddNode(new SpeedNode(damageT, NodeType.Speed, actualNode.unlocked, actualNode.valuePerLevel, actualNode.levelRequirement, actualNode.maxLevel, actualNode.pointsPerLevel));
+                        nodeList.AddNode(new SpeedNode(damageT, NodeType.Speed, actualNode.unlocked, actualNode.valuePerLevel, actualNode.levelRequirement, actualNode.maxLevel, actualNode.pointsPerLevel, actualNode.ascended));
                         break;
                     case (NodeType.Immunity):
                         immunityT = (Immunity)Enum.Parse(typeof(Immunity), actualNode.specificType);
-                        nodeList.AddNode(new ImmunityNode(immunityT, NodeType.Immunity, actualNode.unlocked, actualNode.valuePerLevel, actualNode.levelRequirement, actualNode.maxLevel, actualNode.pointsPerLevel));
+                        nodeList.AddNode(new ImmunityNode(immunityT, NodeType.Immunity, actualNode.unlocked, actualNode.valuePerLevel, actualNode.levelRequirement, actualNode.maxLevel, actualNode.pointsPerLevel, actualNode.ascended));
                         break;
                     case (NodeType.Leech):
                         leechT = (LeechType)Enum.Parse(typeof(LeechType), actualNode.specificType);
-                        nodeList.AddNode(new LeechNode(leechT, NodeType.Leech, actualNode.unlocked, actualNode.valuePerLevel, actualNode.levelRequirement, actualNode.maxLevel, actualNode.pointsPerLevel));
+                        nodeList.AddNode(new LeechNode(leechT, NodeType.Leech, actualNode.unlocked, actualNode.valuePerLevel, actualNode.levelRequirement, actualNode.maxLevel, actualNode.pointsPerLevel, actualNode.ascended));
                         break;
                     case (NodeType.Perk):
                         perkT = (Perk)Enum.Parse(typeof(Perk), actualNode.specificType);
-                        nodeList.AddNode(new PerkNode(perkT, NodeType.Perk, actualNode.unlocked, actualNode.valuePerLevel, actualNode.levelRequirement, actualNode.maxLevel, actualNode.pointsPerLevel));
+                        nodeList.AddNode(new PerkNode(perkT, NodeType.Perk, actualNode.unlocked, actualNode.valuePerLevel, actualNode.levelRequirement, actualNode.maxLevel, actualNode.pointsPerLevel, actualNode.ascended));
                         break;
                     case (NodeType.Stats):
                         StatT = (Stat)Enum.Parse(typeof(Stat), actualNode.specificType);
-                        nodeList.AddNode(new StatNode(StatT, actualNode.flatDamage, NodeType.Stats, actualNode.unlocked, actualNode.valuePerLevel, actualNode.levelRequirement, actualNode.maxLevel, actualNode.pointsPerLevel));
+                        nodeList.AddNode(new StatNode(StatT, actualNode.flatDamage, NodeType.Stats, actualNode.unlocked, actualNode.valuePerLevel, actualNode.levelRequirement, actualNode.maxLevel, actualNode.pointsPerLevel, actualNode.ascended));
+                        break;
+                    case (NodeType.LimitBreak):
+                        nodeList.AddNode(new LimitBreakNode(actualNode.specificType,NodeType.LimitBreak, actualNode.unlocked, actualNode.valuePerLevel, actualNode.levelRequirement, actualNode.maxLevel, actualNode.pointsPerLevel, actualNode.ascended));
                         break;
                 }
 
@@ -221,7 +231,7 @@ namespace AnotherRpgMod.RPGModule
         }
 
 
-        public readonly static int SKILLTREEVERSION = 1;
+        public readonly static int SKILLTREEVERSION = 2;
         public void Init()
         {
             NodeParent.ResetID();

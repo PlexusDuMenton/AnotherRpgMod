@@ -406,11 +406,11 @@ namespace AnotherRpgMod.UI
             switch (stat)
             {
                 case (Stat.Vit):
-                    UpgradeStatOver[0].SetText("+ " + (((float)Char.player.statLifeMax / 20f) * 0.15f * Char.statMultiplier) + " Hp");
+                    UpgradeStatOver[0].SetText("+ " + (((float)Char.player.statLifeMax / 20f) * 0.5f * Char.statMultiplier) + " Hp");
                     UpgradeStatOver[0].TextColor = MainColor;
                     UpgradeStatOver[2].SetText("+ " + (Char.BaseArmor*0.0055f* Char.statMultiplier) + " Armor");
                     UpgradeStatOver[2].TextColor = SecondaryColor;
-                    UpgradeStatOver[10].SetText("+ " + (0.1f* Char.statMultiplier)+" HP/Sec");
+                    UpgradeStatOver[10].SetText("+ " + (0.02f* Char.statMultiplier)+" HP/Sec");
                     break;
                 case (Stat.Foc):
                     UpgradeStatOver[1].SetText("+ " + (((float)Char.player.statManaMax / 20f) * 0.2f * Char.statMultiplier) + " Mana");
@@ -423,9 +423,9 @@ namespace AnotherRpgMod.UI
                 case (Stat.Cons):
                     UpgradeStatOver[2].SetText("+ " + (Char.BaseArmor * 0.012f * Char.statMultiplier) + " Armor");
                     UpgradeStatOver[2].TextColor = MainColor;
-                    UpgradeStatOver[0].SetText("+ " + (((float)Char.player.statLifeMax / 20f) * 0.075f * Char.statMultiplier) + " Hp");
+                    UpgradeStatOver[0].SetText("+ " + (((float)Char.player.statLifeMax / 20f) * 0.25f * Char.statMultiplier) + " Hp");
                     UpgradeStatOver[0].TextColor = SecondaryColor;
-                    UpgradeStatOver[10].SetText("+ " + (0.1f * Char.statMultiplier) + " HP/Sec");
+                    UpgradeStatOver[10].SetText("+ " + (0.02f * Char.statMultiplier) + " HP/Sec");
                     break;
                 case (Stat.Str):
                     UpgradeStatOver[3].SetText("+ " +(RPGPlayer.MAINSTATSMULT * Char.statMultiplier)+ " Multiplier");
@@ -451,16 +451,16 @@ namespace AnotherRpgMod.UI
                 case (Stat.Int):
                     UpgradeStatOver[6].SetText("+ " + (RPGPlayer.MAINSTATSMULT * Char.statMultiplier) + " Multiplier");
                     UpgradeStatOver[6].TextColor = MainColor;
-                    UpgradeStatOver[1].SetText("+ " + (((float)Char.player.statManaMax / 20f) * 0.1f * Char.statMultiplier) + " Mana");
+                    UpgradeStatOver[1].SetText("+ " + (((float)Char.player.statManaMax / 20f) * 0.05f * Char.statMultiplier) + " Mana");
                     UpgradeStatOver[1].TextColor = SecondaryColor;
-                    UpgradeStatOver[11].SetText("+ " + (0.1f * Char.statMultiplier) + " MP/Sec");
+                    UpgradeStatOver[11].SetText("+ " + (0.02f * Char.statMultiplier) + " MP/Sec");
                     break;
                 case (Stat.Spr):
                     UpgradeStatOver[7].SetText("+ " + (RPGPlayer.MAINSTATSMULT * Char.statMultiplier) + " Multiplier");
                     UpgradeStatOver[7].TextColor = MainColor;
                     UpgradeStatOver[6].SetText("+ " + (RPGPlayer.SECONDARYTATSMULT * Char.statMultiplier) + " Multiplier");
                     UpgradeStatOver[6].TextColor = SecondaryColor;
-                    UpgradeStatOver[11].SetText("+ " + (0.1f * Char.statMultiplier) + " MP/Sec");
+                    UpgradeStatOver[11].SetText("+ " + (0.02f * Char.statMultiplier) + " MP/Sec");
                     break;
             }
             InfoStat.SetText(Utils.AdditionalInfo.GetAdditionalStatInfo(stat));
@@ -552,16 +552,17 @@ namespace AnotherRpgMod.UI
             }
             for (int i = 0; i < 5; i++)
             {
-                UpgradeStatDetails[i+3].SetText((DamageType)i + " Damage Multiplier : " + Char.GetDamageMult((DamageType)i, 2)+" - " + Char.GetDamageMult((DamageType)i) + " x " + Char.GetDamageMult((DamageType)i,1));
+                UpgradeStatDetails[i+3].SetText((DamageType)i + " Damage Multiplier : " + Math.Round(Char.GetDamageMult((DamageType)i),2) + " x " + Math.Round(Char.GetDamageMult((DamageType)i, 1),2) + " = "+ Math.Round(Char.GetDamageMult((DamageType)i, 2) * 100,2)+" %");
             }
-            UpgradeStatDetails[0].SetText("Health : "+ Char.player.statLifeMax2 + " - " +(Char.player.statLifeMax / 20) + " Heart x "  + Char.GetHealthMult() + " x " + Char.GetHealthPerHeart() + " Health Per Heart + 10");
-            UpgradeStatDetails[1].SetText("Mana : " + Char.player.statManaMax2 + " - " + (Char.player.statManaMax / 20) + " Crystal x " +Utils.Mathf.Clamp( Char.GetManaPerStar(),0,20) + " Mana per crystal + 4");
-            UpgradeStatDetails[2].SetText("Defense : " + Char.player.statDefense + " - " + Char.BaseArmor + " Armor x " + Char.GetDefenceMult()+ " x " + Char.GetArmorMult() + " Defense Per Armor");
+            UpgradeStatDetails[0].SetText("Health : "+ Char.player.statLifeMax2 + " ( " +(Char.player.statLifeMax / 20) + " Heart x "  + Math.Round(Char.GetHealthMult(),2) + " x " + Math.Round(Char.GetHealthPerHeart(),2) + " Health Per Heart + 10 )");
+            UpgradeStatDetails[1].SetText("Mana : " + Char.player.statManaMax2 + " ( " + (Char.player.statManaMax / 20) + " Crystal x " + Math.Round(Char.GetManaPerStar(),2) + " Mana per crystal + 4 )");
+            UpgradeStatDetails[2].SetText("Defense : " + Char.player.statDefense + " ( " + Char.BaseArmor + " Armor x " + Math.Round(Char.GetDefenceMult(),2)+ " x " + Math.Round(Char.GetArmorMult(),2) + " Defense Per Armor )");
 
-            UpgradeStatDetails[8].SetText("Crit Chance : + " + Char.GetCriticalChanceBonus() + "%" );
-            UpgradeStatDetails[9].SetText("Crit Damage : " + (Char.GetCriticalDamage()*100) +"%");
-            UpgradeStatDetails[10].SetText("HealthRegen : +" + (Char.player.lifeRegen-Utils.Mathf.FloorInt(Char.GetHealthRegen())+ Char.GetHealthRegen()) *0.5f + " Per Sec");
-            UpgradeStatDetails[11].SetText("ManaRegen : +" + (Char.player.manaRegen - Utils.Mathf.FloorInt(Char.GetManaRegen()) + Char.GetManaRegen()) * 0.5f + " Per Sec");
+            UpgradeStatDetails[8].SetText("Crit Chance : + " + Math.Round(Char.GetCriticalChanceBonus(),2) + "%" );
+            UpgradeStatDetails[9].SetText("Crit Damage : " + Math.Round(Char.GetCriticalDamage()*100,2) +"%");
+            UpgradeStatDetails[10].SetText("HealthRegen : +" + Math.Round((double)Char.player.lifeRegen,2) + " Per Sec");
+
+            UpgradeStatDetails[11].SetText("ManaRegen : +" + Math.Round(Char.player.manaRegen + Char.GetManaRegen(),2)+ " Per Sec");
             PointsLeft.SetText("Points : " + Char.FreePtns + " / " + Char.TotalPtns,1,true);
 
         }

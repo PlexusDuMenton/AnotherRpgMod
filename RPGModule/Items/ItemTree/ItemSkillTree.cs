@@ -224,7 +224,7 @@ namespace AnotherRpgMod.Items
             return save;
         }
 
-        public static ItemSkillTree ConvertToTree(string save, ItemUpdate source)
+        public static ItemSkillTree ConvertToTree(string save, ItemUpdate source,int evoPoint,int AscPoint)
         {
             string[] nodeListSave;
             string[] nodeDetails;
@@ -244,6 +244,8 @@ namespace AnotherRpgMod.Items
                     AnotherRpgMod.Instance.Logger.Error("Item tree corrupted, reseting tree");
                     AnotherRpgMod.Instance.Logger.Error(nodeSave);
                     tree = new ItemSkillTree();
+                    tree.MaxEvolutionPoints = evoPoint;
+                    tree.MaxAscendPoints = AscPoint;
                     tree.Init(source);
                     tree.Reset(true);
                     tree.EvolutionPoints = tree.MaxEvolutionPoints;

@@ -14,6 +14,7 @@ namespace AnotherRpgMod.RPGModule
         Immunity,
         Class,
         Perk,
-        Stats
+        Stats,
+        LimitBreak
     }
 }

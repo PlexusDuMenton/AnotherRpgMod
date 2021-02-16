@@ -35,7 +35,7 @@ namespace AnotherRpgMod.Items
 
         public override void SetPower(float value)
         {
-            PercentBonus = Utils.Mathf.Clamp((int)value*5, 1, 150);
+            PercentBonus = Utils.Mathf.Clamp((int)value*10, 5, 150);
         }
 
         public override void LoadValue(string saveValue)

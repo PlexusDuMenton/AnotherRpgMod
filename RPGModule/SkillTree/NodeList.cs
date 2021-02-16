@@ -18,6 +18,7 @@ namespace AnotherRpgMod.RPGModule
         private List<DamageNode> throwDamage;
 
         private List<StatNode> StatsNodes;
+        private List<LimitBreakNode> LBNodes;
 
         private List<SpeedNode> meleeSpeed;
         private List<SpeedNode> rangedSpeed;
@@ -52,6 +53,7 @@ namespace AnotherRpgMod.RPGModule
             leechs = new List<LeechNode>();
 
             StatsNodes = new List<StatNode>();
+            LBNodes = new List<LimitBreakNode>();
 
             classes = new List<ClassNode>();
             perks = new List<PerkNode>();
@@ -64,6 +66,14 @@ namespace AnotherRpgMod.RPGModule
             get
             {
                 return StatsNodes;
+            }
+        }
+
+        public List<LimitBreakNode> GetLBList
+        {
+            get
+            {
+                return LBNodes;
             }
         }
 
@@ -81,6 +91,17 @@ namespace AnotherRpgMod.RPGModule
                 return perks;
             }
         }
+
+        public PerkNode GetPerk(Perk perk)
+        {
+            foreach(PerkNode Pnode in perks)
+            {
+                if (Pnode.GetPerk == perk)
+                    return Pnode;
+            }
+            return null;
+        }
+
         public List<ImmunityNode> GetImmunities
         {
             get
@@ -189,6 +210,14 @@ namespace AnotherRpgMod.RPGModule
             nodeParent.GetNode.SetParrent(nodeParent);
             nodeList.Add(nodeParent);
             StatsNodes.Add(statnode);
+        }
+
+        public void AddNode(LimitBreakNode LBnode)
+        {
+            NodeParent nodeParent = new NodeParent(LBnode, Vector2.Zero);
+            nodeParent.GetNode.SetParrent(nodeParent);
+            nodeList.Add(nodeParent);
+            LBNodes.Add(LBnode);
         }
 
     }

@@ -55,6 +55,9 @@ namespace AnotherRpgMod.Utils
                 case NodeType.Stats:
                     additional += (node as StatNode).GetStatType;
                     break;
+                case NodeType.LimitBreak:
+                    additional += (node as LimitBreakNode).LimitBreakType;
+                    break;
             }
             path += additional;
             return path;

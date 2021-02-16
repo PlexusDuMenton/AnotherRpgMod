@@ -69,20 +69,13 @@ namespace AnotherRpgMod.RPGModule.Entities
         {
             if (HaveModifier(NPCModifier.Vampire))
             {
-                npc.life = Mathf.Clamp(Mathf.CeilInt(damage * 0.5f), npc.life, npc.lifeMax);
+                npc.HealEffect(Mathf.RoundInt(damage * 0.5f), true);
             }
 
             if (HaveModifier(NPCModifier.ArmorBreaker))
             {
                 int def = target.statDefense;
-                if (damage < def)
-                {
-                    damage = Mathf.RoundInt(def + damage * 0.3f);
-                }
-                else if (damage > def + damage * 0.3f)
-                {
-                    damage += Mathf.RoundInt(def * 0.3f);
-                }
+                damage = Mathf.RoundInt(def * 0.3f);
 
             }
             
@@ -157,17 +150,17 @@ namespace AnotherRpgMod.RPGModule.Entities
             if (Main.netMode != NetmodeID.MultiplayerClient)
             {
                 if (level < 0) {
-                    if (!Config.gpConfig.NPCProgress)
+                    if (!Config.NPCConfig.NPCProgress)
                     {
                         level = 0;
                         tier = 0;
                     }
                     else { 
-                        level = Mathf.CeilInt(NPCUtils.GetBaseLevel(npc) * Config.gpConfig.NpclevelMultiplier);
+                        level = Mathf.CeilInt(NPCUtils.GetBaseLevel(npc) * Config.NPCConfig.NpclevelMultiplier);
                         if (npc.townNPC || (npc.damage == 0))
-                            tier = Mathf.CeilInt(NPCUtils.GetTierAlly(npc, level) * Config.gpConfig.NpclevelMultiplier);
-                        else if (Config.gpConfig.NPCProgress)
-                            tier = Mathf.CeilInt(NPCUtils.GetTier(npc, level) * Config.gpConfig.NpclevelMultiplier);
+                            tier = Mathf.CeilInt(NPCUtils.GetTierAlly(npc, level) * Config.NPCConfig.NpclevelMultiplier);
+                        else if (Config.NPCConfig.NPCProgress)
+                            tier = Mathf.CeilInt(NPCUtils.GetTier(npc, level) * Config.NPCConfig.NpclevelMultiplier);
                     }
                     if (!npc.townNPC && !(npc.damage == 0) && (!npc.dontCountMe)) { 
                         Rank = NPCUtils.GetRank(level+tier);
@@ -237,15 +230,17 @@ namespace AnotherRpgMod.RPGModule.Entities
                 }
             }
 
-            if (!StatsCreated && Main.netMode != NetmodeID.MultiplayerClient) {
+
+            if (!StatsCreated && Main.netMode != NetmodeID.MultiplayerClient)
+            {
                 StatsCreated = true;
                 SetInit(npc);
                 SetStats(npc);
                 //MPDebug.Log(mod,"Server Side : \n"+ npc.GetGivenOrTypeNetName()+ " ID : "+ npc.whoAmI + "\nLvl."+ (getLevel+getTier)+"\nHealth : " + npc.life + " / " + npc.lifeMax + "\nDamage : " + npc.damage + "\nDef : " + npc.defense + "\nTier : " + getRank + "\n");
                 MPPacketHandler.SendNpcSpawn(mod, npc, tier, level, this);
                 //NetMessage.SendData(23, -1, -1, null, npc.whoAmI);
-
                 npc.GivenName = NPCUtils.GetNpcNameChange(npc, tier, level, Rank);
+
             }
 
             if (Main.netMode == NetmodeID.MultiplayerClient)
@@ -255,14 +250,12 @@ namespace AnotherRpgMod.RPGModule.Entities
                     StatsFrame0 = true;
                 }
 
-                else if(!StatsCreated)
+                else if (!StatsCreated)
                 {
                     StatsCreated = true;
                     MPPacketHandler.AskNpcInfo(mod, npc);
                 }
             }
-
-
 
             if (Main.netMode != NetmodeID.MultiplayerClient)
             {
@@ -290,9 +283,20 @@ namespace AnotherRpgMod.RPGModule.Entities
             }
 
         }
+
+
         public override void OnHitByItem(NPC npc, Player player, Item item, int damage, float knockback, bool crit)
         {
             
+            if (HaveModifier(NPCModifier.Dancer))
+            {
+                if (Mathf.Random(0, 1) < 0.2f)
+                {
+                    damage = 0;
+                    Main.PlaySound(SoundID.DoubleJump, npc.position);
+                }
+            }
+
             base.OnHitByItem(npc, player, item, damage, knockback, crit);
             MPPacketHandler.SendNpcUpdate(mod, npc);
             //NetMessage.SendData(23, -1, -1, null, npc.whoAmI);
@@ -300,7 +304,14 @@ namespace AnotherRpgMod.RPGModule.Entities
 
         public override void OnHitByProjectile(NPC npc, Projectile projectile, int damage, float knockback, bool crit)
         {
-            
+            if (HaveModifier(NPCModifier.Dancer))
+            {
+                if (Mathf.Random(0, 1) < 0.2f)
+                {
+                    damage = 0;
+                    Main.PlaySound(SoundID.DoubleJump, npc.position);
+                }
+            }
             base.OnHitByProjectile(npc, projectile, damage, knockback, crit);
             MPPacketHandler.SendNpcUpdate(mod, npc);
             //NetMessage.SendData(23, -1, -1, null, npc.whoAmI);
@@ -330,6 +341,7 @@ namespace AnotherRpgMod.RPGModule.Entities
                 npc = NPCUtils.SizeShiftMult(npc, GetBufferProperty("GrowtherStep"));
                 npc.life = npc.lifeMax;
                 MPPacketHandler.SendNpcUpdate(mod, npc);
+                return false;
                 //NetMessage.SendData(23, -1, -1, null, npc.whoAmI);
             }
             return true;

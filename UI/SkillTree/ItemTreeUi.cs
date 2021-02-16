@@ -164,8 +164,13 @@ namespace AnotherRpgMod.UI
             allBasePanel = new List<ItemSkillPanel>();
             allText = new List<ItemSkillText>();
 
-
             backGround = new UIPanel();
+
+            backGround.OnMouseDown += new UIElement.MouseEvent(DragStart);
+            backGround.OnMouseUp += new UIElement.MouseEvent(DragEnd);
+            backGround.OnMiddleClick += new MouseEvent(ResetOffset);
+            backGround.OnScrollWheel += new ScrollWheelEvent(iScrollUpDown);
+
             backGround.SetPadding(0);
             backGround.Left.Set(0, 0f);
             backGround.Top.Set(0, 0f);
@@ -196,9 +201,7 @@ namespace AnotherRpgMod.UI
             ResetText.OnMouseOut += new MouseEvent(ResetTextOut);
             backGround.Append(ResetText);
 
-            backGround.OnMouseDown += new UIElement.MouseEvent(DragStart);
-            backGround.OnMouseUp += new UIElement.MouseEvent(DragEnd);
-            backGround.OnScrollWheel += new ScrollWheelEvent(iScrollUpDown);
+            
 
             Instance = this;
             for (int i = 0; i < m_itemSource.GetItemTree.GetSize; i++)
@@ -219,8 +222,6 @@ namespace AnotherRpgMod.UI
             {
                 backGround.Append(allBasePanel[i]);
             }
-            //
-
         }
 
         public override void Update(GameTime gameTime)
@@ -517,6 +518,13 @@ namespace AnotherRpgMod.UI
             
         }
 
+        private void ResetOffset(UIMouseEvent evt, UIElement listeningElement)
+        {
+            offSet = new Vector2(Main.screenWidth * 0.5f, Main.screenHeight * 0.5f) / Config.vConfig.UI_Scale;
+            iZoom = 1;
+            Init();
+        }
+
         private void OpenToolTip(UIMouseEvent evt, UIElement listeningElement,ItemNode node,bool Hidden)
         {
             if (node == null)
@@ -553,7 +561,7 @@ namespace AnotherRpgMod.UI
                 costText += " Evolution Points\n";
 
             if (node.GetState <= 1)
-                costText = "Cost ??? Ascendence Points";
+                costText = "Cost ??? Points";
 
             UIText info = new UIText(costText);
             info.Left.Set(50* unzoomMult, 0);
@@ -562,7 +570,7 @@ namespace AnotherRpgMod.UI
             string desc = node.GetDesc;
 
             if (node.GetState <= 1)
-                desc = "Unknow Bonus, Unlock a close node to know what this one does !";
+                desc = "Unknow Bonus\nUnlock a close node to know what this one does !";
             UIText description = new UIText(desc);
             description.Left.Set(50* unzoomMult, 0);
             description.Top.Set(170* unzoomMult, 0);

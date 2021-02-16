@@ -582,7 +582,7 @@ namespace AnotherRpgMod.UI
                 default:
                     break;
             }
-
+            quotient = Utils.Mathf.Clamp(quotient, 0, 1);
             this.Left.Set(-(1 - quotient) * width * ImageScale, 0f);
             Recalculate(); // recalculate the position and size
 

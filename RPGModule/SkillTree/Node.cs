@@ -20,7 +20,7 @@ namespace AnotherRpgMod.RPGModule
         protected float value = 0;
         protected int levelRequirement = 0;
         protected bool unlocked = false;
-
+        protected bool Ascended = false;
         public NodeType GetNodeType
         {
             get
@@ -90,7 +90,13 @@ namespace AnotherRpgMod.RPGModule
             }
         }
 
-
+        public bool GetAscended
+        {
+            get
+            {
+                return Ascended;
+            }
+        }
 
         protected bool activate = false;
 
@@ -101,7 +107,7 @@ namespace AnotherRpgMod.RPGModule
             enable = !enable;
         }
 
-        public Node(NodeType _type, bool _unlocked = false, float _value = 1, int _levelrequirement = 0, int _maxLevel = 1, int _pointsPerLevel = 1)
+        public Node(NodeType _type, bool _unlocked = false, float _value = 1, int _levelrequirement = 0, int _maxLevel = 1, int _pointsPerLevel = 1, bool ascended = false)
         {
 
             Type = _type;
@@ -111,6 +117,7 @@ namespace AnotherRpgMod.RPGModule
             activate = false;
             levelRequirement = _levelrequirement;
             unlocked = _unlocked;
+            Ascended = ascended;
 
         }
 

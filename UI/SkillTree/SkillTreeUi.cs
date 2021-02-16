@@ -35,7 +35,7 @@ namespace AnotherRpgMod.UI
 
 
         float zoomMax = 2f;
-        float zoomMin = 0.5f;
+        float zoomMin = 0.25f;
 
         float Zoom = 1;
         float UIScale = Config.vConfig.UI_Scale;
@@ -142,6 +142,12 @@ namespace AnotherRpgMod.UI
             LoadSkillTree();
         }
 
+        private void ResetOffset(UIMouseEvent evt, UIElement listeningElement)
+        {
+            offSet = new Vector2(Main.screenWidth * 0.5f, Main.screenHeight * 0.5f) / Config.vConfig.UI_Scale;
+            Zoom = 1;
+            Init();
+        }
 
         public void Init()
         {
@@ -188,12 +194,18 @@ namespace AnotherRpgMod.UI
             backGround.OnMouseDown += new UIElement.MouseEvent(DragStart);
             backGround.OnMouseUp += new UIElement.MouseEvent(DragEnd);
             backGround.OnScrollWheel += new ScrollWheelEvent(ScrollUpDown);
+            backGround.OnMiddleClick += new MouseEvent(ResetOffset);
+
 
             Instance = this;
             for (int i = 0; i < skillTree.nodeList.nodeList.Count; i++)
             {
-
-                SkillInit(skillTree.nodeList.nodeList[i]);
+                NodeParent Node = skillTree.nodeList.nodeList[i];
+                if (!(Node.GetNodeType == NodeType.LimitBreak && rPGPlayer.GetLevel() < 1000 || Node.GetNode.GetAscended && !skillTree.IsLimitBreak()))
+                {
+                    SkillInit(skillTree.nodeList.nodeList[i]);
+                }
+                 
                 
             }
 
@@ -234,16 +246,22 @@ namespace AnotherRpgMod.UI
             
 
             DrawSkill(node);
-            
+            RPGPlayer rPGPlayer = Main.player[Main.myPlayer].GetModPlayer<RPGPlayer>();
             NodeParent neightboor;
             for (int j = 0; j < node.GetNeightboor.Count; j++)
             {
                 neightboor = node.GetNeightboor[j];
                 if (node.GetNeightboor.Exists(x => x.ID == neightboor.ID) && !(node.connectedNeighboor.Exists(x => x.ID == neightboor.ID)) )
                 {
-                    DrawConnection((neightboor.GetActivate || node.GetActivate) ? Color.GreenYellow : Color.Gray, node.menuPos, neightboor.menuPos,node,neightboor);
-                    node.connectedNeighboor.Add(neightboor);
-                    neightboor.connectedNeighboor.Add(node);
+
+                    if (!(neightboor.GetNodeType == NodeType.LimitBreak && rPGPlayer.GetLevel() < 1000 || neightboor.GetNode.GetAscended && !skillTree.IsLimitBreak()))
+                    {
+                        DrawConnection((neightboor.GetActivate || node.GetActivate) ? Color.GreenYellow : Color.Gray, node.menuPos, neightboor.menuPos, node, neightboor);
+                        node.connectedNeighboor.Add(neightboor);
+                        neightboor.connectedNeighboor.Add(node);
+                    }
+
+                    
                 }
             }
 
@@ -420,8 +438,16 @@ namespace AnotherRpgMod.UI
             toolTip.Left.Set((node.menuPos.X + SKILL_SIZE * 2 + offSet.X)* sizeMultplier, 0);
             toolTip.Top.Set((node.menuPos.Y - SKILL_SIZE * 2 + offSet.Y)* sizeMultplier, 0);
 
-            toolTip.Width.Set(550* unzoomMult, 0);
-            toolTip.Height.Set(300* unzoomMult, 0);
+            float TTWidth = 500;
+            if (node.GetNodeType == NodeType.Class)
+            {
+                ClassType CT = (node.GetNode as ClassNode).GetClassType;
+                JsonChrClass ClassInfo = JsonCharacterClass.GetJsonCharList.GetClass(CT);
+                if (ClassInfo.ManaShield > 0)
+                    TTWidth = 750;
+            }
+            toolTip.Width.Set(TTWidth * unzoomMult, 0);
+            toolTip.Height.Set(350 * unzoomMult, 0);
             toolTip.SetPadding(0);
             toolTip.BackgroundColor = new Color(73, 94, 171, 150);
 
@@ -434,10 +460,10 @@ namespace AnotherRpgMod.UI
                     Name.SetText("Class : " + (node.GetNode as ClassNode).GetClassType, unzoomMult, false);
                     break;
                 case NodeType.Perk:
-                    Name.SetText("Perk : " + (node.GetNode as PerkNode).GetPerk + " Damage\nLevel : " + node.GetLevel + " / " + node.GetMaxLevel, unzoomMult, false);
+                    Name.SetText("Perk : " + (node.GetNode as PerkNode).GetPerk + "\nLevel : " + node.GetLevel + " / " + node.GetMaxLevel, unzoomMult, false);
                     break;
                 case NodeType.Immunity:
-                    Name.SetText("Class : " + (node.GetNode as ImmunityNode).GetImmunity, unzoomMult, false);
+                    Name.SetText("Immunity : " + (node.GetNode as ImmunityNode).GetImmunity, unzoomMult, false);
                     break;
                 case NodeType.Damage:
                     Name.SetText("Bonus " + (node.GetNode as DamageNode).GetDamageType + " Damage\nLevel : " + node.GetLevel + " / " + node.GetMaxLevel, unzoomMult, false);
@@ -448,15 +474,18 @@ namespace AnotherRpgMod.UI
                 case NodeType.Speed:
                     Name.SetText("Bonus " + (node.GetNode as SpeedNode).GetDamageType + " Speed\nLevel : " + node.GetLevel + " / " + node.GetMaxLevel, unzoomMult, false);
                     break;
+                case NodeType.LimitBreak:
+                    Name.SetText("LIMIT BREAK : " + (node.GetNode as LimitBreakNode).LimitBreakType, unzoomMult, false);
+                    break;
             }
 
             UIText info = new UIText("Level Required : " + node.GetLevelRequirement + "\nCost " + node.GetCostPerLevel + " Points Per Level\n");
             info.Left.Set(50* unzoomMult, 0);
-            info.Top.Set(100* unzoomMult, 0);
+            info.Top.Set(80* unzoomMult, 0);
 
             UIText description = new UIText(SkillInfo.GetDesc(node.GetNode));
             description.Left.Set(50* unzoomMult, 0);
-            description.Top.Set(170* unzoomMult, 0);
+            description.Top.Set(140* unzoomMult, 0);
 
             Main.PlaySound(SoundID.MenuTick);
 
@@ -472,7 +501,16 @@ namespace AnotherRpgMod.UI
 
         private void OnRightClickNode(UIMouseEvent evt, UIElement listeningElement, NodeParent node)
         {
-            for (int i = 0; i < 5; i++)
+            if (node.GetNodeType == NodeType.Perk)
+            {
+                node.GetNode.ToggleEnable();
+                if (node.GetEnable == false)
+                    Main.PlaySound(SoundID.MenuClose);
+                else
+                    Main.PlaySound(SoundID.MenuOpen);
+                UpdateValue();
+            }
+            else for (int i = 0; i < 5; i++)
             {
                 OnClickNode(evt, listeningElement, node);
             }
@@ -524,8 +562,17 @@ namespace AnotherRpgMod.UI
             toolTip.Left.Set((node.menuPos.X + SKILL_SIZE*2 + offSet.X)* sizeMultplier, 0);
             toolTip.Top.Set((node.menuPos.Y - SKILL_SIZE * 2 + offSet.Y)* sizeMultplier, 0);
 
-            toolTip.Width.Set(550* unzoomMult, 0);
-            toolTip.Height.Set(300* unzoomMult, 0);
+            float TTWidth = 500;
+            if (node.GetNodeType == NodeType.Class)
+            {
+                ClassType CT = (node.GetNode as ClassNode).GetClassType;
+                JsonChrClass ClassInfo = JsonCharacterClass.GetJsonCharList.GetClass(CT);
+                if (ClassInfo.ManaShield > 0)
+                    TTWidth = 750;
+                
+            }
+            toolTip.Width.Set(TTWidth * unzoomMult, 0);
+            toolTip.Height.Set(350* unzoomMult, 0);
             toolTip.SetPadding(0);
             toolTip.BackgroundColor = new Color(73, 94, 171, 150);
 
@@ -537,7 +584,7 @@ namespace AnotherRpgMod.UI
                     Name.SetText("Class : "+(node.GetNode as ClassNode).GetClassType);
                     break;
                 case NodeType.Perk:
-                    Name.SetText("Perk : " + (node.GetNode as PerkNode).GetPerk + " Damage\nLevel : " + node.GetLevel + " / " + node.GetMaxLevel);
+                    Name.SetText("Perk : " + (node.GetNode as PerkNode).GetPerk + " \nLevel : " + node.GetLevel + " / " + node.GetMaxLevel);
                     break;
                 case NodeType.Immunity:
                     Name.SetText("Class : " + (node.GetNode as ImmunityNode).GetImmunity);
@@ -553,6 +600,9 @@ namespace AnotherRpgMod.UI
                     break;
                 case NodeType.Stats:
                     Name.SetText("Bonus " + (node.GetNode as StatNode).GetStatType + " Stats\nLevel : " + node.GetLevel + " / " + node.GetMaxLevel);
+                    break;
+                case NodeType.LimitBreak:
+                    Name.SetText("LIMIT BREAK : " + (node.GetNode as LimitBreakNode).LimitBreakType, unzoomMult, false);
                     break;
             }
 

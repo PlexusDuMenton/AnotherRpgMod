@@ -4,6 +4,7 @@ using Terraria.ModLoader;
 using AnotherRpgMod.Utils;
 using System.Collections.Generic;
 using Microsoft.Xna.Framework;
+using Terraria.ID;
 
 namespace AnotherRpgMod.RPGModule.Entities
 {
@@ -21,50 +22,72 @@ namespace AnotherRpgMod.RPGModule.Entities
             }
         }
 
+
         public override void ModifyHitPlayer(Projectile projectile, Player target, ref int damage, ref bool crit)
         {
-            if (projectile.owner > Main.npc.Length)
-                return;
-            NPC owner = Main.npc[projectile.owner];
-            if (owner.GivenName == "")
-                return;
+            int projectilelevel = (int)((WorldManager.GetWorldLevelMultiplier(Config.NPCConfig.NPCProjectileDamageLevel)+ WorldManager.GetWorldAdditionalLevel()) * Config.NPCConfig.NpclevelMultiplier );
 
-            damage = owner.damage;
+
+            /*
+            debug
+            Main.NewText("projectile base level : " + Config.NPCConfig.NPCProjectileDamageLevel);
+            Main.NewText("World Day : " + WorldManager.Day);
+            Main.NewText("projectile day level : " + WorldManager.GetWorldLevelMultiplier(Config.NPCConfig.NPCProjectileDamageLevel));
+            Main.NewText("projectile World level : " + WorldManager.GetWorldAdditionalLevel());
+            Main.NewText("npc level multiplier : " + Config.NPCConfig.NpclevelMultiplier);
+
+            Main.NewText("projectile level : " + (int)(WorldManager.GetWorldLevelMultiplier(Config.NPCConfig.NPCProjectileDamageLevel) * Config.NPCConfig.NpclevelMultiplier));
+            Main.NewText("projectile base damage : " + projectile.damage);
+            Main.NewText("projectile damage multiplier : " + Mathf.Pow(1 + projectilelevel * 0.02f, 0.95f) * Config.NPCConfig.NpcDamageMultiplier);
+            */
+
+            damage = Mathf.HugeCalc(Mathf.FloorInt(projectile.damage * Mathf.Pow(1 + projectilelevel * 0.02f, 0.95f) * Config.NPCConfig.NpcDamageMultiplier), projectile.damage);
         }
 
         public override void ModifyHitNPC(Projectile projectile, NPC target, ref int damage, ref float knockback, ref bool crit, ref int hitDirection)
         {
-
             if (projectile.npcProj)
             {
-                if (projectile.owner > Main.npc.Length)
-                    return;
-                NPC owner = Main.npc[projectile.owner];
-                if (owner.GivenName == "")
-                    return;
+                int projectilelevel = (int)(WorldManager.GetWorldLevelMultiplier(Config.NPCConfig.NPCProjectileDamageLevel) * Config.NPCConfig.NpclevelMultiplier);
 
-                damage = owner.damage;
+                damage = Mathf.HugeCalc(Mathf.FloorInt(projectile.damage * Mathf.Pow(1 + projectilelevel * 0.02f, 0.95f)* Config.NPCConfig.NpcDamageMultiplier), projectile.damage);
             }
-
         }
+        
+        /*
+        public override void SetDefaults(Projectile projectile)
+        {
+            if (projectile.npcProj)
+            {
+                int projectilelevel = WorldManager.GetWorldLevelMultiplier(1);
 
+                projectile.damage = Mathf.HugeCalc(Mathf.FloorInt(projectile.damage * Mathf.Pow(1 + projectilelevel * 0.02f, 0.95f)), projectile.damage);
+            }
+            base.SetDefaults(projectile);
+        }
+        */
 
-        public override void AI(Projectile projectile)
+        public override bool PreAI(Projectile projectile)
         {
 
 
             if (init)
-                return;
+                return base.PreAI(projectile);
             if (projectile.friendly)
-                return;
+                return base.PreAI(projectile);
 
             if (!projectile.npcProj && projectile.minion)
             {
                 Player p = Main.player[projectile.owner];
                 itemOrigin = p.HeldItem;
             }
-            init = true;
 
+            
+            
+            init = true;
+            
+
+            return base.PreAI(projectile);
         }
     }
 }
