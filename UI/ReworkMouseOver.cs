@@ -12,6 +12,7 @@ using System.Collections.Generic;
 using AnotherRpgMod.RPGModule.Entities;
 using System.Diagnostics;
 using log4net.Util;
+using Terraria.ID;
 
 namespace AnotherRpgMod.Utils
 {
@@ -21,7 +22,7 @@ namespace AnotherRpgMod.Utils
         UIPanel ScreenPanel;
         public static bool visible = false;
 
-        static ReworkMouseOver Instance;
+        public static ReworkMouseOver Instance;
         List<NPCInfoUI> NPCName = new List<NPCInfoUI>();
         NPCInfoUI NPCDetails;
 
@@ -107,11 +108,10 @@ namespace AnotherRpgMod.Utils
             for (int k = 0; k < 200; k++)
             {
                 ActualNPC = Main.npc[k];
-                if (ActualNPC.active && !ActualNPC.dontCountMe)
+                if (ActualNPC.active)
                 {
-                    int type = Main.npc[k].type;
                     Rectangle NPCPos = new Rectangle((int)ActualNPC.Bottom.X - ActualNPC.frame.Width / 2, (int)ActualNPC.Bottom.Y - ActualNPC.frame.Height, ActualNPC.frame.Width, ActualNPC.frame.Height);
-                    if (ActualNPC.type >= 87 && ActualNPC.type <= 92)
+                    if (ActualNPC.type >= NPCID.WyvernHead && ActualNPC.type <= NPCID.WyvernTail)
                     {
                         NPCPos = new Rectangle((int)(ActualNPC.position.X + ActualNPC.width * 0.5 - 32.0), (int)(ActualNPC.position.Y + ActualNPC.height * 0.5 - 32.0), 64, 64);
                     }
@@ -119,8 +119,6 @@ namespace AnotherRpgMod.Utils
                     bool IsOnScreen = screenRectangle.Intersects(NPCPos);
                     if (IsMouseOver)
                     {
-                        Main.player[Main.myPlayer].showItemIcon = false;
-
                         ARPGGlobalNPC Rnpc = ActualNPC.GetGlobalNPC<ARPGGlobalNPC>();
                         string preFix = "";
                         if (Rnpc.getLevel >= 0 && ActualNPC.damage > 0)
@@ -153,7 +151,6 @@ namespace AnotherRpgMod.Utils
                     else if (IsOnScreen && ((Config.vConfig.DisplayNpcName && !ActualNPC.townNPC) ||(Config.vConfig.DisplayTownName && ActualNPC.townNPC)))
                     {
                         
-                        Main.player[Main.myPlayer].showItemIcon = false;
                         TempText = ActualNPC.GivenOrTypeName;
                         RPGModule.Entities.ARPGGlobalNPC Rnpc = ActualNPC.GetGlobalNPC<RPGModule.Entities.ARPGGlobalNPC>();
                         string preFix = "";
@@ -246,7 +243,7 @@ namespace AnotherRpgMod.Utils
         UIPanel ScreenPanel;
         public static bool visible = false;
 
-        static NPCNameUI Instance;
+        public static NPCNameUI Instance;
         List<NPCInfoUI> NPCName = new List<NPCInfoUI>();
         NPCInfoUI NPCDetails;
 
@@ -347,7 +344,7 @@ namespace AnotherRpgMod.Utils
                 {
                     int type = Main.npc[k].type;
                     Rectangle NPCPos = new Rectangle((int)ActualNPC.Bottom.X - ActualNPC.frame.Width / 2, (int)ActualNPC.Bottom.Y - ActualNPC.frame.Height, ActualNPC.frame.Width, ActualNPC.frame.Height);
-                    if (ActualNPC.type >= 87 && ActualNPC.type <= 92)
+                    if (ActualNPC.type >= NPCID.WyvernHead && ActualNPC.type <= NPCID.WyvernTail)
                     {
                         NPCPos = new Rectangle((int)(ActualNPC.position.X + ActualNPC.width * 0.5 - 32.0), (int)(ActualNPC.position.Y + ActualNPC.height * 0.5 - 32.0), 64, 64);
                     }
@@ -355,7 +352,6 @@ namespace AnotherRpgMod.Utils
                     bool IsOnScreen = screenRectangle.Intersects(NPCPos);
                     if (IsMouseOver)
                     {
-                        Main.player[Main.myPlayer].showItemIcon = false;
 
                         ARPGGlobalNPC Rnpc = ActualNPC.GetGlobalNPC<ARPGGlobalNPC>();
                         string preFix = "";
@@ -388,8 +384,6 @@ namespace AnotherRpgMod.Utils
                     }
                     else if (IsOnScreen && ((Config.vConfig.DisplayNpcName && !ActualNPC.townNPC) || (Config.vConfig.DisplayTownName && ActualNPC.townNPC)))
                     {
-
-                        Main.player[Main.myPlayer].showItemIcon = false;
                         TempText = ActualNPC.GivenOrTypeName;
                         RPGModule.Entities.ARPGGlobalNPC Rnpc = ActualNPC.GetGlobalNPC<RPGModule.Entities.ARPGGlobalNPC>();
                         string preFix = "";

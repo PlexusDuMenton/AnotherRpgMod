@@ -38,9 +38,9 @@ namespace AnotherRpgMod.Items
         protected new bool m_isAscend = true;
         public float manaCostReduction;
 
-        public override void PlayerPassive(Item item, Player player)
+        public override void PlayerPassive(Item item, Player Player)
         {
-            player.manaCost *= 1 - manaCostReduction* GetLevel;
+            Player.manaCost *= 1 - manaCostReduction* GetLevel;
         }
 
         public override void SetPower(float value)

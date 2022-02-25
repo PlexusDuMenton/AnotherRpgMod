@@ -3,6 +3,7 @@ using Microsoft.Xna.Framework;
 using System;
 using System.Collections.Generic;
 using Terraria;
+using Terraria.Audio;
 using Terraria.ID;
 using Terraria.ModLoader;
 
@@ -74,8 +75,13 @@ namespace AnotherRpgMod.RPGModule.Entities
 
             if (HaveModifier(NPCModifier.ArmorBreaker))
             {
-                int def = target.statDefense;
-                damage = Mathf.RoundInt(def * 0.3f);
+                float def = target.statDefense;
+
+                float mult = 0.5f;
+                if (Main.expertMode)
+                    mult = 0.75f;
+
+                damage += Mathf.RoundInt(def * 0.3f * mult);
 
             }
             
@@ -163,7 +169,7 @@ namespace AnotherRpgMod.RPGModule.Entities
                             tier = Mathf.CeilInt(NPCUtils.GetTier(npc, level) * Config.NPCConfig.NpclevelMultiplier);
                     }
                     if (!npc.townNPC && !(npc.damage == 0) && (!npc.dontCountMe)) { 
-                        Rank = NPCUtils.GetRank(level+tier);
+                        Rank = NPCUtils.GetRank(level+tier,npc.boss);
                         modifier = NPCUtils.GetModifier(Rank,npc);
                         if (HaveModifier(NPCModifier.Size))
                         {
@@ -211,14 +217,17 @@ namespace AnotherRpgMod.RPGModule.Entities
 
             if (npc.HasBuff(Terraria.ID.BuffID.Venom))
             {
-                int num41 = Dust.NewDust(npc.position, npc.width, npc.height, 46, 0f, 0f, 120, default(Color), 0.2f);
+                int num41 = Dust.NewDust(npc.position, npc.width, npc.height, DustID.Poisoned, 0f, 0f, 120, default(Color), 0.2f);
                 Main.dust[num41].noGravity = true;
                 Main.dust[num41].fadeIn = 1.9f;
             }
         }
 
+
         public override void PostAI(NPC npc)
         {
+
+            base.PostAI(npc);
 
             Effect(npc);
             if (npc.dontTakeDamage && dontTakeDamageTime > 0)
@@ -237,10 +246,9 @@ namespace AnotherRpgMod.RPGModule.Entities
                 SetInit(npc);
                 SetStats(npc);
                 //MPDebug.Log(mod,"Server Side : \n"+ npc.GetGivenOrTypeNetName()+ " ID : "+ npc.whoAmI + "\nLvl."+ (getLevel+getTier)+"\nHealth : " + npc.life + " / " + npc.lifeMax + "\nDamage : " + npc.damage + "\nDef : " + npc.defense + "\nTier : " + getRank + "\n");
-                MPPacketHandler.SendNpcSpawn(mod, npc, tier, level, this);
+                MPPacketHandler.SendNpcSpawn(Mod,-1, npc, tier, level, this);
                 //NetMessage.SendData(23, -1, -1, null, npc.whoAmI);
                 npc.GivenName = NPCUtils.GetNpcNameChange(npc, tier, level, Rank);
-
             }
 
             if (Main.netMode == NetmodeID.MultiplayerClient)
@@ -252,40 +260,48 @@ namespace AnotherRpgMod.RPGModule.Entities
 
                 else if (!StatsCreated)
                 {
-                    StatsCreated = true;
-                    MPPacketHandler.AskNpcInfo(mod, npc);
+                    MPPacketHandler.AskNpcInfo(Mod, npc, Main.myPlayer);
                 }
             }
 
-            if (Main.netMode != NetmodeID.MultiplayerClient)
+            if (Main.netMode == NetmodeID.MultiplayerClient)
             {
                 
-                debuffDamage += NPCUtils.UpdateDOT(npc);
-                int applydamage = 0;
+                return;
+            }
                 
-                if (debuffDamage > 0) { 
-                    applydamage = Mathf.FloorInt(debuffDamage);
-                    debuffDamage -= applydamage;
-                    npc.life -= applydamage;
-                    npc.lifeRegen -= applydamage;
-                    if (npc.life <= 0)
-                        npc.checkDead();
-                }
-
-
-                if (HaveModifier(NPCModifier.Berserker))
-                {
-                    npc.damage = Mathf.RoundInt((float)baseDamage * (2-((float)npc.life/ (float)npc.lifeMax)));
-                }
-
-                //MPPacketHandler.SendNpcUpdate(mod,npc);
+            debuffDamage += NPCUtils.UpdateDOT(npc);
                 
+            if (debuffDamage > 0) {
+                int applydamage = Mathf.FloorInt(debuffDamage);
+                debuffDamage -= applydamage;
+                npc.life -= applydamage;
+                npc.lifeRegen -= applydamage;
+                if (npc.life <= 0)
+                    npc.checkDead();
             }
 
+
+            if (HaveModifier(NPCModifier.Berserker))
+            {
+                npc.damage = Mathf.RoundInt(baseDamage * (2-((float)npc.life/ (float)npc.lifeMax)));
+            }
+
+            if (Main.netMode == NetmodeID.Server)
+            {
+                MPPacketHandler.SendNpcUpdate(Mod, npc);
+            }
+
+            if (npc.life < 0)
+                npc.life = 0;
+            
+
+
+            
         }
 
 
-        public override void OnHitByItem(NPC npc, Player player, Item item, int damage, float knockback, bool crit)
+        public override void OnHitByItem(NPC npc, Player Player, Item item, int damage, float knockback, bool crit)
         {
             
             if (HaveModifier(NPCModifier.Dancer))
@@ -293,13 +309,12 @@ namespace AnotherRpgMod.RPGModule.Entities
                 if (Mathf.Random(0, 1) < 0.2f)
                 {
                     damage = 0;
-                    Main.PlaySound(SoundID.DoubleJump, npc.position);
+                    SoundEngine.PlaySound(SoundID.DoubleJump, npc.position);
                 }
             }
 
-            base.OnHitByItem(npc, player, item, damage, knockback, crit);
-            MPPacketHandler.SendNpcUpdate(mod, npc);
-            //NetMessage.SendData(23, -1, -1, null, npc.whoAmI);
+            base.OnHitByItem(npc, Player, item, damage, knockback, crit);
+            MPPacketHandler.SendNpcUpdate(Mod, npc);
         }
 
         public override void OnHitByProjectile(NPC npc, Projectile projectile, int damage, float knockback, bool crit)
@@ -309,11 +324,11 @@ namespace AnotherRpgMod.RPGModule.Entities
                 if (Mathf.Random(0, 1) < 0.2f)
                 {
                     damage = 0;
-                    Main.PlaySound(SoundID.DoubleJump, npc.position);
+                    SoundEngine.PlaySound(SoundID.DoubleJump, npc.position);
                 }
             }
             base.OnHitByProjectile(npc, projectile, damage, knockback, crit);
-            MPPacketHandler.SendNpcUpdate(mod, npc);
+            MPPacketHandler.SendNpcUpdate(Mod, npc);
             //NetMessage.SendData(23, -1, -1, null, npc.whoAmI);
         }
 
@@ -340,34 +355,42 @@ namespace AnotherRpgMod.RPGModule.Entities
                 }
                 npc = NPCUtils.SizeShiftMult(npc, GetBufferProperty("GrowtherStep"));
                 npc.life = npc.lifeMax;
-                MPPacketHandler.SendNpcUpdate(mod, npc);
+                MPPacketHandler.SendNpcUpdate(Mod, npc);
                 return false;
                 //NetMessage.SendData(23, -1, -1, null, npc.whoAmI);
             }
             return true;
         }
-
-        public override void NPCLoot(NPC npc)
+        public override void OnKill(NPC npc)
         {
-            
+            base.OnKill(npc);
+
+            Player Player = null;
+            if (Main.netMode == NetmodeID.SinglePlayer)
+                Player = Main.LocalPlayer; //if local , well it's simple
+            else if (Main.player[npc.target].active)
+                Player = Main.player[npc.target];
+
+
+            if (Player is not null)
+            {
+                RPGPlayer rpgPlayer;
+                if (!Player.TryGetModPlayer(out rpgPlayer))
+                {
+                    return;
+                }
+            }
+
             if (HaveModifier(NPCModifier.Cluster) && !HaveBufferProperty("clustered"))
             {
                 int clusterRN = Mathf.RandomInt(4, 8);
                 for (int i = 0; i < clusterRN; i++)
                     NPCUtils.SpawnSized(npc, specialBuffer);
-
             }
 
             if (npc.damage == 0) return;
             if (npc.townNPC) return;
 
-            Player player = Array.Find(Main.player, p => p.active);
-            if (Main.netMode == NetmodeID.SinglePlayer)
-                player = Main.LocalPlayer; //if local , well it's simple
-            else if (Main.player[npc.target].active)
-                player = Main.player[npc.target];
-            else
-                return;
             int XPToDrop = NPCUtils.GetExp(npc);
             if (npc.rarity > 0)
             {
@@ -382,15 +405,17 @@ namespace AnotherRpgMod.RPGModule.Entities
             XPToDrop = Mathf.CeilInt(XPToDrop * Config.gpConfig.XpMultiplier);
 
             int xplevel = level + tier;
-            if (!Config.gpConfig.XPReduction)
-            {
-                xplevel = int.MaxValue;
-            }
-            MPPacketHandler.SendXPPacket(mod, XPToDrop, xplevel);
-            if (Main.netMode == NetmodeID.SinglePlayer)
-                player.GetModPlayer<RPGPlayer>().AddXp(XPToDrop, xplevel);
-           
 
+            if (Main.netMode == NetmodeID.SinglePlayer)
+            {
+                Player.GetModPlayer<RPGPlayer>().AddXp(XPToDrop, xplevel);
+            }
+            else if (Main.netMode == NetmodeID.Server)
+            {
+                MPPacketHandler.SendXPPacket(Mod, XPToDrop, xplevel);
+            }
         }
+
+
     }
 }

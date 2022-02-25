@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using AnotherRpgMod.Utils;
+using Terraria;
 
 namespace AnotherRpgMod.Items
 {
@@ -20,20 +21,35 @@ namespace AnotherRpgMod.Items
         {
             int bossKilled = WorldManager.BossDefeated;
 
-                float totalWeight = 0;
+                float Weight = 0;
             for (int i = 0; i < weights.Length; i++)
-                totalWeight += weights[i].weight;
-            float rn = Mathf.Random(0, totalWeight);
+                Weight += weights[i].weight;
 
-            rn += bossKilled * totalWeight * 0.02f;
-            float actualWeight = 0;
-            for (int i = 0; i < weights.Length; i++)
+            float rn = Mathf.Random(0, Weight);
+
+            if (WorldManager.ascended)
             {
-                if (rn < actualWeight + weights[i].weight)
-                    return weights[i].rarity;
-                actualWeight += weights[i].weight;
+                if (Main.hardMode)
+                    rn *= (Mathf.Pow(0.9f, bossKilled));
+                else
+                    rn *= (Mathf.Pow(0.95f, bossKilled));
             }
-            return weights[weights.Length-1].rarity;
+            else { 
+                if (Main.hardMode)
+                    rn *= (Mathf.Pow(0.95f, bossKilled));
+                else
+                    rn *= (Mathf.Pow(0.975f,bossKilled));
+            }
+
+            float actualWeight = 0;
+            for (int i = weights.Length -1; i >= 0 ; i--)
+            {
+                actualWeight += weights[i].weight;
+                if (rn < actualWeight)
+                    return weights[i].rarity;
+                
+            }
+            return weights[0].rarity;
 
 
         }

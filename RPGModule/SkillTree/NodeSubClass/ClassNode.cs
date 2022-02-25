@@ -16,6 +16,40 @@ namespace AnotherRpgMod.RPGModule
                 return classType;
             }
         }
+
+        public string GetClassName
+        {
+            get
+            {
+                switch(classType)
+                {
+                    case ClassType.AscendedDeity:
+                        return "Ascended Deity";
+                    case ClassType.AscendedFortress:
+                        return "Ascended Fortress";
+                    case ClassType.AscendedHitman:
+                        return "Ascended Hitman";
+                    case ClassType.AscendedMystic:
+                        return "Ascended Mystic";
+                    case ClassType.AscendedShadowDancer:
+                        return "Ascended ShadowDancer";
+                    case ClassType.AscendedSoulLord:
+                        return "Ascended SoulLord";
+                    case ClassType.AscendedSwordSaint:
+                        return "Ascended SwordSaint";
+                    case ClassType.AscendedWindWalker:
+                        return "Ascended WindWalker";
+                    case ClassType.TranscendentalBeing:
+                        return "Transcendental Being";
+                    default:
+                        return "" + classType;
+
+                }
+
+                
+            }
+        }
+
         public ClassNode(ClassType _classType, NodeType _type, bool _unlocked = false, float _value = 1, int _levelrequirement = 0, int _maxLevel = 1, int _pointsPerLevel = 1, bool _ascended = false) : base(_type, _unlocked, _value, _levelrequirement, _maxLevel, _pointsPerLevel, _ascended)
         {
             classType = _classType;

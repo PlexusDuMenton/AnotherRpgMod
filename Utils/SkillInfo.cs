@@ -76,7 +76,7 @@ namespace AnotherRpgMod.Utils
         static public string GetClassDescription(ClassType classType)
         {
             JsonChrClass ClassInfo = JsonCharacterClass.GetJsonCharList.GetClass(classType);
-            string desc = "";
+            string desc = "You can only have 1 active class\n";
 
 
 
@@ -106,9 +106,9 @@ namespace AnotherRpgMod.Utils
                     if (ClassInfo.Damage[i] != 0)
                     {
                         if (ClassInfo.Damage[i] > 0)
-                            desc += "+ " + (ClassInfo.Damage[i] * 100) + "% " + ((DamageNameTree)i).ToString() + " Damage\n";
+                            desc += "+ " + Mathf.Round(ClassInfo.Damage[i] * 100,2) + "% " + ((DamageNameTree)i).ToString() + " Damage\n";
                         else
-                            desc += "- " + (-ClassInfo.Damage[i] * 100) + "% " + ((DamageNameTree)i).ToString() + " Damage\n";
+                            desc += "- " + Mathf.Round(-ClassInfo.Damage[i] * 100,2) + "% " + ((DamageNameTree)i).ToString() + " Damage\n";
                     }
                 }
             }
@@ -117,66 +117,66 @@ namespace AnotherRpgMod.Utils
             if (ClassInfo.Speed != 0)
             {
                 if (ClassInfo.Speed > 0)
-                    desc += "+ " + (ClassInfo.Speed * 100) + "% Melee Speed\n";
+                    desc += "+ " + Mathf.Round(ClassInfo.Speed * 100,2) + "% Melee Speed\n";
                 else
-                    desc += "- " + (-ClassInfo.Speed * 100) + "% Melee Speed\n";
+                    desc += "- " + Mathf.Round(-ClassInfo.Speed * 100,2) + "% Melee Speed\n";
             }
 
             if (ClassInfo.Health != 0)
             {
                 if (ClassInfo.Health > 0)
-                    desc += "+ " + (ClassInfo.Health * 100) + "% Health\n";
+                    desc += "+ " + Mathf.Round(ClassInfo.Health * 100, 2) + "% Health\n";
                 else
-                    desc += "- " + (-ClassInfo.Health * 100) + "% Health\n";
+                    desc += "- " + Mathf.Round(-ClassInfo.Health * 100, 2) + "% Health\n";
             }
             if (ClassInfo.Armor != 0)
             {
                 if (ClassInfo.Armor > 0)
-                    desc += "+ " + (ClassInfo.Armor * 100) + "% Armor\n";
+                    desc += "+ " + Mathf.Round(ClassInfo.Armor * 100, 2) + "% Armor\n";
                 else
-                    desc += "- " + (-ClassInfo.Armor * 100) + "% Armor\n";
+                    desc += "- " + Mathf.Round(-ClassInfo.Armor * 100, 2) + "% Armor\n";
             }
             if (ClassInfo.MovementSpeed != 0)
             {
                 if (ClassInfo.MovementSpeed > 0)
-                    desc += "+ " + (ClassInfo.MovementSpeed * 100) + "% Movement Speed\n";
+                    desc += "+ " + Mathf.Round(ClassInfo.MovementSpeed * 100, 2) + "% Movement Speed\n";
                 else
-                    desc += "- " + (-ClassInfo.MovementSpeed * 100) + "% Movement Speed\n";
+                    desc += "- " + Mathf.Round(-ClassInfo.MovementSpeed * 100, 2) + "% Movement Speed\n";
             }
             if (ClassInfo.Dodge != 0)
             {
                 if (ClassInfo.Dodge != 0)
-                    desc += "+ " + (ClassInfo.Dodge * 100) + "% Dodge\n";
+                    desc += "+ " + Mathf.Round(ClassInfo.Dodge * 100, 2) + "% Dodge\n";
                 else
-                    desc += "- " + (-ClassInfo.Dodge * 100) + "% Dodge\n";
+                    desc += "- " + Mathf.Round(-ClassInfo.Dodge * 100, 2) + "% Dodge\n";
             }
             if (ClassInfo.Ammo != 0)
             {
                 if (ClassInfo.Ammo < 0)
-                    desc += "+ " + (-ClassInfo.Ammo * 100) + "% Ammo consumation\n";
+                    desc += "+ " + Mathf.Round(-ClassInfo.Ammo * 100, 2) + "% Ammo consumation\n";
                 else
-                    desc += "- " + (ClassInfo.Ammo * 100) + "% Ammo consumation\n";
+                    desc += "- " + Mathf.Round(ClassInfo.Ammo * 100, 2) + "% Ammo consumation\n";
             }
             if (ClassInfo.Summons != 0)
             {
                 if (ClassInfo.Summons < 0)
-                    desc += "- " + (-ClassInfo.Summons) + " Max Summon\n";
+                    desc += "- " + Mathf.Round(-ClassInfo.Summons, 0) + " Max Summon\n";
                 else
-                    desc += "+ " + ClassInfo.Summons + " Max Summon\n";
+                    desc += "+ " + Mathf.Round(ClassInfo.Summons, 0) + " Max Summon\n";
             }
             if (ClassInfo.ManaCost != 0)
             {
                 if (ClassInfo.ManaCost < 0)
-                    desc += "- " + (-ClassInfo.ManaCost * 100) + " % Mana Cost\n";
+                    desc += "- " + Mathf.Round(-ClassInfo.ManaCost * 100,2) + " % Mana Cost\n";
                 else
-                    desc += "+ " + (ClassInfo.ManaCost * 100) + " % Mana Cost\n";
+                    desc += "+ " + Mathf.Round(ClassInfo.ManaCost * 100,2) + " % Mana Cost\n";
             }
 
             if (ClassInfo.ManaShield > 0 && (ClassInfo.ManaEfficiency > 0 || ClassInfo.ManaBaseEfficiency > 0))
             {
                 int intelect = Main.player[Main.myPlayer].GetModPlayer<RPGPlayer>().GetStat(Stat.Int);
-                desc += "Grand Mana Shield : " + (ClassInfo.ManaShield * 100) +
-                    "% damage absorbed by mana (" + (ClassInfo.ManaBaseEfficiency + (intelect * ClassInfo.ManaEfficiency)) + " Damage per mana)\n";
+                desc += "Grand Mana Shield : " + Mathf.Round(ClassInfo.ManaShield * 100,2) +
+                    "%\n   damage absorbed by mana (" + Mathf.Round(ClassInfo.ManaBaseEfficiency + (intelect * ClassInfo.ManaEfficiency),2) + " Damage per mana)\n";
             }
             if (classType == ClassType.AscendedShadowDancer)
             {
@@ -211,57 +211,59 @@ namespace AnotherRpgMod.Utils
 
             switch (node.GetNodeType)
             {
+                
                 case NodeType.Class:
                     desc += GetClassDescription((node as ClassNode).GetClassType);
                     break;
                 case NodeType.Damage:
                     switch ((node as DamageNode).GetFlat)
                     {
+
                         case true:
                             if (node.GetLevel > 0)
-                                desc += "+ " + (node.GetValue * (float)Mathf.Clamp(node.GetLevel, 0, node.GetMaxLevel)) + " " + (node as DamageNode).GetDamageType + " Damage Multiplier";
+                                desc += "+ " + Mathf.Round(node.GetValue * Mathf.Clamp(node.GetLevel, 0, node.GetMaxLevel), 2) + " " + (node as DamageNode).GetDamageType + " Damage Multiplier";
                             if (node.GetLevel < node.GetMaxLevel)
                             {
                                 desc += "\n Next Level :";
-                                desc += "\n+ " + (node.GetValue * (float)Mathf.Clamp(node.GetLevel + 1, 0, node.GetMaxLevel)) + " " + (node as DamageNode).GetDamageType + " Damage Multiplier";
+                                desc += "\n+ " + Mathf.Round(node.GetValue * Mathf.Clamp(node.GetLevel + 1, 0, node.GetMaxLevel), 2) + " " + (node as DamageNode).GetDamageType + " Damage Multiplier";
                             }
                             break;
                         default:
                             if (node.GetLevel > 0)
-                                desc += "+ " + (node.GetValue * (float)Mathf.Clamp(node.GetLevel, 0, node.GetMaxLevel) * 100f) + "% " + (node as DamageNode).GetDamageType + " Damage";
+                                desc += "+ " + Mathf.Round(node.GetValue * Mathf.Clamp(node.GetLevel, 0, node.GetMaxLevel) * 100f, 2) + "% " + (node as DamageNode).GetDamageType + " Damage";
                             if (node.GetLevel < node.GetMaxLevel)
                             {
                                 desc += "\n Next Level :";
-                                desc += "\n+ " + (node.GetValue * (float)Mathf.Clamp(node.GetLevel + 1, 0, node.GetMaxLevel) * 100f) + "% " + (node as DamageNode).GetDamageType + " Damage";
+                                desc += "\n+ " + Mathf.Round(node.GetValue * Mathf.Clamp(node.GetLevel + 1, 0, node.GetMaxLevel) * 100f, 2) + "% " + (node as DamageNode).GetDamageType + " Damage";
                             }
                             break;
                     }
                     break;
                 case NodeType.Speed:
                     if (node.GetLevel > 0)
-                        desc += "+ " + (node.GetValue * (float)Mathf.Clamp(node.GetLevel, 0, node.GetMaxLevel) * 100f) + "% " + (node as SpeedNode).GetDamageType + " Speed";
+                        desc += "+ " + Mathf.Round(node.GetValue * Mathf.Clamp(node.GetLevel, 0, node.GetMaxLevel) * 100f, 2) + "% " + (node as SpeedNode).GetDamageType + " Speed";
                     if (node.GetLevel < node.GetMaxLevel)
                     {
                         desc += "\n Next Level :";
-                        desc += "\n+ " + (node.GetValue * (float)Mathf.Clamp(node.GetLevel + 1, 0, node.GetMaxLevel) * 100f) + "% " + (node as SpeedNode).GetDamageType + " Speed";
+                        desc += "\n+ " + Mathf.Round(node.GetValue * Mathf.Clamp(node.GetLevel + 1, 0, node.GetMaxLevel) * 100f, 2) + "% " + (node as SpeedNode).GetDamageType + " Speed";
                     }
                     break;
                 case NodeType.Stats:
                     if (node.GetLevel > 0)
-                        desc += "+ " + (node.GetValue * (float)Mathf.Clamp(node.GetLevel, 0, node.GetMaxLevel)) + " " + (node as StatNode).GetStatType + "";
+                        desc += "+ " + Mathf.Round(node.GetValue * Mathf.Clamp(node.GetLevel, 0, node.GetMaxLevel), 2) + " " + (node as StatNode).GetStatType + "";
                     if (node.GetLevel < node.GetMaxLevel)
                     {
                         desc += "\n Next Level :";
-                        desc += "\n+ " + (node.GetValue * (float)Mathf.Clamp(node.GetLevel + 1, 0, node.GetMaxLevel)) + " " + (node as StatNode).GetStatType + "";
+                        desc += "\n+ " + Mathf.Round(node.GetValue * Mathf.Clamp(node.GetLevel + 1, 0, node.GetMaxLevel), 2) + " " + (node as StatNode).GetStatType + "";
                     }
                     break;
                 case NodeType.Leech:
                     if (node.GetLevel > 0)
-                        desc += "+ " + (node.GetValue * (float)Mathf.Clamp(node.GetLevel, 0, node.GetMaxLevel) * 100f) + "% " + (node as LeechNode).GetLeechType + " Leech";
+                        desc += "+ " + Mathf.Round(node.GetValue * Mathf.Clamp(node.GetLevel, 0, node.GetMaxLevel) * 100f, 2) + "% " + (node as LeechNode).GetLeechType + " Leech";
                     if (node.GetLevel < node.GetMaxLevel)
                     {
                         desc += "\n Next Level :";
-                        desc += "\n+ " + (node.GetValue * (float)Mathf.Clamp(node.GetLevel + 1, 0, node.GetMaxLevel) * 100f) + "% " + (node as LeechNode).GetLeechType + " Leech";
+                        desc += "\n+ " + Mathf.Round(node.GetValue * Mathf.Clamp(node.GetLevel + 1, 0, node.GetMaxLevel) * 100f, 2) + "% " + (node as LeechNode).GetLeechType + " Leech";
                     }
                     break;
                 case NodeType.Perk:

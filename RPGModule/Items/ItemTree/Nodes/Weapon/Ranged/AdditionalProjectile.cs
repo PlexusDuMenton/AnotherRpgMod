@@ -44,20 +44,20 @@ namespace AnotherRpgMod.Items
         
         public int ProjectileAmmount;
 
-        public override void OnShoot(Item item, Player player, ref Vector2 position, ref float speedX, ref float speedY, ref int type, ref int damage, ref float knockBack)
+        public override void OnShoot(Terraria.DataStructures.IProjectileSource source,Item item, Player Player, ref Vector2 position, ref Vector2 Velocity, ref int type, ref int damage, ref float knockBack)
         {
             for (int i = 0; i < ProjectileAmmount* GetLevel; i++)
             {
                 float spread = 10 * 0.0174f; //20 degree cone
-                float baseSpeed = (float)Math.Sqrt(speedX * speedX + speedY * speedY) * (1 + 0.1f * Main.rand.NextFloat());
-                double baseAngle = Math.Atan2(speedX, speedY);
-                double randomAngle = baseAngle + (Main.rand.NextFloat() - 0.5f) * spread;
-                float spdX = baseSpeed * (float)Math.Sin(randomAngle);
-                float spdY = baseSpeed * (float)Math.Cos(randomAngle);
+                float baseSpeed = Velocity.Length() * (0.9f + 0.2f * Main.rand.NextFloat());
+                float baseAngle = MathF.Atan2(Velocity.X, Velocity.Y);
+                float randomAngle = baseAngle + (Main.rand.NextFloat() - 0.5f) * spread;
+                Vector2 newVelocity = baseSpeed * new Vector2(MathF.Sin(randomAngle), MathF.Cos(randomAngle));
 
-                int projnum = Projectile.NewProjectile(position.X, position.Y, spdX, spdY, type, damage, knockBack, player.whoAmI);
+                int projnum = Projectile.NewProjectile(source, position, newVelocity, type, damage, knockBack, Player.whoAmI);
                 Main.projectile[projnum].friendly = true;
                 Main.projectile[projnum].hostile = false;
+                Main.projectile[projnum].originalDamage = damage;
             }
         }
 

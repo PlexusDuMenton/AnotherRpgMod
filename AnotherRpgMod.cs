@@ -1,6 +1,7 @@
 using Terraria;
 using Terraria.ModLoader;
 using Terraria.ID;
+using Terraria.Graphics;
 using System;
 using System.IO;
 using Microsoft.Xna.Framework;
@@ -13,9 +14,11 @@ using Microsoft.Xna.Framework.Graphics;
 using ReLogic.Graphics;
 using Terraria.GameInput;
 using Terraria.Localization;
+using Terraria.Audio;
+
 
 using AnotherRpgMod.Items;
-using Terraria.Graphics;
+using Terraria.GameContent;
 
 namespace AnotherRpgMod
 {
@@ -35,6 +38,7 @@ namespace AnotherRpgMod
     public enum Message : byte {
         AddXP,
         SyncLevel,
+        SyncPlayerHealth,
         SyncNPCSpawn,
         SyncNPCUpdate,
         SyncWeapon,
@@ -77,9 +81,13 @@ namespace AnotherRpgMod
         public ReworkMouseOver NPCInfo;
         public NPCNameUI NPCName;
 
-        public static ModHotKey StatsHotKey;
-        public static ModHotKey SkillTreeHotKey;
-        public static ModHotKey ItemTreeHotKey;
+        public static ModKeybind StatsHotKey;
+        public static ModKeybind SkillTreeHotKey;
+        public static ModKeybind ItemTreeHotKey;
+
+        public static ModKeybind HelmetItemTreeHotKey;
+        public static ModKeybind ChestItemTreeHotKey;
+        public static ModKeybind LegsItemTreeHotKey;
 
 
         internal static GamePlayConfig gpConfig;
@@ -94,9 +102,8 @@ namespace AnotherRpgMod
 
         public static Vector2 zoomValue = new Vector2(1,1);
 
-        private float lastUpdateScreenScale = Main.screenHeight;
+        public float lastUpdateScreenScale = Main.screenHeight;
 
-        public static int PlayerLevel = 0;
         public static Dictionary<SupportedMod, bool> LoadedMods = new Dictionary<SupportedMod, bool>()
         {
             {SupportedMod.Thorium,false },
@@ -112,11 +119,7 @@ namespace AnotherRpgMod
 
             MPPacketHandler.HandlePacket(reader, whoAmI);
         }
-        public override void PreSaveAndQuit()
-        {
-            Stats.visible = false;
-            base.PreSaveAndQuit();
-        }
+        
 
 
         private void Player_Update(ILContext il)
@@ -138,11 +141,72 @@ namespace AnotherRpgMod
             {
                 Logger.Error("another mod is editiong TerrariaPlayer StatmanaMax 2, can't edit mana cap");
             }
-            
+        }
+
+
+        public override void Unload()
+        {
+            base.Unload();
+
+            IL.Terraria.Player.Update -= Player_Update;
+            JsonSkillTree.Unload();
+            JsonCharacterClass.Unload();
+
+            StatsHotKey = null;
+            SkillTreeHotKey = null;
+            ItemTreeHotKey = null;
+
+            HelmetItemTreeHotKey = null;
+            ChestItemTreeHotKey = null;
+            LegsItemTreeHotKey = null;
+            if (!Main.dedServ)
+            {
+                ItemTreeUi.Instance = null;
+                SkillTreeUi.Instance = null;
+                Stats.Instance = null;
+
+
+                visualConfig = null;
+                NPCConfig = null;
+                gpConfig = null;
+                LoadedMods.Clear();
+                LoadedMods = null;
+                NPCNameUI.Instance = null;
+                ReworkMouseOver.Instance = null;
+
+                source = null;
+                Transfer = null;
+
+
+
+                customNPCInfo = null;
+                NPCInfo = null;
+                customNPCName = null;
+                NPCName = null;
+                customResources = null;
+                healthBar = null;
+                customstats = null;
+                statMenu = null;
+                customOpenstats = null;
+                openStatMenu = null;
+                customOpenST = null;
+                OpenST = null;
+                customSkillTree = null;
+                skillTreeUI = null;
+                customItemTree = null;
+                ItemTreeUI = null;
+
+                
+            }
+
+
+            Instance.Logger.Info("Another Rpg Mod " + Version + " Correctly Unloaded");
+
+            Instance = null;
+
 
             
         }
-
         public override void Load()
         {
             IL.Terraria.Player.Update += Player_Update;
@@ -151,13 +215,16 @@ namespace AnotherRpgMod
             Instance.Logger.Info("Another Rpg Mod " + Version + " Correctly loaded");
             JsonSkillTree.Init();
             JsonCharacterClass.Init();
-            LoadedMods[SupportedMod.Thorium] = ModLoader.GetMod("ThoriumMod") != null;
-            LoadedMods[SupportedMod.Calamity] = ModLoader.GetMod("CalamityMod") != null;
-            LoadedMods[SupportedMod.DBZMOD] = ModLoader.GetMod("DBZMOD") != null;
+            //LoadedMods[SupportedMod.Thorium] = ModLoader.GetMod("ThoriumMod") != null;
+            //LoadedMods[SupportedMod.Calamity] = ModLoader.GetMod("CalamityMod") != null;
+            //LoadedMods[SupportedMod.DBZMOD] = ModLoader.GetMod("DBZMOD") != null;
             
-            StatsHotKey = RegisterHotKey("Open Stats Menu", "C");
-            SkillTreeHotKey = RegisterHotKey("Open SkillTree", "X");
-            ItemTreeHotKey = RegisterHotKey("Open Item Tree", "V");
+            StatsHotKey = KeybindLoader.RegisterKeybind(this,"Open Stats Menu", "C");
+            SkillTreeHotKey = KeybindLoader.RegisterKeybind(this, "Open SkillTree", "X");
+            ItemTreeHotKey = KeybindLoader.RegisterKeybind(this, "Open Item Tree", "V");
+            HelmetItemTreeHotKey = KeybindLoader.RegisterKeybind(this, "Open Helmet Item Tree", "NumPad1");
+            ChestItemTreeHotKey = KeybindLoader.RegisterKeybind(this, "Open Chest Item Tree", "NumPad2");
+            LegsItemTreeHotKey = KeybindLoader.RegisterKeybind(this, "Open Legs Item Tree", "NumPad3");
             if (!Main.dedServ)
             {
                 
@@ -211,179 +278,10 @@ namespace AnotherRpgMod
             
         }
 
-        public AnotherRpgMod()
-		{
-			Properties = new ModProperties()
-			{
-				Autoload = true,
-				AutoloadGores = true,
-				AutoloadSounds = true
-			};
-		}
+        
+        
 
-        public override void PostUpdateEverything()
-        {
-            //Update UI when screen Size Change
-            if (Main.netMode != NetmodeID.Server) { 
-                if (lastUpdateScreenScale != Main.screenHeight)
-                {
-                    AnotherRpgMod.Instance.healthBar.Reset();
-                    AnotherRpgMod.Instance.OpenST.Reset();
-                    AnotherRpgMod.Instance.openStatMenu.Reset();
-                }
-                lastUpdateScreenScale = Main.screenHeight;
-            }
-            base.PostUpdateEverything();
-        }
-
-        public override void UpdateUI(GameTime gameTime)
-        {
-            if (customstats != null)
-                customstats.Update(gameTime);
-        }
-
-
-
-        public override void ModifyTransformMatrix(ref SpriteViewMatrix Transform)
-        {
-            zoomValue = Transform.Zoom;
-            base.ModifyTransformMatrix(ref Transform);
-        }
-
-        public override void ModifyInterfaceLayers(List<GameInterfaceLayer> layers)
-        {
-            if (Main.netMode == NetmodeID.Server)
-                return;
-
-
-            if (HealthBar.visible && Config.gpConfig.RPGPlayer && Config.vConfig.HideVanillaHB)
-            {
-                int ressourceid = layers.FindIndex(layer => layer.Name.Equals("Vanilla: Resource Bars"));
-                layers.RemoveAt(ressourceid);
-            }
-
-            //Vanilla: MouseOver
-            int mouseid = layers.FindIndex(layer => layer.Name.Equals("Vanilla: Mouse Over"));
-            if (mouseid != -1)
-            {
-                layers.Insert(mouseid, new LegacyGameInterfaceLayer(
-                    "AnotherRpgMod: NPC Mouse Info",
-                    delegate
-                    {
-                        customNPCInfo.Update(Main._drawInterfaceGameTime);
-                        NPCInfo.Draw(Main.spriteBatch);
-                        return true;
-                    },
-                    InterfaceScaleType.UI)
-                );
-
-                layers.Insert(mouseid, new LegacyGameInterfaceLayer(
-                    "AnotherRpgMod: NPC Name Info",
-                    delegate
-                    {
-                        customNPCName.Update(Main._drawInterfaceGameTime);
-                        NPCName.Draw(Main.spriteBatch);
-                        return true;
-                    },
-                    InterfaceScaleType.Game)
-                );
-            }
-
-
-            int skilltreeid = layers.FindIndex(layer => layer.Name.Equals("Vanilla: Interface Logic 2"));
-            if (skilltreeid != -1)
-            {
-                //layers.RemoveAt(id);
-
-                //Add you own layer
-                layers.Insert(skilltreeid, new LegacyGameInterfaceLayer(
-                    "AnotherRpgMod: StatWindows",
-                    delegate
-                    {
-                        if (Stats.visible)
-                        {
-
-                            statMenu.Draw(Main.spriteBatch);
-
-                        }
-                        if (OpenStatsButton.visible)
-                        {
-                            customOpenstats.Update(Main._drawInterfaceGameTime);
-                            openStatMenu.Draw(Main.spriteBatch);
-                        }
-
-                        return true;
-                    },
-                    InterfaceScaleType.UI)
-                );
-
-                layers.Insert(skilltreeid, new LegacyGameInterfaceLayer(
-                    "AnotherRpgMod: Skill Tree",
-                    delegate
-                    {
-                        if (OpenSTButton.visible)
-                        {
-                            customOpenST.Update(Main._drawInterfaceGameTime);
-                            OpenST.Draw(Main.spriteBatch);
-                        }
-                        return true;
-                    }, InterfaceScaleType.None)
-                );
-
-                layers.Insert(skilltreeid, new LegacyGameInterfaceLayer(
-                    "AnotherRpgMod: Skill Tree",
-                    delegate
-                    {
-                        if (ItemTreeUi.visible)
-                        {
-                            //Update Item Tree
-                            customItemTree.Update(Main._drawInterfaceGameTime);
-                            ItemTreeUI.Draw(Main.spriteBatch);
-
-                        }
-                        return true;
-                    }, InterfaceScaleType.None)
-                );
-
-                layers.Insert(skilltreeid, new LegacyGameInterfaceLayer(
-                    "AnotherRpgMod: Skill Tree",
-                    delegate
-                    {
-                        if (SkillTreeUi.visible)
-                        {
-                            //Update Skill Tree
-                            customSkillTree.Update(Main._drawInterfaceGameTime);
-                            skillTreeUI.Draw(Main.spriteBatch);
-
-                        }
-                        return true;
-                    }, InterfaceScaleType.None)
-                );
-            }
-            
-
-
-            int id = layers.FindIndex(layer => layer.Name.Equals("Vanilla: Inventory"));
-            if (id != -1)
-            {
-                    layers.Insert(id, new LegacyGameInterfaceLayer(
-                        "AnotherRpgMod: Custom Health Bar",
-                        delegate
-                        {
-                            if (HealthBar.visible)
-                            {
-                                //Update CustomBars
-                                customOpenST.Update(Main._drawInterfaceGameTime);
-                                customOpenstats.Update(Main._drawInterfaceGameTime);
-                                customResources.Update(Main._drawInterfaceGameTime);
-                                healthBar.Draw(Main.spriteBatch);
-                            }
-                            return true;
-                        }, InterfaceScaleType.None)
-                    );
-            }
-
-        }
+        
 
 
         private void DrawInterface_Resources_ClearBuffs()
@@ -395,81 +293,88 @@ namespace AnotherRpgMod
                 Main.recStart = 0;
             }
         }
-
-        private void DrawInterface_Resources_Buffs()
+        
+        
+        public void DrawInterface_Resources_Buffs()
         {
+            Main.recBigList = false;
             int BuffID = -1;
-            int num2 = 11;
-            for (int i = 0; i < 22; i++)
+            int num1 = 11;
+            for (int buffSlot = 0; buffSlot < Player.MaxBuffs; buffSlot++)
             {
-                if (Main.player[Main.myPlayer].buffType[i] > 0)
+                if (Main.player[Main.myPlayer].buffType[buffSlot] <= 0)
                 {
-                    int b = Main.player[Main.myPlayer].buffType[i];
-                    int x = 32 + i * 38;
-                    int num3 = 76;
-                    if (i >= num2)
-                    {
-                        x = 32 + (i - num2) * 38;
-                        num3 += 50;
-                    }
-                    BuffID = DrawBuffIcon(BuffID, i, b, x, num3);
+                    Main.buffAlpha[buffSlot] = 0.4f;
                 }
                 else
                 {
-                    Main.buffAlpha[i] = 0.4f;
+                    int num2 = Main.player[Main.myPlayer].buffType[buffSlot];
+                    int x = 32 + buffSlot * 38;
+                    int y = 76;
+                    if (buffSlot >= num1)
+                    {
+                        x = 32 + Math.Abs(buffSlot % 11) * 38;
+                        y = y + 50 * (buffSlot / 11);
+                    }
+                    BuffID = Main.DrawBuffIcon(BuffID, buffSlot, x, y);
                 }
             }
             if (BuffID >= 0)
             {
-                int num4 = Main.player[Main.myPlayer].buffType[BuffID];
-                if (num4 > 0)
+                int num5 = Main.player[Main.myPlayer].buffType[BuffID];
+                if (num5 > 0)
                 {
-                    Main.buffString = Lang.GetBuffDescription(num4);
-                    int itemRarity = 0;
-                    if (num4 == 26 && Main.expertMode)
-                    {
-                        Main.buffString = Language.GetTextValue("BuffDescription.WellFed_Expert");
-                    }
-                    if (num4 == 147)
+                    string buffName = Lang.GetBuffName(num5);
+                    string buffTooltip = Main.GetBuffTooltip(Main.player[Main.myPlayer], num5);
+                    if (num5 == 147)
                     {
                         Main.bannerMouseOver = true;
                     }
-                    if (num4 == 94)
+                    int rarity = 0;
+                    if (Main.meleeBuff[num5])
                     {
-                        int num5 = (int)(Main.player[Main.myPlayer].manaSickReduction * 100f) + 1;
-                        Main.buffString = Main.buffString + num5 + "%";
+                        rarity = -10;
                     }
-                    if (Main.meleeBuff[num4])
-                    {
-                        itemRarity = -10;
-                    }
-                    BuffLoader.ModifyBuffTip(num4, ref Main.buffString, ref itemRarity);
+                    Main.instance.MouseText(buffName, buffTooltip, rarity,0);
                 }
             }
-
-
-
-
-            int DrawBuffIcon(int drawBuffText, int i, int b, int x, int y)
+        }
+        public static int DrawBuffIcon(int drawBuffText, int buffSlotOnPlayer, int x, int y)
+        {
+            int num1;
+            int buffId = Main.player[Main.myPlayer].buffType[buffSlotOnPlayer];
+            if (buffId != 0)
             {
-                //IL_011b: Unknown result type (might be due to invalid IL or missing references)
-                if (b == 0)
+                Color color = new Color(Main.buffAlpha[buffSlotOnPlayer], Main.buffAlpha[buffSlotOnPlayer], Main.buffAlpha[buffSlotOnPlayer], Main.buffAlpha[buffSlotOnPlayer]);
+                SpriteBatch spriteBatch = Main.spriteBatch;
+                Texture2D value = TextureAssets.Buff[buffId].Value;
+                Vector2 position = new Vector2((float)x, (float)y);
+                Rectangle? nullable = new Rectangle?(new Rectangle(0, 0, TextureAssets.Buff[buffId].Width(), TextureAssets.Buff[buffId].Height()));
+                Vector2 origin = new Vector2();
+                spriteBatch.Draw(value, position, nullable, color, 0f, origin, 1f, 0, 0f);
+                if (Main.TryGetBuffTime(buffSlotOnPlayer, out var buffTimeValue) && buffTimeValue > 2)
                 {
-                    return drawBuffText;
+                    string str = Lang.LocalizedDuration(new TimeSpan(0, 0, buffTimeValue / 60), true, false);
+                    SpriteBatch buffTimerBatch = Main.spriteBatch;
+                    DynamicSpriteFont dynamicSpriteFont = FontAssets.ItemStack.Value;
+                    Vector2 timerPosition = new Vector2((float)x, (float)(y + TextureAssets.Buff[buffId].Height()));
+                    origin = new Vector2();
+                    DynamicSpriteFontExtensionMethods.DrawString(buffTimerBatch, dynamicSpriteFont, str, timerPosition, color, 0f, origin, 0.8f, 0, 0f);
                 }
-                Microsoft.Xna.Framework.Color color = new Microsoft.Xna.Framework.Color(Main.buffAlpha[i], Main.buffAlpha[i], Main.buffAlpha[i], Main.buffAlpha[i]);
-                Main.spriteBatch.Draw(Main.buffTexture[b], new Vector2((float)x, (float)y), new Microsoft.Xna.Framework.Rectangle(0, 0, Main.buffTexture[b].Width, Main.buffTexture[b].Height), color, 0f, default(Vector2), 1f, SpriteEffects.None, 0f);
-                if (!Main.vanityPet[b] && !Main.lightPet[b] && !Main.buffNoTimeDisplay[b] && (!Main.player[Main.myPlayer].honeyWet || b != 48) && (!Main.player[Main.myPlayer].wet || !Main.expertMode || b != 46) && Main.player[Main.myPlayer].buffTime[i] > 2)
+                if ((Main.mouseX >= x + TextureAssets.Buff[buffId].Width() || Main.mouseY >= y + TextureAssets.Buff[buffId].Height() || Main.mouseX <= x || Main.mouseY <= y))
                 {
-                    string text = Lang.LocalizedDuration(new TimeSpan(0, 0, Main.player[Main.myPlayer].buffTime[i] / 60), true, false);
-                    DynamicSpriteFontExtensionMethods.DrawString(Main.spriteBatch, Main.fontItemStack, text, new Vector2((float)x, (float)(y + Main.buffTexture[b].Height)), color, 0f, default(Vector2), 0.8f, SpriteEffects.None, 0f);
+                    Main.buffAlpha[buffSlotOnPlayer] -= 0.05f;
                 }
-                if (Main.mouseX < x + Main.buffTexture[b].Width && Main.mouseY < y + Main.buffTexture[b].Height && Main.mouseX > x && Main.mouseY > y)
+                else
                 {
-                    drawBuffText = i;
-                    Main.buffAlpha[i] += 0.1f;
-                    bool flag = Main.mouseRight && Main.mouseRightRelease;
-                    if (PlayerInput.UsingGamepad)
+                    drawBuffText = buffSlotOnPlayer;
+                    Main.buffAlpha[buffSlotOnPlayer] += 0.1f;
+                    bool flag = (Main.mouseRight && Main.mouseRightRelease);
+                    if (!PlayerInput.UsingGamepad)
+                    {
+                        Main.player[Main.myPlayer].mouseInterface = true;
+                    }
+                    else
                     {
                         flag = (Main.mouseLeft && Main.mouseLeftRelease && Main.playerInventory);
                         if (Main.playerInventory)
@@ -477,68 +382,30 @@ namespace AnotherRpgMod
                             Main.player[Main.myPlayer].mouseInterface = true;
                         }
                     }
-                    else
-                    {
-                        Main.player[Main.myPlayer].mouseInterface = true;
-                    }
                     if (flag)
                     {
-                        TryRemovingBuff(i, b);
+                        Main.TryRemovingBuff(buffSlotOnPlayer, buffId);
                     }
                 }
-                else
+                if (Main.buffAlpha[buffSlotOnPlayer] > 1f)
                 {
-                    Main.buffAlpha[i] -= 0.05f;
+                    Main.buffAlpha[buffSlotOnPlayer] = 1f;
                 }
-                if (Main.buffAlpha[i] > 1f)
+                else if ((double)Main.buffAlpha[buffSlotOnPlayer] < 0.4)
                 {
-                    Main.buffAlpha[i] = 1f;
+                    Main.buffAlpha[buffSlotOnPlayer] = 0.4f;
                 }
-                else if ((double)Main.buffAlpha[i] < 0.4)
-                {
-                    Main.buffAlpha[i] = 0.4f;
-                }
-                if (PlayerInput.UsingGamepad && !Main.playerInventory)
+                if ((PlayerInput.UsingGamepad && !Main.playerInventory))
                 {
                     drawBuffText = -1;
                 }
-                return drawBuffText;
+                num1 = drawBuffText;
             }
-
-            void TryRemovingBuff(int i, int b)
+            else
             {
-                bool flag = false;
-                if (!Main.debuff[b] && b != 60 && b != 151)
-                {
-                    if (Main.player[Main.myPlayer].mount.Active && Main.player[Main.myPlayer].mount.CheckBuff(b))
-                    {
-                        Main.player[Main.myPlayer].mount.Dismount(Main.player[Main.myPlayer]);
-                        flag = true;
-                    }
-                    if (Main.player[Main.myPlayer].miscEquips[0].buffType == b && !Main.player[Main.myPlayer].hideMisc[0])
-                    {
-                        Main.player[Main.myPlayer].hideMisc[0] = true;
-                    }
-                    if (Main.player[Main.myPlayer].miscEquips[1].buffType == b && !Main.player[Main.myPlayer].hideMisc[1])
-                    {
-                        Main.player[Main.myPlayer].hideMisc[1] = true;
-                    }
-                    Main.PlaySound(SoundID.MenuTick, -1, -1, 1, 1f, 0f);
-                    if (!flag)
-                    {
-                        Main.player[Main.myPlayer].DelBuff(i);
-                    }
-                }
+                num1 = drawBuffText;
             }
+            return num1;
         }
-
     }
-
-
-
-
-    
-
-    
-
 }

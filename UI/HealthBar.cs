@@ -12,6 +12,9 @@ using AnotherRpgMod.RPGModule.Entities;
 using System.Reflection;
 using Terraria.GameInput;
 using Terraria.Localization;
+using Terraria.Audio;
+using Terraria.GameContent;
+using ReLogic.Content;
 
 namespace AnotherRpgMod.UI
 {
@@ -66,7 +69,6 @@ namespace AnotherRpgMod.UI
         public Vector2 position;
         private Vector2 baseSize;
         public Vector2 size;
-        public Color color;
 
         public RessourceInfo(Texture2D _texture, Vector2 _position,float scale = 1f)
         {
@@ -108,7 +110,6 @@ namespace AnotherRpgMod.UI
 
         public UIElement buffPanel;
         public UIElement buffTTPanel;
-        public List<BuffIcon> BuffList;
 
         private UIText health;
         private UIText manatext;
@@ -162,7 +163,7 @@ namespace AnotherRpgMod.UI
             buffPanel.RemoveAllChildren();
             buffTTPanel.RemoveAllChildren();
             int rowLimit = 11;
-            for (int i = 0; i < Main.player[Main.myPlayer].buffType.Length; i++)
+            for (int i = 0; i < Player.MaxBuffs; i++)
             {
 
                 if (Main.player[Main.myPlayer].buffType[i] > 0)
@@ -183,7 +184,9 @@ namespace AnotherRpgMod.UI
 
         private void DrawBuff(int type,int i,int x,int y)
         {
-            BuffIcon buffIcon = new BuffIcon(Main.buffTexture[type]);
+
+            Texture2D buffTexture = TextureAssets.Buff[type].Value;
+            BuffIcon buffIcon = new BuffIcon(buffTexture);
             buffIcon.color = new Color(0.4f, 0.4f, 0.4f, 0.4f);
             
             buffIcon.Left.Set(x, 0f);
@@ -197,13 +200,13 @@ namespace AnotherRpgMod.UI
             {
                 string text = Lang.LocalizedDuration(new TimeSpan(0, 0, Main.player[Main.myPlayer].buffTime[i] / 60), true, false);
                 UIText uIText = new UIText(text, scale);
-                uIText.Top.Set(Main.buffTexture[type].Height,0);
+                uIText.Top.Set(buffTexture.Height,0);
                 buffIcon.Append(uIText);
                 
                 //buffIcon.MouseOver() += draw
             }
             
-            if (Main.mouseX-buffPanel.Left.Pixels < x + Main.buffTexture[type].Width && Main.mouseY -buffPanel.Top.Pixels < y + Main.buffTexture[type].Height && Main.mouseX- buffPanel.Left.Pixels > x && Main.mouseY- buffPanel.Top.Pixels > y)
+            if (Main.mouseX-buffPanel.Left.Pixels < x + buffTexture.Width && Main.mouseY -buffPanel.Top.Pixels < y + buffTexture.Height && Main.mouseX- buffPanel.Left.Pixels > x && Main.mouseY- buffPanel.Top.Pixels > y)
             {
                 DrawBuffToolTip(type, buffIcon);
                 if (Main.mouseRight && Main.mouseRightRelease)
@@ -215,7 +218,7 @@ namespace AnotherRpgMod.UI
         }
         private void RemoveBuff(int id, int type)
         {
-            AnotherRpgMod.Instance.Logger.Info("Remove buff");
+            //AnotherRpgMod.Instance.Logger.Info("Remove buff");
             bool flag = false;
             if (!Main.debuff[type] && type != 60 && type != 151)
             {
@@ -232,7 +235,7 @@ namespace AnotherRpgMod.UI
                 {
                     Main.player[Main.myPlayer].hideMisc[1] = true;
                 }
-                Main.PlaySound(SoundID.MenuTick, -1, -1, 1, 1f, 0f);
+                SoundEngine.PlaySound(SoundID.MenuTick, -1, -1, 1, 1f, 0f);
                 if (!flag)
                 {
                     Main.player[Main.myPlayer].DelBuff(id);
@@ -272,7 +275,8 @@ namespace AnotherRpgMod.UI
                 string bannerTT = "";
                 for (int l = 0; l < NPCLoader.NPCCount; l++)
                 {
-                    if (Item.BannerToNPC(l) != 0 && Main.player[Main.myPlayer].NPCBannerBuff[l])
+                    
+                    if (Item.BannerToNPC(l) != 0 && Main.SceneMetrics.NPCBannerBuff[l])
                     {
                         bannerTT += "\n" + Lang.GetNPCNameValue(Item.BannerToNPC(l));
                     }
@@ -315,16 +319,16 @@ namespace AnotherRpgMod.UI
 
             RessourceTexture = new Dictionary<Mode, RessourceInfo>()
             {
-                { Mode.Leech, new RessourceInfo(ModContent.GetTexture("AnotherRpgMod/Textures/UI/LeechBar"),new Vector2(14*scale,Main.screenHeight + YDefaultOffSet - baseUiOffset[0]),scale)},
-                { Mode.HP, new RessourceInfo(ModContent.GetTexture("AnotherRpgMod/Textures/UI/HealthBar"),new Vector2(14*scale,Main.screenHeight + YDefaultOffSet - baseUiOffset[0]),scale)},
-                { Mode.MANA, new RessourceInfo(ModContent.GetTexture("AnotherRpgMod/Textures/UI/ManaBar"),new Vector2(31*scale,Main.screenHeight  + YDefaultOffSet - baseUiOffset[1]),scale)},
-                { Mode.XP, new RessourceInfo(ModContent.GetTexture("AnotherRpgMod/Textures/UI/XPBar"),new Vector2(44*scale,Main.screenHeight + YDefaultOffSet -baseUiOffset[2]),scale)},
-                { Mode.Weapon, new RessourceInfo(ModContent.GetTexture("AnotherRpgMod/Textures/UI/WeaponBar"),new Vector2(50*scale,Main.screenHeight + YDefaultOffSet - baseUiOffset[3]),scale)},
-                { Mode.Breath, new RessourceInfo(ModContent.GetTexture("AnotherRpgMod/Textures/UI/BreathBar"),new Vector2(5*scale,Main.screenHeight + YDefaultOffSet - baseUiOffset[4]),scale)}
+                { Mode.Leech, new RessourceInfo(ModContent.Request<Texture2D>("AnotherRpgMod/Textures/UI/LeechBar",AssetRequestMode.ImmediateLoad).Value,new Vector2(14*scale,Main.screenHeight + YDefaultOffSet - baseUiOffset[0]),scale)},
+                { Mode.HP, new RessourceInfo(ModContent.Request<Texture2D>("AnotherRpgMod/Textures/UI/HealthBar",AssetRequestMode.ImmediateLoad).Value,new Vector2(14*scale,Main.screenHeight + YDefaultOffSet - baseUiOffset[0]),scale)},
+                { Mode.MANA, new RessourceInfo(ModContent.Request<Texture2D>("AnotherRpgMod/Textures/UI/ManaBar",AssetRequestMode.ImmediateLoad).Value,new Vector2(31*scale,Main.screenHeight  + YDefaultOffSet - baseUiOffset[1]),scale)},
+                { Mode.XP, new RessourceInfo(ModContent.Request<Texture2D>("AnotherRpgMod/Textures/UI/XPBar",AssetRequestMode.ImmediateLoad).Value,new Vector2(44*scale,Main.screenHeight + YDefaultOffSet -baseUiOffset[2]),scale)},
+                { Mode.Weapon, new RessourceInfo(ModContent.Request<Texture2D>("AnotherRpgMod/Textures/UI/WeaponBar",AssetRequestMode.ImmediateLoad).Value,new Vector2(50*scale,Main.screenHeight + YDefaultOffSet - baseUiOffset[3]),scale)},
+                { Mode.Breath, new RessourceInfo(ModContent.Request<Texture2D>("AnotherRpgMod/Textures/UI/BreathBar",AssetRequestMode.ImmediateLoad).Value,new Vector2(5*scale,Main.screenHeight + YDefaultOffSet - baseUiOffset[4]),scale)}
 
             };
 
-            Overlay = new UIOverlay(ModContent.GetTexture("AnotherRpgMod/Textures/UI/OverlayHealthBar"));
+            Overlay = new UIOverlay(ModContent.Request<Texture2D>("AnotherRpgMod/Textures/UI/OverlayHealthBar", AssetRequestMode.ImmediateLoad).Value);
         }
 
         public void Reset()
@@ -456,7 +460,7 @@ namespace AnotherRpgMod.UI
             MainPanel[0].Append(Level);
 
             Recalculate();
-            //Texture2D OverlayTexture = ModLoader.GetTexture("AnotherRpgMod/Assets/UI/OverlayHealthBar");
+            //Texture2D OverlayTexture = ModLoader.Request<Texture2D>("AnotherRpgMod/Assets/UI/OverlayHealthBar").Value;
 
         }
     }

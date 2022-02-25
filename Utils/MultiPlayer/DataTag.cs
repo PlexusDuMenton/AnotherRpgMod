@@ -12,8 +12,8 @@ namespace AnotherRpgMod.Utils
         public static DataTag amount = new DataTag(reader => reader.ReadInt32());
 
         public static DataTag amount_single = new DataTag(reader => reader.ReadSingle());
-        public static DataTag playerId = new DataTag(reader => reader.ReadInt32());
-        public static DataTag npcId = new DataTag(reader => reader.ReadInt32());
+        public static DataTag PlayerId = new DataTag(reader => reader.ReadByte());
+        public static DataTag npcId = new DataTag(reader => reader.ReadByte());
         public static DataTag itemId = new DataTag(reader => reader.ReadInt32());
 
 

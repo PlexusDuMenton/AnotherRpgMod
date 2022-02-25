@@ -43,6 +43,8 @@ namespace AnotherRpgMod.Command
             level = Mathf.Clamp(level, 0, 9999);
 
             character.ResetLevel();
+            WorldManager.PlayerLevel = level;
+
 
             for (int i = 0; i < level; i++)
             {
@@ -141,16 +143,16 @@ namespace AnotherRpgMod.Command
 
         public override void Action(CommandCaller caller, string input, string[] args)
         {
-            Player player = caller.Player;
-            RPGPlayer character = player.GetModPlayer<RPGPlayer>();
+            Player Player = caller.Player;
+            RPGPlayer character = Player.GetModPlayer<RPGPlayer>();
             
-            ItemUpdate item = player.HeldItem.GetGlobalItem<ItemUpdate>();
-            float itemvalue = player.HeldItem.value;
+            ItemUpdate item = Player.HeldItem.GetGlobalItem<ItemUpdate>();
+            float itemvalue = Player.HeldItem.value;
             int cost = Mathf.RoundInt((itemvalue * 0.33333f));
 
-            if (player.CanBuyItem(cost))
+            if (Player.CanBuyItem(cost))
             {
-                player.BuyItem(cost);
+                Player.BuyItem(cost);
                 int plat = 0;
                 int gold = 0; 
                 int silv = 0; 
@@ -278,14 +280,14 @@ namespace AnotherRpgMod.Command
 
         public override void Action(CommandCaller caller, string input, string[] args)
         {
-            Player player = caller.Player;
-            RPGPlayer character = player.GetModPlayer<RPGPlayer>();
+            Player Player = caller.Player;
+            RPGPlayer character = Player.GetModPlayer<RPGPlayer>();
 
-            ItemUpdate item = player.HeldItem.GetGlobalItem<ItemUpdate>();
-            int cost = player.HeldItem.value;
-            if (player.CanBuyItem(cost))
+            ItemUpdate item = Player.HeldItem.GetGlobalItem<ItemUpdate>();
+            int cost = Player.HeldItem.value;
+            if (Player.CanBuyItem(cost))
             {
-                player.BuyItem(cost);
+                Player.BuyItem(cost);
 
                 int plat = 0;
                 int gold = 0;
@@ -417,8 +419,8 @@ namespace AnotherRpgMod.Command
 
         public override void Action(CommandCaller caller, string input, string[] args)
         {
-            Player player = caller.Player;
-            RPGPlayer character = player.GetModPlayer<RPGPlayer>();
+            Player Player = caller.Player;
+            RPGPlayer character = Player.GetModPlayer<RPGPlayer>();
             if (args.Length == 0)
             {
                 Main.NewText(Description);
@@ -429,9 +431,9 @@ namespace AnotherRpgMod.Command
                 Main.NewText("Slot Number invalid");
                 return;
             }
-            ItemUpdate item = player.HeldItem.GetGlobalItem<ItemUpdate>();
-            ItemUpdate Source = player.inventory[slot].GetGlobalItem<ItemUpdate>();
-            Main.NewText(player.inventory[slot].Name);
+            ItemUpdate item = Player.HeldItem.GetGlobalItem<ItemUpdate>();
+            ItemUpdate Source = Player.inventory[slot].GetGlobalItem<ItemUpdate>();
+            Main.NewText(Player.inventory[slot].Name);
 
 
         }
@@ -461,8 +463,8 @@ namespace AnotherRpgMod.Command
 
         public override void Action(CommandCaller caller, string input, string[] args)
         {
-            Player player = caller.Player;
-            RPGPlayer character = player.GetModPlayer<RPGPlayer>();
+            Player Player = caller.Player;
+            RPGPlayer character = Player.GetModPlayer<RPGPlayer>();
             if (args.Length == 0)
             {
                 Main.NewText(Description);
@@ -472,8 +474,8 @@ namespace AnotherRpgMod.Command
                 Main.NewText("Slot Number invalid");
                 return;
             }
-            ItemUpdate item = player.HeldItem.GetGlobalItem<ItemUpdate>();
-            ItemUpdate Source = player.inventory[slot].GetGlobalItem<ItemUpdate>();
+            ItemUpdate item = Player.HeldItem.GetGlobalItem<ItemUpdate>();
+            ItemUpdate Source = Player.inventory[slot].GetGlobalItem<ItemUpdate>();
 
             if (item == Source)
             {
@@ -489,10 +491,10 @@ namespace AnotherRpgMod.Command
 
             float xp = ItemExtraction.GetExtractedXp(false, Source);
 
-            Main.NewText("Transfering "+ xp + " exp from " + player.inventory[slot].Name + " to " + player.HeldItem.Name);
+            Main.NewText("Transfering "+ xp + " exp from " + Player.inventory[slot].Name + " to " + Player.HeldItem.Name);
 
             Source.ResetLevelXp();
-            item.xPTransfer(xp,player,player.HeldItem);
+            item.xPTransfer(xp,Player,Player.HeldItem);
 
         }
     }
@@ -521,8 +523,8 @@ namespace AnotherRpgMod.Command
 
         public override void Action(CommandCaller caller, string input, string[] args)
         {
-            Player player = caller.Player;
-            RPGPlayer character = player.GetModPlayer<RPGPlayer>();
+            Player Player = caller.Player;
+            RPGPlayer character = Player.GetModPlayer<RPGPlayer>();
             if (AnotherRpgMod.source == null)
                 return;
             if (AnotherRpgMod.Transfer == null)
@@ -538,6 +540,74 @@ namespace AnotherRpgMod.Command
             AnotherRpgMod.XPTvalueA = 0;
             AnotherRpgMod.XPTvalueB = 0;
 
+
+        }
+    }
+
+
+    public class WorldLevel : ModCommand
+    {
+        public override CommandType Type
+        {
+            get { return CommandType.Chat; }
+        }
+
+        public override string Command
+        {
+            get { return "WorldRPGInfo"; }
+        }
+
+        public override string Usage
+        {
+            get { return "/WorldRPGInfo"; }
+        }
+
+        public override string Description
+        {
+            get { return "Debug print the world info"; }
+        }
+
+        public override void Action(CommandCaller caller, string input, string[] args)
+        {
+            Main.NewText("is world ascended : " + WorldManager.ascended);
+            if (WorldManager.ascended)
+                Main.NewText("world ascend level : " + WorldManager.ascendedLevelBonus);
+
+            Main.NewText("Number of boss defeated : " + WorldManager.BossDefeated);
+            Main.NewText("Is hardmode ? : " + Main.hardMode);
+            Main.NewText("Day : " + WorldManager.Day);
+            Main.NewText("Player Level : " + WorldManager.PlayerLevel);
+        }
+    }
+
+    public class AscentWorld : ModCommand
+    {
+        public override CommandType Type
+        {
+            get { return CommandType.Chat; }
+        }
+
+        public override string Command
+        {
+            get { return "Ascend"; }
+        }
+
+        public override string Usage
+        {
+            get { return "/Ascend <level>"; }
+        }
+
+        public override string Description
+        {
+            get { return "Ascend world, and add X level to the world"; }
+        }
+
+        public override void Action(CommandCaller caller, string input, string[] args)
+        {
+            WorldManager.ascended = true;
+            int level = Int32.Parse(args[0]);
+            if (level < 250) level = 250;
+            WorldManager.ascendedLevelBonus = level;
 
         }
     }

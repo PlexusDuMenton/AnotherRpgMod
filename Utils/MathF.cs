@@ -13,7 +13,7 @@ namespace AnotherRpgMod.Utils
 
         public static int HugeCalc(int val,int original)
         {
-            if (val < original)
+            if (val == int.MinValue)
                 return int.MaxValue;
             return val;
         }
