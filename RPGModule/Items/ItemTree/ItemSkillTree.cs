@@ -234,6 +234,11 @@ namespace AnotherRpgMod.Items
             string[] a;
             ItemNode bufferNode;
 
+            tree.MaxEvolutionPoints = evoPoint;
+            tree.MaxAscendPoints = AscPoint;
+            tree.EvolutionPoints = tree.MaxEvolutionPoints;
+            tree.AscendPoints = tree.MaxAscendPoints;
+
             foreach (string nodeSave in nodeListSave)
             {
                 bufferNode = null;
@@ -277,16 +282,19 @@ namespace AnotherRpgMod.Items
                 if (nodeDetails[7] != "")
                     bufferNode.LoadValue(nodeDetails[7]);
                 tree.AddNode(bufferNode);
-            }
 
+                if (bufferNode.IsAscend)
+                    tree.AscendPoints -= bufferNode.GetLevel * bufferNode.GetRequiredPoints;
+                else
+                    tree.EvolutionPoints -= bufferNode.GetLevel * bufferNode.GetRequiredPoints;
+            }
+            
             return tree;
         }
 
         protected List<ItemNode> m_nodeList;
         protected ItemUpdate m_ItemSource;
 
-
-        private int m_ActualPossibleBranch;
 
         private const int MAXBRANCH = 7;
         private const int MINBRANCH = 3;
@@ -348,20 +356,20 @@ namespace AnotherRpgMod.Items
 
         }
 
-        public void ApplyPlayerPassive(Item item, Player player)
+        public void ApplyPlayerPassive(Item item, Player Player)
         {
             foreach (ItemNode n in m_nodeList)
             {
-                n.PlayerPassive(item, player);
+                n.PlayerPassive(item, Player);
             }
             
         }
-        public void OnShoot(Item item, Player player, ref Vector2 position, ref float speedX, ref float speedY, ref int type, ref int damage, ref float knockBack)
+        public void OnShoot(Terraria.DataStructures.EntitySource_ItemUse_WithAmmo source, Item item, Player Player, ref Vector2 position, ref Vector2 velocity,ref int type, ref int damage, ref float knockBack)
         {
             foreach (ItemNode n in m_nodeList)
             {
                 if (n is ItemNodeAdvanced m)
-                    m.OnShoot(item, player, ref position, ref speedX, ref speedY, ref type, ref damage, ref knockBack);
+                    m.OnShoot(source, item, Player, ref position, ref velocity, ref type, ref damage, ref knockBack);
             }
 
         }

@@ -130,7 +130,7 @@ namespace AnotherRpgMod
             new JsonNode("Stats",-650,800,false,new int[1]{73},"Str",false,15,120,4,10), //77
             new JsonNode("Stats",-900,550,false,new int[1]{76},"Str",false,15,120,4,10), //78
 
-            new JsonNode("Class",-750,800,false,new int[1]{77},"Montain",false,0.05f,150,1,20), //79
+            new JsonNode("Class",-750,800,false,new int[1]{77},"Mountain",false,0.05f,150,1,20), //79
 
             new JsonNode("Stats",-750,900,false,new int[1]{79},"Vit",false,30,150,3,20), //80
             new JsonNode("Damage",-750,1000,false,new int[1]{80},"Melee",false,0.1f,170,3,10),//81
@@ -248,6 +248,30 @@ namespace AnotherRpgMod
             new JsonNode("Perk",500,100,false,new int[1]{24},"StarGatherer",false,0,75,5,8), //157
             new JsonNode("Perk",800,700,false,new int[1]{101},"ManaOverBurst",false,0,150,3,15), //158
 
+
+
+            new JsonNode("Class",-350,1450,false,new int[1]{60},"AscendedShadowDancer",false,0.1f,1500,1,200,true), //159
+            new JsonNode("Class",-250,1500,false,new int[1]{60},"AscendedWindWalker",false,0.1f,1500,1,200,true), //160
+            new JsonNode("Class",-150,1550,false,new int[1]{60},"AscendedHitman",false,0.1f,1500,1,200,true), //161
+            new JsonNode("Class",-50,1600,false,new int[1]{60},"AscendedSoulLord",false,0.1f,1500,1,200,true), //162
+            new JsonNode("Class",50,1600,false,new int[1]{60},"AscendedMystic",false,0.1f,1500,1,200,true), //163
+            new JsonNode("Class",150,1550,false,new int[1]{60},"AscendedDeity",false,0.1f,1500,1,200,true), //164
+            new JsonNode("Class",250,1500,false,new int[1]{60},"AscendedFortress",false,0.1f,1500,1,200,true), //165
+            new JsonNode("Class",350,1450,false,new int[1]{60},"AscendedSwordSaint",false,0.1f,1500,1,200,true), //166
+
+
+            new JsonNode("Stats",-350,1850,false,new int[1]{159},"Dex",false,1000,1750,100,50,true), //167
+            new JsonNode("Stats",-250,1800,false,new int[1]{160},"Agi",false,1000,1750,100,50,true), //168
+            new JsonNode("Stats",-150,1750,false,new int[1]{161},"Agi",false,1000,1750,100,50,true), //169
+            new JsonNode("Stats",-50,1700,false,new int[1]{162},"Spr",false,1000,1750,100,50,true), //170
+            new JsonNode("Stats",50,1700,false,new int[1]{163},"Int",false,1000,1750,100,50,true), //171
+            new JsonNode("Stats",150,1750,false,new int[1]{164},"Int",false,1000,1750,100,50,true), //172
+            new JsonNode("Stats",250,1800,false,new int[1]{165},"Str",false,1000,1750,100,50,true), //173
+            new JsonNode("Stats",350,1850,false,new int[1]{166},"Str",false,1000,1750,100,50,true), //174
+
+            new JsonNode("LimitBreak",0,1900,false,new int[8]{167,168,169,170,171,172,173,174},"TRANSCEND",false,9999,2000,1,100), //175
+
+            new JsonNode("Class",0,2000,false,new int[1]{175},"TranscendentalBeing",false,0.1f,2001,1,400,true), //176
         };
     }
 
@@ -266,6 +290,7 @@ namespace AnotherRpgMod
         public bool unlocked = false;
         public bool ascended = false;
 
+        [JsonConstructor]
         public JsonNode(string baseType,float posX,float posY,bool unlocked, int[] neightboorlist,string specificType,bool flatDamage,float valuePerLevel,int levelRequirement,int maxLevel, int pointsPerLevel, bool ascended = false)
         {
             this.baseType = baseType;
@@ -311,22 +336,20 @@ namespace AnotherRpgMod
 
         public static void Load()
         {
-            try
-            {
+            try { 
+            
                 Directory.CreateDirectory(Main.SavePath + Path.DirectorySeparatorChar + Dir);
-
+                cPath = (Main.SavePath + Path.DirectorySeparatorChar + Dir + Path.DirectorySeparatorChar + Name);
                 jsonSkillList = new JsonNodeList();
-                //disable Load for Now
-                /*
+
                 if (File.Exists(cPath))
                 {
                     using (StreamReader reader = new StreamReader(cPath))
                     {
-
-                        jsonSkillList = JsonConvert.DeserializeObject<JsonNodeList>(reader.ReadToEnd());
+                        if (Config.gpConfig.UseCustomSkillTree)
+                            jsonSkillList = JsonConvert.DeserializeObject<JsonNodeList>(reader.ReadToEnd());
                     }
                 }
-                */
                 Save();
 
             }
@@ -336,6 +359,10 @@ namespace AnotherRpgMod
             }
         }
 
+        public static void Unload()
+        {
+            jsonSkillList = null;
+        }
         public static void Save()
         {
             try

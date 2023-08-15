@@ -4,6 +4,7 @@ using Terraria;
 using Terraria.ModLoader;
 using System.IO;
 using AnotherRpgMod.RPGModule.Entities;
+using Terraria.ID;
 
 namespace AnotherRpgMod.Utils
 {
@@ -17,7 +18,7 @@ namespace AnotherRpgMod.Utils
 
         static public void Log(Mod mod, string message)
         {
-            if (Main.netMode == 2)
+            if (Main.netMode == NetmodeID.Server)
             {
                 ModPacket packet = mod.GetPacket();
                 packet.Write((byte)Message.Log);

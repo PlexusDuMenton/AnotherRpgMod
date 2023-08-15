@@ -14,9 +14,8 @@ using Terraria.GameInput;
 using Terraria.Localization;
 using AnotherRpgMod.RPGModule;
 using AnotherRpgMod.Utils;
-
-
-
+using Terraria.Audio;
+using ReLogic.Content;
 
 namespace AnotherRpgMod.UI
 {
@@ -24,7 +23,6 @@ namespace AnotherRpgMod.UI
     {
 
         UIPanel backGround;
-        UIPanel ScrollDetector;
         UIPanel toolTip;
 
         List<Connection> allConnection;
@@ -134,7 +132,7 @@ namespace AnotherRpgMod.UI
         {
             if (!visible)
                 return;
-            Main.PlaySound(SoundID.MenuOpen);
+            SoundEngine.PlaySound(SoundID.MenuOpen);
             RPGPlayer rPGPlayer = Main.player[Main.myPlayer].GetModPlayer<RPGPlayer>();
             rPGPlayer.ResetSkillTree();
             rPGPlayer.GetskillTree.Init();
@@ -215,10 +213,6 @@ namespace AnotherRpgMod.UI
 
         }
 
-        private void helpme(UIMouseEvent evt, UIElement listeningElement)
-        {
-            AnotherRpgMod.Instance.Logger.Info("HELP ME !");
-        }
 
         public override void Update(GameTime gameTime)
         {
@@ -279,11 +273,14 @@ namespace AnotherRpgMod.UI
 
         public void DrawSkill(NodeParent node) //Vector2 pos, Texture2D tex,int state)
         {
-            SkillPanel basePanel = new SkillPanel(ModContent.GetTexture("AnotherRpgMod/Textures/UI/skill_blank"));
+
+
+
+            SkillPanel basePanel = new SkillPanel(ModContent.Request<Texture2D>("AnotherRpgMod/Textures/UI/skill_blank", AssetRequestMode.ImmediateLoad).Value);
             basePanel.SetPadding(0);
             basePanel.Width.Set(SKILL_SIZE * sizeMultplier, 0f);
             basePanel.Height.Set(SKILL_SIZE * sizeMultplier, 0f);
-            Skill skillIcon = new Skill(ModContent.GetTexture(SkillTextures.GetTexture(node.GetNode)));
+            Skill skillIcon = new Skill(ModContent.Request<Texture2D>(SkillTextures.GetTexture(node.GetNode), AssetRequestMode.ImmediateLoad).Value);
 
             skillIcon.Width.Set(SKILL_SIZE * sizeMultplier, 0f);
             skillIcon.Height.Set(SKILL_SIZE * sizeMultplier, 0f);
@@ -487,7 +484,7 @@ namespace AnotherRpgMod.UI
             description.Left.Set(50* unzoomMult, 0);
             description.Top.Set(140* unzoomMult, 0);
 
-            Main.PlaySound(SoundID.MenuTick);
+            SoundEngine.PlaySound(SoundID.MenuTick);
 
             backGround.Append(toolTip);
             toolTip.Append(Name);
@@ -505,9 +502,9 @@ namespace AnotherRpgMod.UI
             {
                 node.GetNode.ToggleEnable();
                 if (node.GetEnable == false)
-                    Main.PlaySound(SoundID.MenuClose);
+                    SoundEngine.PlaySound(SoundID.MenuClose);
                 else
-                    Main.PlaySound(SoundID.MenuOpen);
+                    SoundEngine.PlaySound(SoundID.MenuOpen);
                 UpdateValue();
             }
             else for (int i = 0; i < 5; i++)
@@ -526,9 +523,9 @@ namespace AnotherRpgMod.UI
                     
                     UpdateValue();
                     if (node.GetEnable == false)
-                        Main.PlaySound(SoundID.MenuClose);
+                        SoundEngine.PlaySound(SoundID.MenuClose);
                     else
-                        Main.PlaySound(SoundID.MenuOpen);
+                        SoundEngine.PlaySound(SoundID.MenuOpen);
                     return;
                 }
             }
@@ -541,10 +538,10 @@ namespace AnotherRpgMod.UI
                     node.Upgrade();
                     UpdateToolTip(node);
                     UpdateValue();
-                    Main.PlaySound(SoundID.MenuOpen);
+                    SoundEngine.PlaySound(SoundID.MenuOpen);
                     break;
                 default:
-                    Main.PlaySound(SoundID.MenuClose);
+                    SoundEngine.PlaySound(SoundID.MenuClose);
                     break;
             }
             
@@ -563,16 +560,19 @@ namespace AnotherRpgMod.UI
             toolTip.Top.Set((node.menuPos.Y - SKILL_SIZE * 2 + offSet.Y)* sizeMultplier, 0);
 
             float TTWidth = 500;
+            float TTHeight = 350;
             if (node.GetNodeType == NodeType.Class)
             {
+                TTHeight = 400;
                 ClassType CT = (node.GetNode as ClassNode).GetClassType;
                 JsonChrClass ClassInfo = JsonCharacterClass.GetJsonCharList.GetClass(CT);
                 if (ClassInfo.ManaShield > 0)
                     TTWidth = 750;
-                
+                if (node.GetNode.GetAscended)
+                    TTHeight = 500;
             }
             toolTip.Width.Set(TTWidth * unzoomMult, 0);
-            toolTip.Height.Set(350* unzoomMult, 0);
+            toolTip.Height.Set(TTHeight * unzoomMult, 0);
             toolTip.SetPadding(0);
             toolTip.BackgroundColor = new Color(73, 94, 171, 150);
 
@@ -581,7 +581,7 @@ namespace AnotherRpgMod.UI
             Name.Top.Set(10, 0);
             switch (node.GetNodeType) {
                 case NodeType.Class:
-                    Name.SetText("Class : "+(node.GetNode as ClassNode).GetClassType);
+                    Name.SetText("Class : "+(node.GetNode as ClassNode).GetClassName);
                     break;
                 case NodeType.Perk:
                     Name.SetText("Perk : " + (node.GetNode as PerkNode).GetPerk + " \nLevel : " + node.GetLevel + " / " + node.GetMaxLevel);
@@ -614,7 +614,7 @@ namespace AnotherRpgMod.UI
             description.Left.Set(50* unzoomMult, 0);
             description.Top.Set(170* unzoomMult, 0);
             
-            Main.PlaySound(SoundID.MenuTick);
+            SoundEngine.PlaySound(SoundID.MenuTick);
 
             backGround.Append(toolTip);
             toolTip.Append(Name);

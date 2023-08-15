@@ -8,6 +8,7 @@ using Terraria.ID;
 
 namespace AnotherRpgMod.RPGModule.Entities
 {
+
     class ARPGGlobalProjectile : GlobalProjectile
     {
         bool init = false;
@@ -22,14 +23,14 @@ namespace AnotherRpgMod.RPGModule.Entities
             }
         }
 
-
+        
         public override void ModifyHitPlayer(Projectile projectile, Player target, ref int damage, ref bool crit)
         {
             int projectilelevel = (int)((WorldManager.GetWorldLevelMultiplier(Config.NPCConfig.NPCProjectileDamageLevel)+ WorldManager.GetWorldAdditionalLevel()) * Config.NPCConfig.NpclevelMultiplier );
 
 
-            /*
-            debug
+            /*debug
+            
             Main.NewText("projectile base level : " + Config.NPCConfig.NPCProjectileDamageLevel);
             Main.NewText("World Day : " + WorldManager.Day);
             Main.NewText("projectile day level : " + WorldManager.GetWorldLevelMultiplier(Config.NPCConfig.NPCProjectileDamageLevel));
@@ -41,9 +42,10 @@ namespace AnotherRpgMod.RPGModule.Entities
             Main.NewText("projectile damage multiplier : " + Mathf.Pow(1 + projectilelevel * 0.02f, 0.95f) * Config.NPCConfig.NpcDamageMultiplier);
             */
 
-            damage = Mathf.HugeCalc(Mathf.FloorInt(projectile.damage * Mathf.Pow(1 + projectilelevel * 0.02f, 0.95f) * Config.NPCConfig.NpcDamageMultiplier), projectile.damage);
+            damage = Mathf.HugeCalc(Mathf.FloorInt(projectile.damage *(1 + projectilelevel * 0.05f) * Config.NPCConfig.NpcDamageMultiplier), projectile.damage);
         }
-
+        
+        
         public override void ModifyHitNPC(Projectile projectile, NPC target, ref int damage, ref float knockback, ref bool crit, ref int hitDirection)
         {
             if (projectile.npcProj)
@@ -52,6 +54,7 @@ namespace AnotherRpgMod.RPGModule.Entities
 
                 damage = Mathf.HugeCalc(Mathf.FloorInt(projectile.damage * Mathf.Pow(1 + projectilelevel * 0.02f, 0.95f)* Config.NPCConfig.NpcDamageMultiplier), projectile.damage);
             }
+            base.ModifyHitNPC(projectile, target, ref damage, ref knockback, ref crit, ref hitDirection);
         }
         
         /*
@@ -67,10 +70,10 @@ namespace AnotherRpgMod.RPGModule.Entities
         }
         */
 
-        public override bool PreAI(Projectile projectile)
+    public override bool PreAI(Projectile projectile)
         {
 
-
+            
             if (init)
                 return base.PreAI(projectile);
             if (projectile.friendly)
@@ -89,5 +92,7 @@ namespace AnotherRpgMod.RPGModule.Entities
 
             return base.PreAI(projectile);
         }
+
     }
+
 }

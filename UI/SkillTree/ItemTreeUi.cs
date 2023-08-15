@@ -15,8 +15,8 @@ using Terraria.Localization;
 using AnotherRpgMod.RPGModule;
 using AnotherRpgMod.Utils;
 using AnotherRpgMod.Items;
-
-
+using Terraria.Audio;
+using ReLogic.Content;
 
 namespace AnotherRpgMod.UI
 {
@@ -24,7 +24,6 @@ namespace AnotherRpgMod.UI
     {
 
         UIPanel backGround;
-        UIPanel scrollDetector;
         UIPanel toolTip;
 
         List<ItemConnection> allConnection;
@@ -36,8 +35,9 @@ namespace AnotherRpgMod.UI
         float zoomMin = 0.5f;
 
         float iZoom = 1;
-        static float uIScale = Config.vConfig.UI_Scale;
+        static float uIScale = 1;
         float screenMult = (Main.screenHeight / 1080f);
+
 
         public float sizeMultplier;
         private void ResetTextHover(UIMouseEvent evt, UIElement listeningElement)
@@ -89,7 +89,7 @@ namespace AnotherRpgMod.UI
             for (int i = 0; i < listSize; i++)
             {
                 if (allBasePanel[i].node.GetState > 1 )
-                    allBasePanel[i].skill.SetTexture =  ModContent.GetTexture(SkillTextures.GetItemTexture(allBasePanel[i].node));
+                    allBasePanel[i].skill.SetTexture =  ModContent.Request<Texture2D>(SkillTextures.GetItemTexture(allBasePanel[i].node), AssetRequestMode.ImmediateLoad).Value;
                 allBasePanel[i].Hidden = false;
                 allBasePanel[i].skill.Hidden = false;
                 switch (allBasePanel[i].node.GetState)
@@ -133,7 +133,7 @@ namespace AnotherRpgMod.UI
         {
             if (!visible)
                 return;
-            Main.PlaySound(SoundID.MenuOpen);
+            SoundEngine.PlaySound(SoundID.MenuOpen);
                 m_itemSource.ResetTree();
                 Init();
                 
@@ -148,6 +148,9 @@ namespace AnotherRpgMod.UI
             Init();
         }
 
+
+
+
         public void Init()
         {
             //Erase all previous value
@@ -159,12 +162,17 @@ namespace AnotherRpgMod.UI
                 return;
             }
 
+            uIScale = Config.vConfig.UI_Scale;
+
             sizeMultplier = iZoom * uIScale * screenMult;
             allConnection = new List<ItemConnection>();
             allBasePanel = new List<ItemSkillPanel>();
             allText = new List<ItemSkillText>();
 
             backGround = new UIPanel();
+
+
+
 
             backGround.OnMouseDown += new UIElement.MouseEvent(DragStart);
             backGround.OnMouseUp += new UIElement.MouseEvent(DragEnd);
@@ -276,13 +284,13 @@ namespace AnotherRpgMod.UI
 
 
 
-            ItemSkillPanel basePanel = new ItemSkillPanel(ModContent.GetTexture("AnotherRpgMod/Textures/UI/skill_blank"));
+            ItemSkillPanel basePanel = new ItemSkillPanel(ModContent.Request<Texture2D>("AnotherRpgMod/Textures/UI/skill_blank", AssetRequestMode.ImmediateLoad).Value);
             basePanel.SetPadding(0);
             basePanel.Width.Set(SKILL_SIZE * sizeMultplier, 0f);
             basePanel.Height.Set(SKILL_SIZE * sizeMultplier, 0f);
-            ItemSkill skillIcon = new ItemSkill(ModContent.GetTexture("AnotherRpgMod/Textures/ItemTree/unknow"));
+            ItemSkill skillIcon = new ItemSkill(ModContent.Request<Texture2D>("AnotherRpgMod/Textures/ItemTree/unknow", AssetRequestMode.ImmediateLoad).Value);
             if (node.GetState >1)
-                skillIcon = new ItemSkill(ModContent.GetTexture(SkillTextures.GetItemTexture(node)));
+                skillIcon = new ItemSkill(ModContent.Request<Texture2D>(SkillTextures.GetItemTexture(node)).Value);
 
             skillIcon.Width.Set(SKILL_SIZE * sizeMultplier, 0f);
             skillIcon.Height.Set(SKILL_SIZE * sizeMultplier, 0f);
@@ -474,7 +482,7 @@ namespace AnotherRpgMod.UI
             description.Left.Set(50* unzoomMult, 0);
             description.Top.Set(170* unzoomMult, 0);
 
-            Main.PlaySound(SoundID.MenuTick);
+            SoundEngine.PlaySound(SoundID.MenuTick);
 
             backGround.Append(toolTip);
             toolTip.Append(Name);
@@ -509,10 +517,10 @@ namespace AnotherRpgMod.UI
 
                     UpdateToolTip(node);
                     UpdateValue();
-                    Main.PlaySound(SoundID.CoinPickup);
+                    SoundEngine.PlaySound(SoundID.CoinPickup);
                     break;
                 default:
-                    Main.PlaySound(SoundID.MenuClose);
+                    SoundEngine.PlaySound(SoundID.MenuClose);
                     break;
             }
             
@@ -575,7 +583,7 @@ namespace AnotherRpgMod.UI
             description.Left.Set(50* unzoomMult, 0);
             description.Top.Set(170* unzoomMult, 0);
             
-            Main.PlaySound(SoundID.MenuTick);
+            SoundEngine.PlaySound(SoundID.MenuTick);
 
             backGround.Append(toolTip);
             toolTip.Append(Name);

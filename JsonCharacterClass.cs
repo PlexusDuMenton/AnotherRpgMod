@@ -21,6 +21,7 @@ namespace AnotherRpgMod
      * int _maxLevel
      * int _pointsPerLevel
      */
+
     public class JsonChrClassList
     {
         public JsonChrClass GetClass(ClassType classType)
@@ -190,7 +191,7 @@ namespace AnotherRpgMod
                 "Ranger",
                 new float[7]{ 0, 0.6f, 0, 0, 0, 0.6f, 0 },
                 0,
-                -0.4f,0,0,0.15f,0,0,0,0
+                -0.2f,0,0,0.15f,0,0,0,0
             ),
                 new JsonChrClass(
                 "Spitfire",
@@ -240,7 +241,7 @@ namespace AnotherRpgMod
                 "Marksman",
                 new float[7]{ 0, 0.8f, 0, 0, 0, 0.8f, 0 },
                 0,
-                -0.5f,0,0,0.25f,0,0,0,0
+                -0.25f,0,0,0.25f,0,0,0,0
             ),
                 new JsonChrClass(
                 "Sniper",
@@ -252,7 +253,7 @@ namespace AnotherRpgMod
                 "Champion",
                 new float[7]{ 2f, 0, 0, 0, 0, 0, 0 },
                 0,
-                -0.4f,-0.2f,0.15f,0.35f,0,0,0,0,0,0
+                -0.3f,-0.2f,0.15f,0.35f,0,0,0,0,0,0
             ),
                 new JsonChrClass(
                 "SoulBinder",
@@ -264,7 +265,7 @@ namespace AnotherRpgMod
                 "Warlock",
                 new float[7]{ 0, 0, 0, 1.5f, 0, 0, 0 },
                 0,
-                -0.45f,0,0,-0.7f,0,0,0
+                -0.25f,0,0,-0.7f,0.1f,0.00025f,0.1f
             ),
                 new JsonChrClass(
                 "Assassin",
@@ -279,7 +280,7 @@ namespace AnotherRpgMod
                 0.4f,0.25f,0,0,0.65f,0.001f,1
             ),
                 new JsonChrClass(
-                "Montain",
+                "Mountain",
                 new float[7]{ 1.25f, 0, 0, 0, 0, 0, 0 },
                 0,
                 0.6f,0.4f,-0.05f,0,0,0,0,0,0
@@ -290,7 +291,7 @@ namespace AnotherRpgMod
                 "WindWalker",
                 new float[7]{ 0, 1.2f, 0, 0, 0, 1.2f, 0 },
                 0,
-                -0.65f,0,0,0.3f,0.3f,0,0,0
+                -0.35f,0,0,0.3f,0.3f,0,0,0
             ),
                 new JsonChrClass(
                 "Hitman",
@@ -302,7 +303,7 @@ namespace AnotherRpgMod
                 "SwordSaint",
                 new float[7]{ 3f, 0, 0, 0, 0, 0, 0 },
                 0,
-                -0.5f,-0.25f,0.2f,0.5f,0,0,0,0,0,0
+                -0.35f,-0.25f,0.2f,0.5f,0,0,0,0,0,0
             ),
                 new JsonChrClass(
                 "SoulLord",
@@ -384,6 +385,14 @@ namespace AnotherRpgMod
                 0,
                 14f,14f,0,0.1f,0,0,0,0,0
             ),
+
+                //Ascended Specialist / T7... Please balance this ?
+                 new JsonChrClass(
+                "TranscendentalBeing",
+                new float[7]{ 20, 20, 20, 20, 20, 20, 20 },
+                0,
+                20f,20f,0.25f,0.95f,0.99f,5,-0.99999f,0.9999f,1f,100
+            ),
         };
     }
 
@@ -403,7 +412,7 @@ namespace AnotherRpgMod
         public float ManaEfficiency;
         public float ManaBaseEfficiency;
 
-
+        [JsonConstructor]
         public JsonChrClass(string Name, float[] Damage, float Speed,
             float Health = 0,float Armor=0, float MovementSpeed = 0, float Dodge = 0, float Ammo = 0,
             int Summons = 0, float ManaCost = 0, 
@@ -439,6 +448,7 @@ namespace AnotherRpgMod
         static public JsonChrClassList GetJsonCharList { get { return jsonCCList; } }
 
         public static string Name = "skillClass.json";
+        public static string Dir = "Mod Configs" + Path.DirectorySeparatorChar + "AnRPG";
         public static string cPath;
 
 
@@ -447,7 +457,7 @@ namespace AnotherRpgMod
         {
             try
             {
-                cPath = (Main.SavePath + Path.DirectorySeparatorChar + Name);
+                cPath = (Main.SavePath + Path.DirectorySeparatorChar + Dir + Path.DirectorySeparatorChar + Name);
                 jsonCCList = new JsonChrClassList();
                 Load();
             }
@@ -457,24 +467,28 @@ namespace AnotherRpgMod
             }
         }
 
+        public static void Unload()
+        {
+            jsonCCList = null;
+        }
+
         public static void Load()
         {
             try
             {
-                Directory.CreateDirectory(Main.SavePath);
-
+                Directory.CreateDirectory(Main.SavePath + Path.DirectorySeparatorChar + Dir);
+                cPath = (Main.SavePath + Path.DirectorySeparatorChar + Dir + Path.DirectorySeparatorChar + Name);
                 jsonCCList = new JsonChrClassList();
-                //disable Load for Now
-                /*
+               
                 if (File.Exists(cPath))
                 {
                     using (StreamReader reader = new StreamReader(cPath))
                     {
-
-                        jsonSkillList = JsonConvert.DeserializeObject<JsonNodeList>(reader.ReadToEnd());
+                        if (Config.gpConfig.UseCustomSkillTree)
+                            jsonCCList = JsonConvert.DeserializeObject<JsonChrClassList>(reader.ReadToEnd());
                     }
                 }
-                */
+                
                 Save();
 
             }

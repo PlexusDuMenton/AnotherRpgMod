@@ -53,7 +53,8 @@ namespace AnotherRpgMod.Items
         public static ItemDataTag baseMana = new ItemDataTag(reader => reader.ReadInt32());
 
         public static ItemDataTag itemTree = new ItemDataTag(reader => reader.ReadString());
-
+        public static ItemDataTag bWorldAscendDrop = new ItemDataTag(reader => reader.ReadBoolean());
+        public static ItemDataTag WorldAscendDropLevel = new ItemDataTag(reader => reader.ReadInt32());
 
         public Func<BinaryReader, object> read;
 

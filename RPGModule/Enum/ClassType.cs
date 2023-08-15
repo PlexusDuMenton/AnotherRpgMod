@@ -53,7 +53,7 @@ namespace AnotherRpgMod.RPGModule
         Warlock,
         Assassin,
         Paladin,
-        Montain,
+        Mountain,
         //Tier 5
 
         PerfectBeing,
@@ -77,6 +77,10 @@ namespace AnotherRpgMod.RPGModule
         AscendedShadowDancer,
         AscendedDeity,
         AscendedFortress,
+
+
+        //Tier 7
+        TranscendentalBeing, // Balancing is dead
 
         /*
         //Hybrid

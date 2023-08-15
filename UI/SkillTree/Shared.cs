@@ -6,6 +6,7 @@ using System;
 using Terraria.ModLoader;
 using AnotherRpgMod.RPGModule;
 using AnotherRpgMod.Items;
+using ReLogic.Content;
 
 namespace AnotherRpgMod.UI
 {
@@ -123,7 +124,7 @@ namespace AnotherRpgMod.UI
         public bool Hidden = false;
         public int nodeID;
         public int neighboorID;
-        private Texture2D texture = ModContent.GetTexture("AnotherRpgMod/Textures/UI/Blank");
+        private Texture2D texture = ModContent.Request<Texture2D>("AnotherRpgMod/Textures/UI/Blank", AssetRequestMode.ImmediateLoad).Value;
         public Color color;
         public Vector2 basePos;
         public bool bg = false;
@@ -155,7 +156,7 @@ namespace AnotherRpgMod.UI
     {
         public NodeParent node;
         public NodeParent neighboor;
-        private Texture2D texture = ModContent.GetTexture("AnotherRpgMod/Textures/UI/Blank");
+        private Texture2D texture = ModContent.Request<Texture2D>("AnotherRpgMod/Textures/UI/Blank", AssetRequestMode.ImmediateLoad).Value;
         public Color color;
         public Vector2 basePos;
         public bool bg = false;

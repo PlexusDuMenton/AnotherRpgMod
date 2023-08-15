@@ -31,17 +31,18 @@ namespace AnotherRpgMod
         NPCMODIFIER = 0x8,
         BOSSMODIFIER = 0x10,
         BOSSCLUSTERED = 0x20,
-        RPGPLAYER = 0x40,
+        RPGPlayer = 0x40,
         ITEMRARITY = 0x80,
         ITEMMODIFIER = 0x100,
         LIMITNPCGROWTH = 0x200,
-        DISPLAYNPCNAME = 0x400
+        DISPLAYNPCNAME = 0x400,
+        BOSSKILLINCREASELEVEL = 0x800
     }
 
     [Label("AnRPG display config")]
     public class VisualConfig : ModConfig
     {
-        // You MUST specify a MultiplayerSyncMode.
+        // You MUST specify a MultiPlayerSyncMode.
         public override ConfigScope Mode => ConfigScope.ClientSide;
 
         [Label("HealthBar Offset")]
@@ -103,7 +104,7 @@ namespace AnotherRpgMod
     public class GamePlayConfig : ModConfig
     {
 
-        // You MUST specify a MultiplayerSyncMode.
+        // You MUST specify a MultiPlayerSyncMode.
         public override ConfigScope Mode => ConfigScope.ServerSide;
 
         
@@ -114,7 +115,7 @@ namespace AnotherRpgMod
         public bool XPReduction;
 
         [Label("RPG Player Module")]
-        [Tooltip("Enable all player related RPG elements")]
+        [Tooltip("Enable all Player related RPG elements")]
         [DefaultValue(true)]
         public bool RPGPlayer;
 
@@ -152,7 +153,7 @@ namespace AnotherRpgMod
         public int XPReductionDelta;
 
         [Label("Xp Multiplier")]
-        [Tooltip("Multiply all xp gain for player by this value")]
+        [Tooltip("Multiply all xp gain for Player by this value")]
         [Range(0.1F, 50F)]
         [Increment(.25f)]
         [DefaultValue(1f)]
@@ -176,6 +177,15 @@ namespace AnotherRpgMod
         [Tooltip("Allow vanity object to give stat")]
         [DefaultValue(false)]
         public bool VanityGiveStat;
+
+        [Label("Use Custom SkillTree")]
+        [Tooltip("When true, it'll use the JsonSkillTree in \"Documents\\My Games\\Terraria\\ModLoader\\Mod Configs\\AnRPG\" ")]
+        [DefaultValue(false)]
+        public bool UseCustomSkillTree;
+
+
+
+       
 
         public override void OnLoaded()
         {
@@ -206,6 +216,11 @@ namespace AnotherRpgMod
         [DefaultValue(true)]
         public bool NPCModifier;
 
+        [Label("Boss Rarity")]
+        [Tooltip("Apply Rarity to boss")]
+        [DefaultValue(true)]
+        public bool BossRarity;
+
         [Label("Boss Modifier")]
         [Tooltip("Apply modifier to boss")]
         [DefaultValue(true)]
@@ -217,16 +232,25 @@ namespace AnotherRpgMod
         public bool BossClustered;
 
         [Label("Limit NPC growth")]
-        [Tooltip("If activated prevent npc to have level too high than player based on Limit NPC growth Value")]
+        [Tooltip("If activated cap max npc level arround the Player level based on Limit NPC growth Value")]
         [DefaultValue(true)]
         public bool LimitNPCGrowth;
 
-        [Increment(50)]
+        
         [Label("Limit NPC growth Value")]
-        [Tooltip("If Limit Npc Growth is actiaved, limit npc level by your level + this value")]
-        [Range(1, int.MaxValue)]
-        [DefaultValue(100)]
+        [Tooltip("If Limit Npc Growth is actiaved, limit npc level by your level + this value + level X Growth Percent")]
+        [Range(0, int.MaxValue)]
+        [Increment(10)]
+        [DefaultValue(20)]
         public int LimitNPCGrowthValue;
+
+        
+        [Label("Limit NPC growth Percent")]
+        [Tooltip("If Limit Npc Growth is actiaved, limit npc level by your level + Growth Value + level X Growth Percent ")]
+        [Range(0f, 200f)]
+        [Increment(5f)]
+        [DefaultValue(20f)]
+        public float LimitNPCGrowthPercent;
 
         [Label("Npc Level Multiplier")]
         [Tooltip("Multiply all npc level by this value")]
@@ -236,7 +260,7 @@ namespace AnotherRpgMod
         public float NpclevelMultiplier;
 
         [Label("Npc Projectile Level")]
-        [Tooltip("Black Magic")]
+        [Tooltip("Used as a workd-arround to scale NPC projectile, tweak this value if needed")]
         [Range(1, 2500)]
         [Increment(10)]
         [DefaultValue(10)]
@@ -264,6 +288,35 @@ namespace AnotherRpgMod
         public float BossHealthMultiplier;
 
 
+        [Label("Each Boss Kill NPC growth")]
+        [Tooltip("When True, Each boss kill will increase the global level (instead of just the first kill) ")]
+        [DefaultValue(false)]
+        public bool BossKillLevelIncrease;
+
+        [Label("NPC growth Per Boss")]
+        [Tooltip("How many level the world gain when killing a boss")]
+        [Range(1, int.MaxValue)]
+        [Increment(5)]
+        [DefaultValue(15)]
+        public int NPCGrowthValue;
+
+        [Label("NPC growth OnHardMode")]
+        [Tooltip("How many level the world gain when entering hardmode")]
+        [Range(1, int.MaxValue)]
+        [Increment(5)]
+        [DefaultValue(50)]
+        public int NPCGrowthHardMode;
+
+        [Label("NPC growth Hard Mode Percent")]
+        [Tooltip("Multiply the world level by this value (applied before \"NPC growth OnHardMode\")")]
+        [Range(1f, 10f)]
+        [Increment(0.1f)]
+        [DefaultValue(1.1f)]
+        public float NPCGrowthHardModePercent;
+
+        
+
+
         public override void OnLoaded()
         {
             AnotherRpgMod.NPCConfig = this;
@@ -271,6 +324,9 @@ namespace AnotherRpgMod
         public override void OnChanged()
         {
             AnotherRpgMod.NPCConfig = this;
+
+            JsonSkillTree.Load();
+            JsonCharacterClass.Load();
         }
     }
 

@@ -11,6 +11,8 @@ using Terraria.Utilities;
 using AnotherRpgMod.RPGModule.Entities;
 using AnotherRpgMod.Utils;
 using AnotherRpgMod.RPGModule;
+using Terraria.DataStructures;
+
 namespace AnotherRpgMod.Items
 {
     class ItemUpdate : GlobalItem
@@ -18,7 +20,7 @@ namespace AnotherRpgMod.Items
 
         public static bool HaveTree (Item item)
         {
-            if (item.GetGlobalItem<ItemUpdate>() != null && item.GetGlobalItem<ItemUpdate>().NeedsSaving(item) && !item.accessory)
+            if (item.GetGlobalItem<ItemUpdate>() != null && NeedSavingStatic(item) && !item.accessory)
             {
                 return true;
             }
@@ -27,7 +29,7 @@ namespace AnotherRpgMod.Items
 
         #region Variables
 
-        string[] AscendName =
+        static string[] AscendName =
         {
             "",
             "Limit Broken ",
@@ -86,7 +88,7 @@ namespace AnotherRpgMod.Items
             "One of the popular manga out there is actualy a manhua titled 'Solo Leveling', you are playing a rpg mod, so you should definetly like it ",
             "Another manhua similar to solo leveling but taking a different story is 'I Am the sorcerer King' ",
             "Totaly different genre, but you should also read Dr.Stone, especialy if you like science ",
-            "hmm... You realy like thos text ? Well ... ",
+            "hmm... You realy like those text ? Well ... ",
             "Player - Is this a discution ? ",
             "Discution - Ascension Text ",
             "Yea I mess arround, but guy, if you reach this far you most likely used an exploit, and are actively looking for this ! ",
@@ -116,7 +118,7 @@ namespace AnotherRpgMod.Items
             "I will also randomly add new text with update without any changelog, there is nothing to gain, you ... well you will just make me laught to see you looking for all that ",
             "I mean, only because it's not that easy to find doesn't mean it's interesting, of you should read it, I even made some advertisement for a game I work on as employee Hahaha ",
             "... ",
-            "Have you player CivIdle ? That a game I work on my freetime When I'm not lazy, Ready manhua, Working on AnRPG or other random stuff, You can easily find the link on discord ",
+            "Have you Player CivIdle ? That a game I work on my freetime When I'm not lazy, Ready manhua, Working on AnRPG or other random stuff, You can easily find the link on discord ",
             "What is it ? A simply Idle uncomplete Game where you lead a civilization ! ",
             "The link ? SERIOUSLY ?!!! CHECK ON DISCORD DAMN IT ! ",
             "... ",
@@ -124,17 +126,33 @@ namespace AnotherRpgMod.Items
             "... ",
             "... ",
             "...here a new text for 1.5, never knew I would come back at this, but here we goes... ",
-            "I've finaly added some player ascend ",
+            "I've finaly added some Player ascend ",
             "Once you reach level 1000 you can obtain the Limit Break skill tree node ",
             "Allowing exp gain after level 1000 and unlocking ascended class ",
+            "Will this Terraria 1.4 patch finaly come ?!",
+            "Duh, of course, this version is on 1.4... if I ever published it... ",
+            "Well if you read this, congratulation you are in the good universe !",
+            "Do you remember the game Qanga I've spoken about ? there has been lot of change about this since",
+            "The game now have the entire earth planet to explore, 1-1 scale, you can also travel between earth and moon...",
+            "And mars, and Venus, and some other stuff",
+            "It use a plugin I've spent a year working on, WorldScape, alowing for realistic Planet generation in 3D :)",
+            "Yes it was another advertissement, No one excpected it !",
+            "Also recently I've spent a lot of time working on a Vampire Survivor type of game, I'm still looking for a definitive name but for now it's Idle-wave",
+            "Yes the name is quite weird as there is no idle game part... yet, maybe I'll use the idle part for persistent progressions",
             "Infinity +1 ",
-               
+
+
 
         };
 
         public string ItemName;
 
         protected ItemSkillTree m_itemTree;
+        public void SetItemTree(ItemSkillTree newItemTree)
+        {
+            m_itemTree = newItemTree;
+        }
+
         public int GetEvolutionPoints { get { return m_itemTree.EvolutionPoints; } }
         public int GetAscendPoints { get { return m_itemTree.AscendPoints; } }
         public int GetMaxEvolutionPoints { get { return m_itemTree.MaxEvolutionPoints; } }
@@ -153,6 +171,8 @@ namespace AnotherRpgMod.Items
 
         bool init = false;
         bool AscendLimit = false;
+        bool bAscendWorldDrop = false;
+        int AscendWorldDropLevel = 0;
         int ascendedLevel = 0;
         int baseHealLife = 0;
         int baseHealMana = 0;
@@ -214,7 +234,7 @@ namespace AnotherRpgMod.Items
                 , ItemDataTag.statst4, ItemDataTag.stat4
                 , ItemDataTag.statst5, ItemDataTag.stat5
                 , ItemDataTag.statst6, ItemDataTag.stat6
-                , ItemDataTag.itemTree
+                , ItemDataTag.itemTree, ItemDataTag.bWorldAscendDrop, ItemDataTag.WorldAscendDropLevel
             } },
         };
 
@@ -229,10 +249,10 @@ namespace AnotherRpgMod.Items
             return false;
         }
 
-        public override bool OnPickup(Item item, Player player)
+        public override bool OnPickup(Item item, Player Player)
         {
             InitItem(item);
-            return base.OnPickup(item, player);
+            return base.OnPickup(item, Player);
         }
 
         public override void Update(Item item, ref float gravity, ref float maxFallSpeed)
@@ -242,11 +262,6 @@ namespace AnotherRpgMod.Items
         }
 
         static public bool NeedSavingStatic(Item item)
-        {
-            return (item.maxStack == 1 && (item.damage > 0 || item.headSlot > 0 || item.legSlot > 0 || item.bodySlot > 0 || item.accessory));
-        }
-
-        public override bool NeedsSaving(Item item)
         {
             return (item.maxStack == 1 && (item.damage > 0 || item.headSlot > 0 || item.legSlot > 0 || item.bodySlot > 0 || item.accessory));
         }
@@ -288,7 +303,7 @@ namespace AnotherRpgMod.Items
         }
 
 
-        public void UpdatePassive(Item item,Player player)
+        public void UpdatePassive(Item item,Player Player)
         {
             leech = 0;
             bonusXp = 0;
@@ -301,7 +316,7 @@ namespace AnotherRpgMod.Items
             m_itemTree.ApplyFlatPassives(item);
             m_itemTree.ApplyMultiplierPassives(item);
             m_itemTree.ApplyOtherPassives(item);
-            m_itemTree.ApplyPlayerPassive(item,player);
+            m_itemTree.ApplyPlayerPassive(item,Player);
         }
 
 
@@ -327,6 +342,10 @@ namespace AnotherRpgMod.Items
                     ((float)_damage * (1f + (float)ascendedLevel * 0.1f + (float)level / 100f)
                      * (1 + ModifierManager.GetRarityDamageBoost(rarity) * 0.01f)));
             }
+
+            if (bAscendWorldDrop)
+                _damage = Mathf.CeilInt((float)_damage * 1.5f);
+
             return _damage;
         }
 
@@ -387,6 +406,10 @@ namespace AnotherRpgMod.Items
             }
             else
                 _defense = Mathf.CeilInt(_defense * (1 + ascendedLevel * 0.25f) + level * 0.25f);
+
+            if (bAscendWorldDrop)
+                _defense = Mathf.CeilInt((float)_defense * 1.25f);
+
             return _defense;
         }
 
@@ -426,14 +449,6 @@ namespace AnotherRpgMod.Items
             }
         }
 
-        public override bool CloneNewInstances
-        {
-            get
-            {
-                return true;
-            }
-        }
-
 
         public ItemSkillTree GetItemTree { get { return m_itemTree; } }
         
@@ -464,7 +479,7 @@ namespace AnotherRpgMod.Items
             if (init)
                 return;
             init = true;
-            if (NeedsSaving(item))
+            if (NeedSavingStatic(item))
             {
                 baseMana = item.mana;
                 baseAutoReuse = item.autoReuse;
@@ -475,17 +490,44 @@ namespace AnotherRpgMod.Items
                 baseArmor = item.defense;
                 baseDamage = item.damage;
 
+                if (WorldManager.ascended)
+                {
+                    bAscendWorldDrop = true;
+                    AscendWorldDropLevel = WorldManager.ascendedLevelBonus;
+                }
+
                 Roll(item);
 
                 baseCap = GetCapLevel();
+
+                
+
+
                 if (HaveTree(item) && (m_itemTree == null || m_itemTree.GetSize == 0))
                 {
                     m_itemTree = new ItemSkillTree();
                     m_itemTree.Init(this);
                 }
 
-               
-                
+                if (WorldManager.ascended)
+                {
+                    int AscendLevel = 1 + Mathf.CeilInt(WorldManager.ascendedLevelBonus / 250);
+                    float BaseLevel = Mathf.CeilInt(WorldManager.ascendedLevelBonus / 2500);
+                    if (BaseLevel > 0.4f) BaseLevel = 0.4f;
+                    BaseLevel += 0.1f;
+                    ascendedLevel = AscendLevel;
+                    level = Mathf.CeilInt(baseCap * BaseLevel * AscendLevel);
+                    if (HaveTree(item))
+                    { 
+                        m_itemTree.MaxAscendPoints = ascendedLevel;
+                        m_itemTree.AscendPoints = ascendedLevel;
+                        m_itemTree.MaxEvolutionPoints = level;
+                        m_itemTree.EvolutionPoints = level;
+                        m_itemTree.ExtendTree(Mathf.Clamp(Mathf.CeilInt(Mathf.Pow(baseCap / 3f, 0.95)), 5, 99) * ascendedLevel);
+                    }
+                }
+
+
 
             }
 
@@ -503,7 +545,7 @@ namespace AnotherRpgMod.Items
 
         public override void NetSend(Item item, BinaryWriter writer)
         {
-            if (NeedsSaving(item))
+            if (NeedSavingStatic(item))
             {
 
                 writer.Write((byte)Message.SyncWeapon);
@@ -555,6 +597,9 @@ namespace AnotherRpgMod.Items
                 }
 
                 writer.Write(itemTree);
+
+                writer.Write(bAscendWorldDrop);
+                writer.Write(AscendWorldDropLevel);
             }
             
             
@@ -563,7 +608,7 @@ namespace AnotherRpgMod.Items
 
         public override void NetReceive(Item item, BinaryReader reader)
         {
-            if (NeedsSaving(item))
+            if (NeedSavingStatic(item))
             {
                 Message msg;
                 msg = (Message)reader.ReadByte();
@@ -642,6 +687,8 @@ namespace AnotherRpgMod.Items
                         if ((string)tags[ItemDataTag.itemTree] != "")
                             m_itemTree = ItemSkillTree.ConvertToTree((string)tags[ItemDataTag.itemTree], this,level,ascendedLevel);
 
+                        bAscendWorldDrop = (bool)tags[ItemDataTag.bWorldAscendDrop];
+                        AscendWorldDropLevel = (int)tags[ItemDataTag.WorldAscendDropLevel];
                         init = true;
                         break;
                 }
@@ -650,51 +697,53 @@ namespace AnotherRpgMod.Items
             base.NetReceive(item, reader);
         }
 
-        public override bool Shoot(Item item, Player player, ref Vector2 position, ref float speedX, ref float speedY, ref int type, ref int damage, ref float knockBack)
+        public override GlobalItem Clone(Item item, Item itemClone)
+        {
+            ItemUpdate clonedItem = (ItemUpdate)base.Clone(item, itemClone);
+            clonedItem.SetItemTree(m_itemTree);
+            clonedItem.AscendToolTip = AscendToolTip;
+            return clonedItem;
+
+
+
+
+
+        }
+
+
+        public override bool Shoot(Item item, Player Player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback)
         {
             int Projectileid = type;
-            if (m_itemTree != null) { 
+            if (m_itemTree != null)
+            {
                 if (ModifierManager.HaveModifier(Modifier.Random, modifier))
                 {
                     Projectileid = Mathf.RandomInt(1, 500);
                     float spread = 10 * 0.0174f; //20 degree cone
-                    float baseSpeed = (float)Math.Sqrt(speedX * speedX + speedY * speedY) * (1 + 0.1f * Main.rand.NextFloat());
-                    double baseAngle = Math.Atan2(speedX, speedY);
-                    double randomAngle = baseAngle + (Main.rand.NextFloat() - 0.5f) * spread;
-                    float spdX = baseSpeed * (float)Math.Sin(randomAngle);
-                    float spdY = baseSpeed * (float)Math.Cos(randomAngle);
-                    int projnum = Projectile.NewProjectile(position.X, position.Y, spdX, spdY, Projectileid, damage, knockBack, player.whoAmI);
+                    float baseSpeed = velocity.Length() * (0.9f + 0.2f * Main.rand.NextFloat());
+                    float baseAngle = MathF.Atan2(velocity.X, velocity.Y);
+                    float randomAngle = baseAngle + (Main.rand.NextFloat() - 0.5f) * spread;
+                    Vector2 newVelocity = baseSpeed * new Vector2(MathF.Sin(randomAngle), MathF.Cos(randomAngle)) ;
+                    int projnum = Projectile.NewProjectile(source,position, newVelocity, Projectileid, damage, knockback,Player.whoAmI);
                     Main.projectile[projnum].friendly = true;
                     Main.projectile[projnum].hostile = false;
-
+                    Main.projectile[projnum].originalDamage = damage;
+                    return false;
                 }
-            /*
-            if (!item.summon) { 
-                for (int i = 0; i < ascendedLevel; i++)
+                else
                 {
-                    float spread = 10 * 0.0174f; //20 degree cone
-                    float baseSpeed = (float)Math.Sqrt(speedX * speedX + speedY * speedY) * (1 + 0.1f * Main.rand.NextFloat());
-                    double baseAngle = Math.Atan2(speedX, speedY);
-                    double randomAngle = baseAngle + (Main.rand.NextFloat() - 0.5f) * spread;
-                    float spdX = baseSpeed * (float)Math.Sin(randomAngle);
-                    float spdY = baseSpeed * (float)Math.Cos(randomAngle);
-
-                    int projnum = Projectile.NewProjectile(position.X, position.Y, spdX, spdY, Projectileid, damage, knockBack, player.whoAmI);
-                    Main.projectile[projnum].friendly = true;
-                    Main.projectile[projnum].hostile = false;
+                    m_itemTree.OnShoot(source, item, Player, ref position, ref velocity, ref type, ref damage, ref knockback);
+                    return base.Shoot(item,Player,source,position,velocity,type,damage,knockback);
                 }
             }
-            */
-            
-                m_itemTree.OnShoot(item, player, ref position, ref speedX, ref speedY, ref type, ref damage, ref knockBack);
-            }
-            return true;
+            return base.Shoot(item, Player, source, position, velocity, type, damage, knockback);
         }
 
-        public override void ModifyHitNPC(Item item, Player player, NPC target, ref int damage, ref float knockBack, ref bool crit)
+
+        public override void ModifyHitNPC(Item item, Player Player, NPC target, ref int damage, ref float knockBack, ref bool crit)
         {
 
-            RPGPlayer rpgPlayer = player.GetModPlayer<RPGPlayer>();
+            RPGPlayer rpgPlayer = Player.GetModPlayer<RPGPlayer>();
             if (crit)
             {
                 damage = (int)(0.5f * damage * rpgPlayer.GetCriticalDamage());
@@ -702,16 +751,18 @@ namespace AnotherRpgMod.Items
             if (target.type != NPCID.TargetDummy)
                 rpgPlayer.AddWeaponXp(damage, item);
             //rpgPlayer.Leech(damage);
-            base.ModifyHitNPC(item, player, target, ref damage, ref knockBack, ref crit);
+            base.ModifyHitNPC(item, Player, target, ref damage, ref knockBack, ref crit);
         }
 
-
-        public override void Load(Item item, TagCompound tag)
+        public override void LoadData(Item item, TagCompound tag)
         {
+            //base.LoadData(item, tag);
+            //AnotherRpgMod.Instance.Logger.Info(tag);
+            //AnotherRpgMod.Instance.Logger.Info("Load Item Data");
             if (init)
                 return;
             //item.r
-            if (!NeedsSaving(item))
+            if (!NeedSavingStatic(item))
                 return;
 
             string itemTreeSave;
@@ -722,8 +773,8 @@ namespace AnotherRpgMod.Items
 
             rarity = (Rarity)tag.GetInt("rarity");
             modifier = (Modifier)tag.GetInt("modifier");
-
-
+            bAscendWorldDrop = tag.GetBool("bAscendWorldDrop");
+            AscendWorldDropLevel = tag.GetInt("AscendWorldDropLevel");
 
             if (m_itemTree == null)
                 m_itemTree = new ItemSkillTree();
@@ -732,8 +783,9 @@ namespace AnotherRpgMod.Items
 
             if (itemTreeSave != "")
             {
-                m_itemTree = ItemSkillTree.ConvertToTree(itemTreeSave,this,0,0);
-            }else
+                m_itemTree = ItemSkillTree.ConvertToTree(itemTreeSave, this, 0, 0);
+            }
+            else
             {
                 m_itemTree = new ItemSkillTree();
                 m_itemTree.Init(this);
@@ -754,7 +806,7 @@ namespace AnotherRpgMod.Items
             }
 
             List<ItemStat> itemstatslist = new List<ItemStat>();
-        
+
 
 
             for (int i = 0; i < tag.GetIntArray("stats").Length * 0.5f; i++)
@@ -807,11 +859,8 @@ namespace AnotherRpgMod.Items
             if (stats.Stats == null)
                 stats.Stats = new List<ItemStat>();
             init = true;
-            
-            item.SetNameOverride(SetName(item));
 
-            
-            
+            item.SetNameOverride(SetName(item));
         }
 
         public override void ModifyTooltips(Item item, List<TooltipLine> tooltips)
@@ -823,7 +872,7 @@ namespace AnotherRpgMod.Items
                 if (healtt != null)
                 {
                     int iheal = tooltips.FindIndex(x => x.Name == "HealLife");
-                    healtt = new TooltipLine(mod, "HealLife", healtt.text + "( " + baseHealLife + " )");
+                    healtt = new TooltipLine(Mod, "HealLife", healtt.Text + "( " + baseHealLife + " )");
                     tooltips[iheal] = healtt;
                 }
 
@@ -834,12 +883,12 @@ namespace AnotherRpgMod.Items
                 if (healtt != null)
                 {
                     int iheal = tooltips.FindIndex(x => x.Name == "HealMana");
-                    healtt = new TooltipLine(mod, "HealMana", healtt.text + "( " + baseHealMana + " )");
+                    healtt = new TooltipLine(Mod, "HealMana", healtt.Text + "( " + baseHealMana + " )");
                     tooltips[iheal] = healtt;
                 }
             }
 
-            if (NeedsSaving(item))
+            if (NeedSavingStatic(item))
             {
 
 
@@ -851,19 +900,32 @@ namespace AnotherRpgMod.Items
                         TooltipLine ITT = new TooltipLine(mod, "WeaponType",ItemUtils.GetWeaponType(item).ToString());
                         tooltips.Add(ITT);
                     }*/
+
+                    if (bAscendWorldDrop)
+                    {
+                        TooltipLine AWTT;
+                        AWTT = new TooltipLine(Mod, "AscendedInfo","This item is from an Ascended World : +50% Damage, +25% Defence")
+                        {
+                            OverrideColor = Color.Azure
+                        };
+
+                        tooltips.Add(AWTT);
+                    }
+                       
+
                     if (Config.gpConfig.ItemRarity)
                     {
                         TooltipLine Rtt;
                         if (rarity != Rarity.NONE)
-                            Rtt = new TooltipLine(mod, "Rarity", Enum.GetName(typeof(Rarity), rarity))
+                            Rtt = new TooltipLine(Mod, "Rarity", Enum.GetName(typeof(Rarity), rarity))
                             {
-                                overrideColor = ModifierManager.GetRarityColor(rarity)
+                                OverrideColor = ModifierManager.GetRarityColor(rarity)
                             };
                         else
                         {
-                            Rtt = new TooltipLine(mod, "Rarity", "???")
+                            Rtt = new TooltipLine(Mod, "Rarity", "???")
                             {
-                                overrideColor = Color.Pink
+                                OverrideColor = Color.Pink
                             };
                         }
                         tooltips.Add(Rtt);
@@ -878,14 +940,14 @@ namespace AnotherRpgMod.Items
                                 TooltipLine Stt;
                                 RPGPlayer p = Main.LocalPlayer.GetModPlayer<RPGPlayer>();
                                 if (GetStatSlot(i) > 0)
-                                    Stt = new TooltipLine(mod, "statsInfo" + i, Enum.GetName(typeof(Stat), stats.Stats[i].stat) + " +" + Mathf.Round(GetStatSlot(i),2) + " % ( +" + Mathf.Round(p.GetStat(stats.Stats[i].stat) * GetStatSlot(i) * 0.01f, 1) + " )")
+                                    Stt = new TooltipLine(Mod, "statsInfo" + i, Enum.GetName(typeof(Stat), stats.Stats[i].stat) + " +" + Mathf.Round(GetStatSlot(i),2) + " % ( +" + Mathf.Round(p.GetStat(stats.Stats[i].stat) * GetStatSlot(i) * 0.01f, 1) + " )")
                                     {
-                                        overrideColor = Color.LimeGreen
+                                        OverrideColor = Color.LimeGreen
                                     };
                                 else
-                                    Stt = new TooltipLine(mod, "statsInfo" + i, Enum.GetName(typeof(Stat), stats.Stats[i].stat) + " -" + Math.Abs(Mathf.Round(GetStatSlot(i),2)) + " % ( " + Mathf.Round(p.GetStat(stats.Stats[i].stat) * GetStatSlot(i) * 0.01f, 1) + " )")
+                                    Stt = new TooltipLine(Mod, "statsInfo" + i, Enum.GetName(typeof(Stat), stats.Stats[i].stat) + " -" + Math.Abs(Mathf.Round(GetStatSlot(i),2)) + " % ( " + Mathf.Round(p.GetStat(stats.Stats[i].stat) * GetStatSlot(i) * 0.01f, 1) + " )")
                                     {
-                                        overrideColor = Color.PaleVioletRed
+                                        OverrideColor = Color.PaleVioletRed
                                     };
 
                                 tooltips.Add(Stt);
@@ -897,15 +959,15 @@ namespace AnotherRpgMod.Items
                         TooltipLine Stt;
                         RPGPlayer p = Main.LocalPlayer.GetModPlayer<RPGPlayer>();
                         if (ModifierManager.GetRarityDamageBoost(rarity) > 0)
-                            Stt = new TooltipLine(mod, "statsInfo", "Rarity bonus + " + ModifierManager.GetRarityDamageBoost(rarity) + "% Damage")
+                            Stt = new TooltipLine(Mod, "statsInfo", "Rarity bonus + " + ModifierManager.GetRarityDamageBoost(rarity) + "% Damage")
                             {
-                                overrideColor = ModifierManager.GetRarityColor(rarity)
+                                OverrideColor = ModifierManager.GetRarityColor(rarity)
                             };
                         else
                         {
-                            Stt = new TooltipLine(mod, "statsInfo", "Rarity bonus " + ModifierManager.GetRarityDamageBoost(rarity) + "% Damage")
+                            Stt = new TooltipLine(Mod, "statsInfo", "Rarity bonus " + ModifierManager.GetRarityDamageBoost(rarity) + "% Damage")
                             {
-                                overrideColor = ModifierManager.GetRarityColor(rarity)
+                                OverrideColor = ModifierManager.GetRarityColor(rarity)
                             };
                         }
                         tooltips.Add(Stt);
@@ -918,9 +980,9 @@ namespace AnotherRpgMod.Items
                         for (int i = 0; i < SList.Length; i++)
                         {
 
-                            TooltipLine Mtt = new TooltipLine(mod, "Modifier" + i, SList[i])
+                            TooltipLine Mtt = new TooltipLine(Mod, "Modifier" + i, SList[i])
                             {
-                                overrideColor = ModifierManager.GetRarityColor(rarity)
+                                OverrideColor = ModifierManager.GetRarityColor(rarity)
                             };
                             tooltips.Add(Mtt);
                         }
@@ -931,48 +993,48 @@ namespace AnotherRpgMod.Items
                 {
                     if (itemType == ItemType.Weapon)
                     {
-                        TooltipLine bt = new TooltipLine(mod, "BaseDamage", "" + baseDamage + " Base Damage");
+                        TooltipLine bt = new TooltipLine(Mod, "BaseDamage", "" + baseDamage + " Base Damage");
                         tooltips.Add(bt);
                     }
                     else if (itemType == ItemType.Armor)
                     {
-                        TooltipLine bt = new TooltipLine(mod, "BaseDefense", "" + baseArmor + " Base Defense");
+                        TooltipLine bt = new TooltipLine(Mod, "BaseDefense", "" + baseArmor + " Base Defense");
                         tooltips.Add(bt);
                     }
 
 
                     if (itemType == ItemType.Weapon || itemType == ItemType.Armor)
                     {
-                        TooltipLine ltt = new TooltipLine(mod, "LevelInfo", "Level : " + level + " / " + (GetCapLevel() * (ascendedLevel+1)))
+                        TooltipLine ltt = new TooltipLine(Mod, "LevelInfo", "Level : " + level + " / " + (GetCapLevel() * (ascendedLevel+1)))
                         {
-                            isModifier = true
+                            IsModifier = true
                         };
                         tooltips.Add(ltt);
-                        TooltipLine xptt = new TooltipLine(mod, "Experience", "Xp : " + GetXp + "/" + GetMaxXp)
+                        TooltipLine xptt = new TooltipLine(Mod, "Experience", "Xp : " + GetXp + "/" + GetMaxXp)
                         {
-                            isModifier = true
+                            IsModifier = true
                         };
                         tooltips.Add(xptt);
                     }
-                    if (level > 0)
+                    if (level >= 0)
                     {
-                        if (Config.gpConfig.ItemTree)
+                        if (Config.gpConfig.ItemTree && m_itemTree!= null)
                         {
                             if (m_itemTree.EvolutionPoints > 0)
                             {
-                                TooltipLine infott = new TooltipLine(mod, "pointsInfo", m_itemTree.EvolutionPoints + " Evolution Points left !")
+                                TooltipLine infott = new TooltipLine(Mod, "pointsInfo", m_itemTree.EvolutionPoints + " Evolution Points left !")
                                 {
-                                    isModifier = true,
-                                    overrideColor = Color.Orange
+                                    IsModifier = true,
+                                    OverrideColor = Color.Orange
                                 };
                                 tooltips.Add(infott);
                             }
                             if (m_itemTree.AscendPoints > 0)
                             {
-                                TooltipLine infotta = new TooltipLine(mod, "pointsAscendInfo", m_itemTree.AscendPoints + " Ascend Points left !!!")
+                                TooltipLine infotta = new TooltipLine(Mod, "pointsAscendInfo", m_itemTree.AscendPoints + " Ascend Points left !!!")
                                 {
-                                    isModifier = true,
-                                    overrideColor = Color.Red
+                                    IsModifier = true,
+                                    OverrideColor = Color.Red
                                 };
                                 tooltips.Add(infotta);
                             }
@@ -984,17 +1046,17 @@ namespace AnotherRpgMod.Items
                             {
                                 if (item.pick > 0 || item.axe > 0 || item.hammer > 0)
                                 {
-                                    TooltipLine stt = new TooltipLine(mod, "BonusSpeedstuff", "+" + Math.Round(((Mathf.Pow(1.005, level) - 1) * 100 + (Mathf.Pow(1.05, ascendedLevel) - 1) * 100), 1) + "% Speed")
+                                    TooltipLine stt = new TooltipLine(Mod, "BonusSpeedstuff", "+" + Math.Round(((Mathf.Pow(1.005, level) - 1) * 100 + (Mathf.Pow(1.05, ascendedLevel) - 1) * 100), 1) + "% Speed")
                                     {
-                                        isModifier = true
+                                        IsModifier = true
                                     };
                                     tooltips.Add(stt);
                                 }
                                 else
                                 {
-                                    TooltipLine tt = new TooltipLine(mod, "PrefixDamage", "+" + (((float)level * 1f) + ascendedLevel * 10f) + "% Damage")
+                                    TooltipLine tt = new TooltipLine(Mod, "PrefixDamage", "+" + (((float)level * 1f) + ascendedLevel * 10f) + "% Damage")
                                     {
-                                        isModifier = true
+                                        IsModifier = true
                                     };
                                     tooltips.Add(tt);
                                 }
@@ -1002,9 +1064,9 @@ namespace AnotherRpgMod.Items
                             }
                             if (itemType == ItemType.Armor)
                             {
-                                TooltipLine tt = new TooltipLine(mod, "PrefixDefense", "+" + Mathf.CeilInt(((float)level * 0.25f) + baseArmor * ascendedLevel * 0.25f) + " Defense")
+                                TooltipLine tt = new TooltipLine(Mod, "PrefixDefense", "+" + Mathf.CeilInt(((float)level * 0.25f) + baseArmor * ascendedLevel * 0.25f) + " Defense")
                                 {
-                                    isModifier = true
+                                    IsModifier = true
                                 };
                                 tooltips.Add(tt);
 
@@ -1028,9 +1090,10 @@ namespace AnotherRpgMod.Items
             return "";
         }
 
-        public override TagCompound Save(Item item)
+        public override void SaveData(Item item, TagCompound tag)
         {
-
+            //AnotherRpgMod.Instance.Logger.Info("Is it saving Item Data ? ....");
+            base.SaveData(item, tag);
             int[] statsArray = new int[0];
             if (stats.Stats != null && stats.Stats.Count > 0)
             {
@@ -1046,41 +1109,42 @@ namespace AnotherRpgMod.Items
 
 
             string treeToStringVal = "";
-            int[] evInfo = new int[4] { 0,0,0,0 };
+            int[] evInfo = new int[4] { 0, 0, 0, 0 };
             if (m_itemTree != null)
             {
                 treeToStringVal = treeToString(m_itemTree);
-                if (m_itemTree.MaxEvolutionPoints >= level -1)
+                if (m_itemTree.MaxEvolutionPoints >= level - 1)
                     evInfo = new int[4] { GetEvolutionPoints, GetMaxEvolutionPoints, GetAscendPoints, GetMaxAscendPoints };
                 else
                 {
-                    evInfo = new int[4] { level - 1 - m_itemTree.GetUsedPoints, level-1, m_itemTree.AscendPoints, ascendedLevel };
+                    evInfo = new int[4] { level - 1 - m_itemTree.GetUsedPoints, level - 1, m_itemTree.AscendPoints, ascendedLevel };
                 }
             }
 
-            return new TagCompound
-                {
-                    {"Exp", xp},
-                    {"level",level },
-                    {"ascendedLevel",ascendedLevel },
-                    {"rarity",(int)rarity },
-                    {"modifier",(int)modifier },
-                    {"stats", statsArray},
-                    {"tree", treeToStringVal},
-                    {"evolutionInfo",  evInfo}
-                };
+            tag.Add("Exp", xp);
+            tag.Add("level", level);
+            tag.Add("ascendedLevel",ascendedLevel);
+            tag.Add( "rarity",(int)rarity);
+            tag.Add("modifier",(int)modifier);
+            tag.Add("stats", statsArray);
+            tag.Add("tree", treeToStringVal);
+            tag.Add("evolutionInfo",  evInfo);
+            tag.Add("bAscendWorldDrop", bAscendWorldDrop);
+            tag.Add("AscendWorldDropLevel",  AscendWorldDropLevel);
         }
 
-        public override bool ConsumeAmmo(Item item, Player player)
+
+        public override bool CanConsumeAmmo(Item weapon, Item ammo, Player player)
         {
             if (ascendedLevel > 0)
                 return Main.rand.NextFloat() >= .5f;
-            return base.ConsumeAmmo(item, player);
+            return base.CanConsumeAmmo(weapon, ammo, player);
         }
 
-        public override void UpdateEquip(Item item, Player player)
+        
+        public override void UpdateEquip(Item item, Player Player)
         {
-            if (NeedsSaving(item))
+            if (NeedSavingStatic(item))
             {
                 if (rarity == Rarity.NONE)
                 {
@@ -1088,24 +1152,24 @@ namespace AnotherRpgMod.Items
                 }
             }
 
-            RPGPlayer character = player.GetModPlayer<RPGPlayer>();
+            RPGPlayer character = Player.GetModPlayer<RPGPlayer>();
             if (character != null)
             {
 
                 AscendToolTip = new List<TooltipLine>();
 
-                if (NeedsSaving(item) && (level > 0 || ascendedLevel > 0))
+                if (NeedSavingStatic(item) && (level > 0 || ascendedLevel > 0))
                 {
                     
                     baseValue = (int)(item.value * (1 + Mathf.Pow(ascendedLevel, 2f) + level * 0.1f));
                     if (itemType == ItemType.Armor)
                     {
-                        UpdatePassive(item,player);
+                        UpdatePassive(item,Player);
                         item.defense = GetDefense(item);
                         if (ascendedLevel > 0)
                         {
                             int maxascend = Mathf.Clamp(ascendedLevel, 0, AscendName.Length - 1);
-                            AscendToolTip.Add(new TooltipLine(mod, "Ascding", "Ascending Tier " + ascendedLevel + " : " + AscendName[maxascend]) { isModifier = true });
+                            AscendToolTip.Add(new TooltipLine(Mod, "Ascding", "Ascending Tier " + ascendedLevel + " : " + AscendName[maxascend]) { IsModifier = true });
                         }
                     }
                 }
@@ -1115,146 +1179,146 @@ namespace AnotherRpgMod.Items
 
         }
 
-        public override void UpdateInventory(Item item, Player player)
+        public override void UpdateInventory(Item item, Player Player)
         {
-            RPGPlayer character = player.GetModPlayer<RPGPlayer>();
-            if (NeedsSaving(item))
+            RPGPlayer character = Player.GetModPlayer<RPGPlayer>();
+            if (NeedSavingStatic(item))
             {
                 item.SetNameOverride(SetName(item));
             }
-            if (character != null)
+            if (character == null)
             {
-                AscendToolTip = new List<TooltipLine>();
+                return;
+            }
+            AscendToolTip = new List<TooltipLine>();
                 
-                InitItem(item);
+            InitItem(item);
 
 
 
-                if (NeedsSaving(item) && (level > 0 || ascendedLevel > 0))
+            if (NeedSavingStatic(item) && (level > 0 || ascendedLevel > 0))
+            {
+
+                UpdatePassive(item,Player);
+
+                baseValue = (int)(item.value * (1 + Mathf.Pow(ascendedLevel, 1.5f) + level * 0.1f));
+                if (itemType == ItemType.Armor)
                 {
-
-                    UpdatePassive(item,player);
-
-                    baseValue = (int)(item.value * (1 + Mathf.Pow(ascendedLevel, 1.5f) + level * 0.1f));
-                    if (itemType == ItemType.Armor)
+                    item.defense = GetDefense(item);
+                    if (ascendedLevel > 0)
                     {
-                        item.defense = GetDefense(item);
-                        if (ascendedLevel > 0)
-                        {
-                            int maxascend = Mathf.Clamp(ascendedLevel, 0, AscendName.Length - 1);
-                            AscendToolTip.Add(new TooltipLine(mod, "Ascding", "Ascending Tier " + ascendedLevel + " : " + AscendName[maxascend]) { isModifier = true });
-                        }
+                        int maxascend = Mathf.Clamp(ascendedLevel, 0, AscendName.Length - 1);
+                        AscendToolTip.Add(new TooltipLine(Mod, "Ascding", "Ascending Tier " + ascendedLevel + " : " + AscendName[maxascend]) { IsModifier = true });
                     }
-                    if (itemType == ItemType.Weapon)
+                }
+                if (itemType == ItemType.Weapon)
+                {
+                    if (item.pick > 0 || item.axe > 0 || item.hammer > 0)
                     {
-                        if (item.pick > 0 || item.axe > 0 || item.hammer > 0)
+                        item.useTime = GetUse(item);
+                        item.useAnimation = item.useTime;
+                    }
+                    else
+                        item.damage = GetDamage(item);
+
+                    if (ascendedLevel > 0)
+                    {
+                        int maxascend = Mathf.Clamp(ascendedLevel, 0, AscendName.Length - 1);
+                        AscendToolTip.Add(new TooltipLine(Mod, "Ascding", "Ascending Tier " + ascendedLevel + " : " + AscendName[maxascend]) { IsModifier = true });
+
+                        if (!Config.gpConfig.ItemTree)
                         {
-                            item.useTime = GetUse(item);
-                            item.useAnimation = item.useTime;
-                        }
-                        else
-                            item.damage = GetDamage(item);
 
-                        if (ascendedLevel > 0)
-                        {
-                            int maxascend = Mathf.Clamp(ascendedLevel, 0, AscendName.Length - 1);
-                            AscendToolTip.Add(new TooltipLine(mod, "Ascding", "Ascending Tier " + ascendedLevel + " : " + AscendName[maxascend]) { isModifier = true });
-
-                            if (!Config.gpConfig.ItemTree) { 
-
-                                if (!baseAutoReuse && !item.magic && !item.summon)
-                                    AscendToolTip.Add(new TooltipLine(mod, "AscdAutoSwing", "Have AutoUse") { isModifier = true });
-                                if (item.ranged)
-                                    AscendToolTip.Add(new TooltipLine(mod, "ascdProjectile", "+ " + ascendedLevel + " Projectiles") { isModifier = true });
-
-                                if ((baseAutoReuse) || (ascendedLevel > 1))
-                                {
-                                    AscendToolTip.Add(new TooltipLine(mod, "AscdAutoSwingBonus", "+ 40% attack speed") { isModifier = true });
-                                    item.useTime = Mathf.CeilInt(baseUseTime * 0.6f);
-                                    item.useAnimation = item.useTime;
-                                }
-                                if (baseMana > 0)
-                                {
-                                    AscendToolTip.Add(new TooltipLine(mod, "AscdAManaUse", "50% Mana Reduction") { isModifier = true });
-                                    item.mana = Mathf.CeilInt(baseMana * 0.5f);
-                                }
-                                if (item.summon)
-                                {
-                                    AscendToolTip.Add(new TooltipLine(mod, "AscdMaxMinion", "Max minion +" + ascendedLevel) { isModifier = true });
-                                    /*
-                                    if (player.HeldItem == item)
-                                        player.maxMinions+=ascendedLevel;
-                                        */
-                                }
-                                if (!item.magic && !item.summon)
-                                    item.autoReuse = true;
-                            }
-                        }
-                        if (ascendedLevel > 1)
-                        {
-                            if (!Config.gpConfig.ItemTree)
+                            if (!baseAutoReuse && item.DamageType != DamageClass.Magic && item.DamageType != DamageClass.Summon)
                             {
-                                if (item.melee)
+                                AscendToolTip.Add(new TooltipLine(Mod, "AscdAutoSwing", "Have AutoUse") { IsModifier = true });
+                                item.autoReuse = true;
+                            }
+
+
+                            if (item.DamageType == DamageClass.Ranged)
+                                AscendToolTip.Add(new TooltipLine(Mod, "ascdProjectile", "+ " + ascendedLevel + " Projectiles") { IsModifier = true });
+
+                            if ((baseAutoReuse) || (ascendedLevel > 1))
+                            {
+                                AscendToolTip.Add(new TooltipLine(Mod, "AscdAutoSwingBonus", "+ 40% attack speed") { IsModifier = true });
+                                item.useTime = Mathf.CeilInt(baseUseTime * 0.6f);
+                                item.useAnimation = item.useTime;
+                            }
+                            if (baseMana > 0)
+                            {
+                                AscendToolTip.Add(new TooltipLine(Mod, "AscdAManaUse", "50% Mana Reduction") { IsModifier = true });
+                                item.mana = Mathf.CeilInt(baseMana * 0.5f);
+                            }
+                            if (item.DamageType == DamageClass.Summon)
+                            {
+                                AscendToolTip.Add(new TooltipLine(Mod, "AscdMaxMinion", "Max minion +" + ascendedLevel) { IsModifier = true });
+                                /*
+                                if (Player.HeldItem == item)
+                                    Player.maxMinions+=ascendedLevel;
+                                    */
+                            }
+
+
+                            if (ascendedLevel > 1)
+                            {
+                                if (item.DamageType == DamageClass.Melee)
                                 {
                                     for (int i = 0; i < ascendedLevel; i++)
                                     {
                                         lifeLeech = i * 0.5f;
                                     }
-                                    AscendToolTip.Add(new TooltipLine(mod, "AscdLifeLeech", "+ " + lifeLeech + "% LifeLeech") { isModifier = true });
+                                    AscendToolTip.Add(new TooltipLine(Mod, "AscdLifeLeech", "+ " + lifeLeech + "% LifeLeech") { IsModifier = true });
 
                                 }
-                                if (item.magic)
+                                if (item.DamageType == DamageClass.Magic)
                                 {
                                     for (int i = 0; i < ascendedLevel; i++)
                                     {
                                         manaLeech = i;
                                     }
-                                    AscendToolTip.Add(new TooltipLine(mod, "AscdManaLeech", "+ " + manaLeech + "% ManaLeech") { isModifier = true });
+                                    AscendToolTip.Add(new TooltipLine(Mod, "AscdManaLeech", "+ " + manaLeech + "% ManaLeech") { IsModifier = true });
                                 }
-                                if (item.summon)
+                                if (item.DamageType == DamageClass.Summon)
                                 {
 
-                                    AscendToolTip.Add(new TooltipLine(mod, "AscdMinionDamage", "+ 50% Minion Damage") { isModifier = true });
-                                    player.minionDamage *= 1.5f;
+                                    AscendToolTip.Add(new TooltipLine(Mod, "AscdMinionDamage", "+ 50% Minion Damage") { IsModifier = true });
+                                    Player.GetDamage(DamageClass.Summon) *= 1.5f;
                                 }
                                 if (item.useAmmo > 0)
                                 {
-                                    AscendToolTip.Add(new TooltipLine(mod, "AscdMinionDamage", "50% Chance Not to use ammo") { isModifier = true });
+                                    AscendToolTip.Add(new TooltipLine(Mod, "AscdMinionDamage", "50% Chance Not to use ammo") { IsModifier = true });
                                 }
+
                             }
                         }
-
-                        int manacostGain = 0;
-
-                        if (character.GetskillTree.HavePerk(Perk.ManaOverBurst) && item.magic && item.mana > 0)
-                        {
-                            
-                            manacostGain = Mathf.CeilInt((player.statMana * (0.1f + ((float)character.GetskillTree.nodeList.GetPerk(Perk.ManaOverBurst).GetLevel - 1) * 0.15f))/ (float)Math.Sqrt(character.GetDamageMult(DamageType.Magic, 2)));
-                        }
-                        item.mana = baseMana + manacostGain;
-
                     }
+
+
+                    int manacostGain = 0;
+                    if (Config.gpConfig.RPGPlayer && character.GetskillTree.HavePerk(Perk.ManaOverBurst) && item.DamageType == DamageClass.Magic && item.mana > 0)
+                    {
+                            
+                        manacostGain = Mathf.CeilInt((Player.statMana * (0.1f + ((float)character.GetskillTree.nodeList.GetPerk(Perk.ManaOverBurst).GetLevel - 1) * 0.15f))/ (float)Math.Sqrt(character.GetDamageMult(DamageType.Magic, 2)));
+                    }
+                    item.mana = baseMana + manacostGain;
+
                 }
-
-
-
-
-
             }
 
         }
 
 
-        public override void GetHealLife(Item item, Player player, bool quickHeal, ref int healValue)
+        public override void GetHealLife(Item item, Player Player, bool quickHeal, ref int healValue)
         {
-            healValue = (int)( healValue* player.GetModPlayer<RPGPlayer>().GetBonusHeal());
-            base.GetHealLife(item, player, quickHeal, ref healValue);
+            healValue = (int)( healValue* Player.GetModPlayer<RPGPlayer>().GetBonusHeal());
+            base.GetHealLife(item, Player, quickHeal, ref healValue);
         }
 
-        public override void GetHealMana(Item item, Player player, bool quickHeal, ref int healValue)
+        public override void GetHealMana(Item item, Player Player, bool quickHeal, ref int healValue)
         {
-            healValue = (int)( healValue * player.GetModPlayer<RPGPlayer>().GetBonusHealMana());
-            base.GetHealMana(item, player, quickHeal, ref healValue);
+            healValue = (int)( healValue * Player.GetModPlayer<RPGPlayer>().GetBonusHealMana());
+            base.GetHealMana(item, Player, quickHeal, ref healValue);
         }
 
 
@@ -1399,15 +1463,18 @@ namespace AnotherRpgMod.Items
 
         public void Roll(Item item)
         {
-            RollInfo info = ModifierManager.RollItem(this, item);
-            if (Config.gpConfig.ItemRarity)
+            if (Config.gpConfig.ItemRarity || Config.gpConfig.ItemModifier)
             {
-                rarity = info.rarity;
-                stats = info.stats;
-            }
-            if (Config.gpConfig.ItemRarity)
-            {
-                modifier = info.modifier;
+                RollInfo info = ModifierManager.RollItem(this, item, bAscendWorldDrop, AscendWorldDropLevel);
+                if (Config.gpConfig.ItemRarity)
+                {
+                    rarity = info.rarity;
+                    stats = info.stats;
+                }
+                if (Config.gpConfig.ItemModifier)
+                {
+                    modifier = info.modifier;
+                }
             }
         }
 
@@ -1458,9 +1525,13 @@ namespace AnotherRpgMod.Items
             }
         }
 
-        public void LevelUp(Player player, Item item)
+        public void LevelUp(Player Player, Item item)
         {
-            
+            if (m_itemTree == null)
+            {
+                m_itemTree = new ItemSkillTree();
+                m_itemTree.Init(this);
+            }
 
             if (level >= (GetCapLevel() * (ascendedLevel + 1)) && ascendedLevel >= WorldManager.GetMaximumAscend())
             {
@@ -1469,9 +1540,9 @@ namespace AnotherRpgMod.Items
 
             xp -= GetExpToNextLevel(level, ascendedLevel);
             if (itemType == ItemType.Armor)
-                CombatText.NewText(player.getRect(), new Color(255, 26, 255), "Armor upgrade !", true);
+                CombatText.NewText(Player.getRect(), new Color(255, 26, 255), "Armor upgrade !", true);
             if (itemType == ItemType.Weapon)
-                CombatText.NewText(player.getRect(), new Color(255, 26, 255), "Weapon upgrade !", true);
+                CombatText.NewText(Player.getRect(), new Color(255, 26, 255), "Weapon upgrade !", true);
             level++;
             m_itemTree.MaxEvolutionPoints++;
             m_itemTree.EvolutionPoints++;
@@ -1485,7 +1556,7 @@ namespace AnotherRpgMod.Items
             item.SetNameOverride(SetName(item));
         }
 
-        public void AddExp(Int64 _xp, Player player, Item item)
+        public void AddExp(Int64 _xp, Player Player, Item item)
         {
             
 
@@ -1502,7 +1573,7 @@ namespace AnotherRpgMod.Items
                 xp += (long)Mathf.Clamp(_xp * Config.gpConfig.ItemXpMultiplier, 0, long.MaxValue);
             while (xp >= GetExpToNextLevel(level, ascendedLevel) && canLevelUpMore())
             {
-                LevelUp(player, item);
+                LevelUp(Player, item);
                 if (!canLevelUpMore())
                 {
                     xp = (long)Mathf.Clamp(xp, 0, GetExpToNextLevel(level, ascendedLevel));
@@ -1519,13 +1590,13 @@ namespace AnotherRpgMod.Items
                 return ascendedLevel < WorldManager.GetMaximumAscend();
         }
 
-        public void xPTransfer(float _xp, Player player, Item item)
+        public void xPTransfer(float _xp, Player Player, Item item)
         {
 
             xp += (long)Mathf.Clamp(_xp, 0, long.MaxValue - xp);
             while (xp >= GetExpToNextLevel(level, ascendedLevel) && canLevelUpMore())
             {
-                LevelUp(player, item);
+                LevelUp(Player, item);
             }
         }
 
@@ -1540,22 +1611,22 @@ namespace AnotherRpgMod.Items
             }
         }
 
-        public void EquipedUpdateModifier(Item item, Player player)
+        public void EquipedUpdateModifier(Item item, Player Player)
         {
             if (ModifierManager.HaveModifier(Modifier.Thorny, modifier))
             {
-                player.thorns += ModifierManager.GetModifierBonus(Modifier.Thorny, this) * 0.01f;
+                Player.thorns += ModifierManager.GetModifierBonus(Modifier.Thorny, this) * 0.01f;
             }
             if (ModifierManager.HaveModifier(Modifier.VampiricAura, modifier))
             {
                 for (int j = 0; j < Main.npc.Length; j++)
                 {
                     float damageToApply = ModifierManager.GetModifierBonus(Modifier.VampiricAura, this) * (1f / 60f);
-                    if (Vector2.Distance(Main.npc[j].position, player.position) < 1000 && !Main.npc[j].townNPC && Main.npc[j].damage > 1)
+                    if (Vector2.Distance(Main.npc[j].position, Player.position) < 1000 && !Main.npc[j].townNPC && Main.npc[j].damage > 1)
                     {
                         int heal = Main.npc[j].GetGlobalNPC<ARPGGlobalNPC>().ApplyVampricAura(Main.npc[j], damageToApply);
-                        player.GetModPlayer<RPGPlayer>().ApplyReduction(ref heal);
-                        player.statLife = Mathf.Clamp(player.statLife + heal, player.statLife, player.statLifeMax2);
+                        Player.GetModPlayer<RPGPlayer>().ApplyReduction(ref heal);
+                        Player.GetModPlayer<RPGPlayer>().HealSlow(heal);
 
                         if (Main.netMode == NetmodeID.MultiplayerClient)
                         {
@@ -1571,7 +1642,7 @@ namespace AnotherRpgMod.Items
                     if (!Main.npc[j].townNPC)
                     {
 
-                        if (Vector2.Distance(Main.npc[j].position, player.position) < ModifierManager.GetModifierBonus(Modifier.FireLord, this))
+                        if (Vector2.Distance(Main.npc[j].position, Player.position) < ModifierManager.GetModifierBonus(Modifier.FireLord, this))
                         {
                             Main.npc[j].AddBuff(BuffID.OnFire, 15);
                         }

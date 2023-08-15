@@ -24,7 +24,7 @@ namespace AnotherRpgMod.RPGModule.Entities
         public static Dictionary<NPCRank, float[]> NPCRankStats = new Dictionary<NPCRank, float[]>()
         {
             //Rank                                  HPMult,   DMGMult,    DefMult
-            { NPCRank.Weak,         new float[3]    {0.65f,    0.8f,       0.5f  } },
+            { NPCRank.Weak,         new float[3]    {0.8f,    0.9f,       0.5f  } },
             { NPCRank.Normal,       new float[3]    {1,       1,          1     } },
             { NPCRank.Alpha,        new float[3]    {1.2f,    1.05f,      1.1f  } },
             { NPCRank.Elite,        new float[3]    {1.4f,    1.10f,       1.2f  } },
@@ -42,13 +42,13 @@ namespace AnotherRpgMod.RPGModule.Entities
             { NPCRank.Transcendental,  new float[3]    {200,      8.5f,          8.5f  } },
             { NPCRank.TransDimensional,new float[3]    {1000f,      10f,          10f  } },
             
-            { NPCRank.DioAboveHeaven,  new float[3]    {9999999999999f,      100f,           20f  } }, //int max health, 100X damage, 20 time defense, Good luck XD
+            { NPCRank.DioAboveHeaven,  new float[3]    {9999999999999f,      10,           0f  } }, //int max health, 10X damage, no defense, Good luck
         };
 
         public static Dictionary<string, float[]> NPCSizeStats = new Dictionary<string, float[]>()
         {
             //Rank                              HPMult,     DMGMult,    DefMult     Size
-            { "Mini",         new float[4]      {0.65f,       0.8f,       0.7f,       0.6f    } },
+            { "Mini",         new float[4]      {0.8f,       0.9f,       0.7f,       0.6f    } },
             { "Giant",        new float[4]      {1.8f,       1.05f,       1.05f,       1.2f    } },
             { "Colossus",     new float[4]      {2.2f,         1.10f,       1.10f,       1.5f    } },
             { "Titan",        new float[4]      {2.5f,         1.15f,       1.2f,       1.8f    } },
@@ -64,34 +64,38 @@ namespace AnotherRpgMod.RPGModule.Entities
 
             if (npc.type == NPCID.DungeonGuardian || npc.type == NPCID.SpikeBall | npc.type == NPCID.BlazingWheel)
                 return 1;
-            int maxLevel = (AnotherRpgMod.PlayerLevel + Config.NPCConfig.LimitNPCGrowthValue);
-            if (maxLevel < 1)
-                maxLevel = 1;
+            int maxLevel = GetMaxLevel();
 
-            int baselevel = Mathf.HugeCalc((int)((Mathf.Pow(npc.lifeMax / 35, 1.05f) + Mathf.Pow(npc.damage * 0.2f, 1.15f) + Mathf.Pow(npc.defense, 1.3f))),-1);
+            float health = npc.lifeMax;
+
+            int damage = npc.damage;
+            int def = npc.defense;
+            if (npc.damage < 0)
+                damage = 1;
+            if (npc.defense < 0)
+                def = 1;
+            if (npc.defense > npc.damage)
+                def = npc.damage / 2;
+
+            int baselevel = Mathf.HugeCalc((int)((Mathf.Pow(npc.lifeMax / 20, 1.1f) + Mathf.Pow(damage * 0.4f, 1.2f) + Mathf.Pow(def, 1.4f))),-1);
             
             if (npc.boss)
             {
-                float health = npc.lifeMax;
-
-                int damage = npc.damage;
-                int def = npc.defense;
-                if (npc.damage < 0)
-                    damage = 0;
-                if (npc.defense < 0)
-                    def = 0;
-
-
-                    if (Main.expertMode)
+                
+                if (Main.masterMode)
                 {
-                    baselevel = Mathf.HugeCalc((int)(health / 140 + Mathf.Pow(damage * 0.31f, 1.05f) + Mathf.Pow(def * 0.8f, 1.07f)),-1);
+                    baselevel = Mathf.HugeCalc((int)(health / 150 + Mathf.Pow(damage * 0.30f, 1.09f) + Mathf.Pow(def * 0.8f, 1.15f)), -1);
+                }
+                else if (Main.expertMode)
+                {
+                    baselevel = Mathf.HugeCalc((int)(health / 100 + Mathf.Pow(damage * 0.325f, 1.09f) + Mathf.Pow(def*0.85f, 1.15f)),-1);
                 }
                 else
                 {
-                    baselevel = Mathf.HugeCalc((int)(health / 100 + Mathf.Pow(damage * 0.30f, 1.04f) + Mathf.Pow(def * 0.7f, 1.05f)),-1) ;
+                    baselevel = Mathf.HugeCalc((int)(health / 80 + Mathf.Pow(damage * 0.35f, 1.09f) + Mathf.Pow(def * 0.9f, 1.15f)),-1) ;
                 }
 
-                if ((npc.aiStyle == 6 || npc.aiStyle == 37) && npc.type > 100) { 
+                if ((npc.aiStyle == 6 || npc.aiStyle == 37) && npc.type > NPCID.SeekerTail) { 
                     if (Main.expertMode)
                     {
                         baselevel = Mathf.HugeCalc((int)(Mathf.Pow(health / 650,0.5f) + Mathf.Pow(damage * 0.31f, 1.05f) + Mathf.Pow(def * 0.8f, 1.07f)), -1);
@@ -104,9 +108,24 @@ namespace AnotherRpgMod.RPGModule.Entities
 
             }
 
-            if (Main.expertMode)
+
+            if (Main.masterMode)
             {
-                baselevel = (int)(baselevel * 0.6f);
+                baselevel = (int)(baselevel * 0.35f);
+                if (AnotherRpgMod.LoadedMods[SupportedMod.Calamity])
+                {
+                    if (baselevel > 15)
+                    {
+                        baselevel -= 15;
+                        Mathf.Clamp(baselevel, 5, int.MaxValue);
+                    }
+
+                    baselevel = (int)(baselevel * 0.35f);
+                }
+            }
+            else if (Main.expertMode)
+            {
+                baselevel = (int)(baselevel * 0.5f);
                 if (AnotherRpgMod.LoadedMods[SupportedMod.Calamity])
                 {
                     if (baselevel > 15)
@@ -116,26 +135,42 @@ namespace AnotherRpgMod.RPGModule.Entities
                     }
 
                     baselevel = (int)(baselevel * 0.5f);
-
-                    
                 }
             }
 
+            baselevel -= 10;
+
+
             baselevel = WorldManager.GetWorldLevelMultiplier(baselevel);
             if (baselevel < -1)
-                return 0;
+                return 1;
             if (Config.NPCConfig.LimitNPCGrowth)
-                baselevel = Mathf.Clamp(baselevel,1, maxLevel);
+            {
+                baselevel = Mathf.Clamp(baselevel, 10, maxLevel);
+            }
+                
+
+            baselevel = Mathf.Clamp(baselevel, 10, int.MaxValue);
             return baselevel;
         }
+
+        public static int GetMaxLevel()
+        {
+            int maxLevel = Mathf.CeilInt(WorldManager.PlayerLevel + Config.NPCConfig.LimitNPCGrowthValue + (float)WorldManager.PlayerLevel * Config.NPCConfig.LimitNPCGrowthPercent * 0.01f);
+            if (maxLevel < 1)
+                maxLevel = 1;
+            return maxLevel;
+        }
+
         //Get Tier bonus from world
         public static int GetWorldTier(NPC npc, int baselevel)
         {
-            int BonusLevel = WorldManager.GetWorldAdditionalLevel();
 
-            if (BonusLevel * 2 > baselevel)
+            int BonusLevel = WorldManager.GetWorldAdditionalLevel();
+            int maxLevel = GetMaxLevel();
+            if (BonusLevel + baselevel >  maxLevel)
             {
-                return Mathf.Clamp(BonusLevel, 0, BonusLevel * 2 - baselevel);
+                return maxLevel - baselevel;
             }
             return 0;
         }
@@ -154,10 +189,12 @@ namespace AnotherRpgMod.RPGModule.Entities
         }
 
         //get actual rank of the monster
-        public static NPCRank GetRank(int level)
+        public static NPCRank GetRank(int level, bool boss = false)
         {
             if (!WorldManager.ascended) { 
                 if (!Config.NPCConfig.NPCRarity)
+                    return NPCRank.Normal;
+                if (boss && !Config.NPCConfig.BossRarity)
                     return NPCRank.Normal;
                 if (level < 1)
                     level = 1; 
@@ -211,7 +248,10 @@ namespace AnotherRpgMod.RPGModule.Entities
 
         public static int GetExp(NPC npc)
         {
-            return Mathf.CeilInt(Math.Pow(npc.lifeMax / 8 + npc.damage*1.2 + npc.defense * 1.7f, 0.9f));
+            if (!WorldManager.ascended)
+                return Mathf.CeilInt(Math.Pow(npc.lifeMax / 8 + npc.damage*1.2 + npc.defense * 1.7f, 0.9f));
+            else
+                return Mathf.CeilInt(Math.Pow(npc.lifeMax / 5 + npc.damage * 1.3 + npc.defense * 1.9f, 1.05f) * 1.5f);
         }
 
         private static NPCModifier AddRandomModifier(List<NPCModifier> pool)
@@ -249,24 +289,35 @@ namespace AnotherRpgMod.RPGModule.Entities
                 case NPCRank.Weak:
                     return 0;
                 case NPCRank.Normal:
+                case NPCRank.LimitBreaked:
                     maxModifier = (Mathf.Random(0, 3) < 1) ? 0 : 1;
                     break;
                 case NPCRank.Alpha:
+                case NPCRank.Raised:
                     maxModifier = 1;
                     break;
                 case NPCRank.Elite:
+                
+                case NPCRank.Ascended:
                     maxModifier = (Mathf.Random(0, 3) < 1) ? 1 : 2;
                     break;
                 case NPCRank.Legendary:
+                case NPCRank.HighAscended:
                     maxModifier = 2;
                     break;
                 case NPCRank.Mythical:
+                case NPCRank.PeakAscended:
                     maxModifier = 3;
                     break;
                 case NPCRank.Godly:
+                case NPCRank.Transcendental:
                     maxModifier = 4;
                     break;
+                case NPCRank.TransDimensional:
+                    maxModifier = 5;
+                    break;
                 case NPCRank.DIO:
+                case NPCRank.DioAboveHeaven:
                     maxModifier = (Enum.GetValues(typeof(NPCModifier)) as NPCModifier[]).Length;
                     break;
             }
@@ -352,6 +403,30 @@ namespace AnotherRpgMod.RPGModule.Entities
                     break;
                 case NPCRank.DIO:
                     Prefix += "Kono Dio Da ";
+                    break;
+                case NPCRank.Raised:
+                    Prefix += "Raised ";
+                    break;
+                case NPCRank.LimitBreaked:
+                    Prefix += "Limits Breaked ";
+                    break;
+                case NPCRank.Ascended:
+                    Prefix += "Ascended ";
+                    break;
+                case NPCRank.HighAscended:
+                    Prefix += "High Ascent ";
+                    break;
+                case NPCRank.PeakAscended:
+                    Prefix += "Peak Ascent ";
+                    break;
+                case NPCRank.Transcendental:
+                    Prefix += "Transcendental ";
+                    break;
+                case NPCRank.TransDimensional:
+                    Prefix += "TransDimensional ";
+                    break;
+                case NPCRank.DioAboveHeaven:
+                    Prefix += "Dio Above Heaven ";
                     break;
             }
 
@@ -519,9 +594,12 @@ namespace AnotherRpgMod.RPGModule.Entities
 
 
 
-        static public void SpawnSized(NPC npc, Dictionary<string, string> buffer)
+        static public void SpawnSized(NPC npc, Terraria.DataStructures.IEntitySource source , Dictionary<string, string> buffer)
         {
-             int n = NPC.NewNPC(
+
+            
+
+             int n = NPC.NewNPC(source,
                 (int)npc.position.X,
                 (int)npc.position.Y,
                 npc.type
@@ -574,11 +652,11 @@ namespace AnotherRpgMod.RPGModule.Entities
 
             if (npc.townNPC || npc.damage == 0)
             {
-                npc.lifeMax = Mathf.HugeCalc(Mathf.FloorInt(npc.lifeMax * (1 + (tier + level) * 0.1f)), npc.lifeMax);
+                npc.lifeMax = Mathf.HugeCalc(Mathf.FloorInt(npc.lifeMax * (0.5f + (tier + level) * 0.1f)), npc.lifeMax);
                 if (npc.damage > 0)
-                    npc.damage = Mathf.HugeCalc(Mathf.FloorInt(npc.damage * Mathf.Pow(1 + level * 0.02f + tier * 0.05f, 0.95f)), npc.damage);
+                    npc.damage = Mathf.HugeCalc(Mathf.FloorInt(npc.damage *(0.75f + level * 0.03f + tier * 0.06f)), npc.damage);
                 if (npc.defense >0)
-                    npc.defense = Mathf.HugeCalc(Mathf.FloorInt(npc.defense * (1 + level * 0.012f + tier * 0.02f)), npc.defense);
+                    npc.defense = Mathf.HugeCalc(Mathf.FloorInt(npc.defense * (0.8f + level * 0.012f + tier * 0.02f)), npc.defense);
 
                 if (npc.defense < 0)
                     npc.defense = 0;
@@ -591,35 +669,79 @@ namespace AnotherRpgMod.RPGModule.Entities
             }
             else
             {
-                if (npc.boss)
+                float power = 1.0f;
+                if (Main.hardMode)
+                    power = 1.15f;
+
+                if (Main.masterMode)
                 {
-                    if (npc.damage > 0) { 
-                        if (Mathf.HugeCalc(Mathf.FloorInt(npc.damage * Mathf.Pow(0.3f + level * 0.012f + tier * 0.02f, 1.05f) * Config.NPCConfig.NpcDamageMultiplier) , 1) < 250000)
-                        npc.damage = Mathf.HugeCalc(Mathf.FloorInt(npc.damage * Mathf.Pow(0.3f + level * 0.012f + tier * 0.02f, 1.05f) * Config.NPCConfig.NpcDamageMultiplier ), 1);
-                        else
+                    if (npc.boss)
+                    {
+                        if (npc.damage > 0)
                         {
-                            npc.damage = Mathf.FloorInt(250000 * Mathf.Logx(1 + level * 0.10f + tier * 0.30f, 7.5f) * Config.NPCConfig.NpcDamageMultiplier);
+                            if (Mathf.HugeCalc(Mathf.FloorInt(npc.damage * (0.35f + level * 0.015f + tier * 0.025f) * Config.NPCConfig.NpcDamageMultiplier * 0.75f), 1) < 250000)
+                                npc.damage = Mathf.HugeCalc(Mathf.FloorInt(npc.damage * (0.35f + level * 0.015f + tier * 0.025f) * Config.NPCConfig.NpcDamageMultiplier * 0.75f), 1);
+                            else
+                            {
+                                npc.damage = Mathf.FloorInt(250000 * Mathf.Logx(1 + level * 0.025f + tier * 0.05f, 7.5f) * Config.NPCConfig.NpcDamageMultiplier);
+                            }
                         }
+
+                        npc.lifeMax = Mathf.HugeCalc(Mathf.FloorInt(Mathf.Pow(npc.lifeMax * (level * 0.025f + tier * 0.035f), 1.05f) * Config.NPCConfig.BossHealthMultiplier * Config.NPCConfig.NpcHealthMultiplier), 1);
+                    }
+                    else
+                    {
+                        if (npc.damage > 0)
+                            npc.damage = Mathf.HugeCalc(Mathf.FloorInt(npc.damage * (0.75f + level * 0.015f + tier * 0.025f) * Config.NPCConfig.NpcDamageMultiplier), 1);
+                        npc.lifeMax = Mathf.HugeCalc(Mathf.FloorInt(Mathf.Pow(npc.lifeMax * (level * 0.10f + tier * 0.15f), power) * Config.NPCConfig.NpcHealthMultiplier), 1);
                     }
 
-                    npc.lifeMax = Mathf.HugeCalc(Mathf.FloorInt(Mathf.Pow(npc.lifeMax * (0.5f + level * 0.02f + tier*0.03),1.1f)*Config.NPCConfig.BossHealthMultiplier* Config.NPCConfig.NpcHealthMultiplier), 1);
+                    npc.value = npc.value * (1 + (level + tier) * 0.001f) * (1 + (int)rank * 0.1f);
+                    if (npc.defense > 0)
+                        npc.defense = Mathf.HugeCalc(Mathf.FloorInt(npc.defense * (1 + level * 0.005f + tier * 0.01f)), npc.defense);
+                    if (npc.defense > 5)
+                        npc.defense -= 5;
+                    else
+                        npc.defense = 0;
+
+                    npc.life = npc.lifeMax;
+
                 }
                 else
                 {
-                    if (npc.damage > 0)
-                        npc.damage = Mathf.HugeCalc(Mathf.FloorInt(npc.damage * Mathf.Pow(0.3f + level * 0.02f + tier * 0.04f, 0.85f) * Config.NPCConfig.NpcDamageMultiplier), 1);
-                    npc.lifeMax = Mathf.HugeCalc(Mathf.FloorInt(npc.lifeMax * (0.2f + level * 0.1f + tier * 0.125f) * Config.NPCConfig.NpcHealthMultiplier), 1);
+                    if (npc.boss)
+                    {
+                        if (npc.damage > 0)
+                        {
+                            if (Mathf.HugeCalc(Mathf.FloorInt(npc.damage * (0.35f + level * 0.04f + tier * 0.06f) * Config.NPCConfig.NpcDamageMultiplier * 0.75f), 1) < 250000)
+                                npc.damage = Mathf.HugeCalc(Mathf.FloorInt(npc.damage * (0.35f + level * 0.04f + tier * 0.06f) * Config.NPCConfig.NpcDamageMultiplier * 0.75f), 1);
+                            else
+                            {
+                                npc.damage = Mathf.FloorInt(250000 * Mathf.Logx(1 + level * 0.10f + tier * 0.30f, 7.5f) * Config.NPCConfig.NpcDamageMultiplier);
+                            }
+                        }
+
+                        npc.lifeMax = Mathf.HugeCalc(Mathf.FloorInt(Mathf.Pow(npc.lifeMax * (level * 0.05f + tier * 0.070), 1.08f) * Config.NPCConfig.BossHealthMultiplier * Config.NPCConfig.NpcHealthMultiplier), 1);
+                    }
+                    else
+                    {
+                        if (npc.damage > 0)
+                            npc.damage = Mathf.HugeCalc(Mathf.FloorInt(npc.damage * (0.75f + level * 0.035f + tier * 0.05f) * Config.NPCConfig.NpcDamageMultiplier), 1);
+                        npc.lifeMax = Mathf.HugeCalc(Mathf.FloorInt(Mathf.Pow(npc.lifeMax * (level * 0.20f + tier * 0.30f), power) * Config.NPCConfig.NpcHealthMultiplier), 1);
+                    }
+
+                    npc.value = npc.value * (1 + (level + tier) * 0.001f) * (1 + (int)rank * 0.1f);
+                    if (npc.defense > 0)
+                        npc.defense = Mathf.HugeCalc(Mathf.FloorInt(npc.defense * (1 + level * 0.01f + tier * 0.02f)), npc.defense);
+                    if (npc.defense > 5)
+                        npc.defense -= 5;
+                    else
+                        npc.defense = 0;
+
+                    npc.life = npc.lifeMax;
                 }
 
-                npc.value = npc.value * (1 + (level + tier) * 0.01f) * Mathf.Clamp((int)rank,1,5);
-                if (npc.defense > 0)
-                    npc.defense = Mathf.HugeCalc(Mathf.FloorInt(npc.defense * (1 + level * 0.01f + tier * 0.02f)), npc.defense);
-                if (npc.defense > 5)
-                    npc.defense -= 5;
-                else
-                    npc.defense = 0;
-
-                npc.life = npc.lifeMax;
+                
 
                 npc = SetRankStat(npc, rank);
                 npc = SetModifierStat(npc);

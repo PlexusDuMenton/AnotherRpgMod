@@ -169,11 +169,11 @@ namespace AnotherRpgMod.Items
 
         /// <summary>
         /// Passive : 
-        /// Called each frame to modify player linked attributes;
+        /// Called each frame to modify Player linked attributes;
         /// </summary>
         /// <param name="item"></param>
-        /// <param name="player"></param>
-        virtual public void PlayerPassive(Item item, Player player)
+        /// <param name="Player"></param>
+        virtual public void PlayerPassive(Item item, Player Player)
         {
 
         }
@@ -202,7 +202,7 @@ namespace AnotherRpgMod.Items
     class ItemNodeAdvanced : ItemNode
     {
 
-        virtual public void OnShoot(Item item, Player player, ref Vector2 position, ref float speedX, ref float speedY, ref int type, ref int damage, ref float knockBack)
+        public virtual void OnShoot(Terraria.DataStructures.EntitySource_ItemUse_WithAmmo source, Item item, Player Player, ref Vector2 position, ref Vector2 Velocity, ref int type, ref int damage, ref float knockBack)
         {
 
         }

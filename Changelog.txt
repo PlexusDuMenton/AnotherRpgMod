@@ -1,4 +1,77 @@
-﻿1.5.0.18
+﻿
+
+2.0.0 Alpha (1.9.0)
+Update to Tmod 1.4
+
+
+1.6.0 - Transcendental Update
+
+Added (barebone) World Ascending, for now you can only ascend a world using /Ascend <level> (minimum level 250)
+Increase the ennemies level (and whole new ranks/rarity) based on the ascend level. 
+Item dropped/crafted in Ascended world have better roll and have default ascend tiers based on the world Ascend level.
+Added 9 new Ascended Class.
+
+
+
+
+1.5.1.7
+Fix Value sometime going to -2 billion
+Nerf Npc Bonus gold drop from levels
+
+1.5.1.6
+Fix Level cap not applying correctly for bonus level
+
+1.5.1.5
+Reboost Hardmode ennemies HP
+MP Desync should be less common (not fixed)
+Bonus Level from world should no longer ignore NPC LImit Growth
+
+1.5.1.4
+fix rare crash
+slight increase do boss HP pre-hardmode
+fix mp name bug
+
+1.5.1.3
+fix MP sending Player date freeze
+disabling Player module should apply correctly to some perk and class bonus now
+
+
+1.5.1.2 
+Fix minor bug that made some perk/class bonus apply when Player Rpg Module was disabled
+Fix boss having WAY TO MUCH hp before hardmode
+
+
+1.5.1.1
+Boosted non-boss Health in Hard mode
+Fixed DemonEater Working on each hit
+Fixed Armor Breaker Modifier for NPC
+
+
+1.5.1
+Huge balancing Edit, ennemies are overall more powerfull as you advance into the game
+Modifier count has been hugely reduced on accesories and weapon
+Rarity has been balanced, mythical is now realy realy rare, legendary is also itself quite rare
+Also fixed BossKilled impact on rarity roll x)
+Entering Hardmode also improve item rarity chances
+Fixed ItemTree 0/0 when sharing item in multiPlayer
+Nerf Vampiric aura modifier healing speed
+Added a cap on bonus damage from buff/debuff modifier
+Limit NPC Growth now world correctly, and use the higgest level Player for mp (reset when relaunching server)
+Ennemeis with OVERLY high def should no longer have crazy levels
+Added a config option to limit npc scaling based on a percent of your level
+Added Config to use custom skill tree (could have lot of issue for MP)
+Added config to disable rarity on boss 
+Added config for world level gain on boss kill (no longer influenced by ascending cap)
+Added 3 new config option for NPC Growth, On boss, On Hard mode, and on hard mode Percent, allowing finer tuning for your moded crazy let's play
+Added /WorldRPGInfo Command to display some info on the world (mainly for debug)
+
+
+untest : should correctly display other Player max health, may also fail miserably
+
+1.5.0.19
+Legendary, Mythical, Godly and dio npc are much rarer at low level now
+
+1.5.0.18
 Fix at npc level going crazy in new world
 
 1.5.0.17
@@ -115,7 +188,7 @@ Huge nerf to the flat node in item trees
 
 -1.4.0.7
 Fixed bug where modifier and rarity would still apply effect even when disabled
-Fixed a bug where ennemies' projectile damage wouldn't apply damage correctly in multiplayer
+Fixed a bug where ennemies' projectile damage wouldn't apply damage correctly in multiPlayer
 Added an NPC projectile damage slider in config
 Added an BossHealth Multiplier in config
 Added Node Graphics for Manacost reduction and Multiple Projectiles
@@ -134,7 +207,7 @@ Added Life Leech cooldown (cooldown can be customised in config, default at 1sec
 Fix to melee weapon double leech
 
 -1.4.0.2
-Fixed Multiplayer
+Fixed MultiPlayer
 
 -1.4.0.1
 Fixed Throwable item not working
@@ -196,7 +269,7 @@ Ingame config (look in the menu)
 Added two new command
     /rarity - Reroll rarity and modifier for 33% of the item value
     /itemtree - Reroll Item tree for the entire item value
-FIXED MULTIPLAYER DESYNC (Definetive edition)
+FIXED MULTIPlayer DESYNC (Definetive edition)
 COMPLETE OVERALL OF THE ITEM LEVELING SYSTEM (can be toggle to old system in config option) :
 Added Item Tree, Each item have a skill tree (look in the bind to open it)
 Changed the way item Gain XP
@@ -204,14 +277,14 @@ Changed how Life Leech work, Cap the lifeleech as Health regen (10%) over a time
 https://i.imgur.com/we4jgzk.png
 HugeBalance Overall :
 
-    Reduction of player Health, Damage, Regen
+    Reduction of Player Health, Damage, Regen
     Reduction of ennemies Health, Damage, Regen, Armor
     Reduced armor of enemy by 5 in the early game
     Huge reduction of xp, especialy for late game
 
-Others player class and level are now displayed in multiplyer
+Others Player class and level are now displayed in multiplyer
 Deleted Vanilla UI
-Buff are now displayer over healthbar
+Buff are now disPlayer over healthbar
 FIXED massive health lose when using health draining buff/debuff (so fixing kaioken and poison massive health drop)
 Clean up a lot of mess, order stuff, better naming
 Added DBZ mod,Tremor and Thorium Compatibility
@@ -227,8 +300,8 @@ Reaching hardmode and defeating moonlord Increase "base rarity" for rarity roll 
 
 -1.2.0.3
 Attempt at fixing Game Crash in MP when taking an item out of Reforge
-Fixed Item Xp (again because it was on player until then)
-Fixed debuff damage being too high on player
+Fixed Item Xp (again because it was on Player until then)
+Fixed debuff damage being too high on Player
 Added back this damn /level command since you keep spamming me about this
 Nerf at damage scaling with level for non-boss ennemies
 Changed base xpDelta value from 5 to 10
@@ -283,7 +356,7 @@ Nerf to Critical chance and critical damage at high stats value
 [c/efc737:Buff armor and Health Stats !]
 
 [c/efc737:Huge Improvement to Config files]
-[c/efc737:Added Level cap on NPC max level based on players]
+[c/efc737:Added Level cap on NPC max level based on Players]
 [c/efc737:(config file to enable/disable this ! ) ]
 [c/efc737:(actual value is Player level X 1.5 + 100)]
 [c/efc737:Monster rarity and Modifier can be toggled on and off]
@@ -291,7 +364,7 @@ Nerf to Critical chance and critical damage at high stats value
 [c/efc737:Clustered boss modifier can be toggled on and off]
 [c/efc737:(for the cool kid) (base is off)]
 [c/efc737:RPG part of the mod can be disactivated]
-[c/efc737:(no player level, stats and skilltree)]
+[c/efc737:(no Player level, stats and skilltree)]
 [c/efc737:and many more , just check it out]
 
 [c/efc737:Nerf for size modifier and rarity on npc]
@@ -318,7 +391,7 @@ Nerf to Critical chance and critical damage at high stats value
 -Fixed Server Desync
 -Ascended Ranged weapon now have correct  ammont of projectile shoot when ... shoot (or not still not fixed :E)
 -Fixed Summon Weapon Summoning per ascend
--Fixed World Tier Not displaying in Multiplayer 
+-Fixed World Tier Not displaying in MultiPlayer 
 
 
 1.0.1
@@ -331,7 +404,7 @@ Nerf to Critical chance and critical damage at high stats value
 
 
 1.0
--MULTIPLAYER IS FIXED !
+-MULTIPlayer IS FIXED !
 -Server will automaticaly send server config
 -Config changed location to "D:\Documents\My Games\Terraria\ModLoader\Mod Configs\AnRPG"
 -Added more value in Setting (don't realy rememver if I use them, gonna check later)
@@ -344,7 +417,7 @@ Nerf to Critical chance and critical damage at high stats value
 
 -TownNPC no longer have op Health
 -NPC no longer have negativ hp
--Life Leech is now based on player's health
+-Life Leech is now based on Player's health
 
 -Bonus Level from "World" is now correctly displayed
 -Changed Boss First Kill Sentence
@@ -353,7 +426,7 @@ Nerf to Critical chance and critical damage at high stats value
 
 
 0.99.3
-Fixed some bug/glitch with Poison,Fire and other Damage on Time debuff both on player and ennemy
+Fixed some bug/glitch with Poison,Fire and other Damage on Time debuff both on Player and ennemy
 Added Tier One classes on skill tree
 Increase MaxLevel of allready existing node from 5 to 100 (should be ok until level 500 now)
 
@@ -512,7 +585,7 @@ Buff to bosses, they were WAY too weak
 Increase Level gained on monster for each boss killed by 50%
 
 0.8 -
-Definetly fixed desync problem between client and server , no more monster dispearing and total multiplayer fixed (I hope there will not be any other problem)
+Definetly fixed desync problem between client and server , no more monster dispearing and total multiPlayer fixed (I hope there will not be any other problem)
 
 0.7.3 - 
 Added transparency to the stats menu
@@ -533,7 +606,7 @@ Added Reset Button
 Don't erase other mods' rename on npcs (like prefixe or afixe)
 
 0.7 -
-Multiplayer support 
+MultiPlayer support 
 
 0.6.2-
 Just added icon to mod browser
