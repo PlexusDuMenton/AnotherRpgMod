@@ -740,18 +740,17 @@ namespace AnotherRpgMod.Items
         }
 
 
-        public override void ModifyHitNPC(Item item, Player Player, NPC target, ref int damage, ref float knockBack, ref bool crit)
+        public override void ModifyHitNPC(Item item, Player player, NPC target, ref NPC.HitModifiers modifiers)
         {
 
-            RPGPlayer rpgPlayer = Player.GetModPlayer<RPGPlayer>();
-            if (crit)
-            {
-                damage = (int)(0.5f * damage * rpgPlayer.GetCriticalDamage());
-            }
+            RPGPlayer rpgPlayer = player.GetModPlayer<RPGPlayer>();
+
+            modifiers.CritDamage *= 0.5f * rpgPlayer.GetCriticalDamage();
+
             if (target.type != NPCID.TargetDummy)
-                rpgPlayer.AddWeaponXp(damage, item);
+                rpgPlayer.AddWeaponXp( Mathf.RoundInt(modifiers.FinalDamage.Additive* modifiers.FinalDamage.Multiplicative), item);
             //rpgPlayer.Leech(damage);
-            base.ModifyHitNPC(item, Player, target, ref damage, ref knockBack, ref crit);
+            base.ModifyHitNPC(item, player, target, ref modifiers);
         }
 
         public override void LoadData(Item item, TagCompound tag)

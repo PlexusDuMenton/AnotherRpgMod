@@ -67,8 +67,11 @@ namespace AnotherRpgMod.RPGModule.Entities
         }
 
         #region Buffers
-        public override void ModifyHitPlayer(NPC npc, Player target, ref int damage, ref bool crit)
+        public override void ModifyHitPlayer(NPC npc, Player target, ref Player.HurtModifiers modifiers)
         {
+
+            float damage = modifiers.FinalDamage.Additive * modifiers.FinalDamage.Multiplicative;
+
             if (HaveModifier(NPCModifier.Vampire))
             {
                 npc.HealEffect(Mathf.RoundInt(damage * 0.5f), true);
@@ -82,11 +85,11 @@ namespace AnotherRpgMod.RPGModule.Entities
                 if (Main.expertMode)
                     mult = 0.75f;
 
-                damage += Mathf.RoundInt(def * 0.3f * mult);
+                modifiers.ArmorPenetration += Mathf.RoundInt(def * 0.3f * mult);
 
             }
             
-            base.ModifyHitPlayer(npc, target, ref damage, ref crit);
+            base.ModifyHitPlayer(npc, target, ref modifiers);
         }
 
         public string GetBufferProperty(string property)
@@ -313,33 +316,35 @@ namespace AnotherRpgMod.RPGModule.Entities
         }
 
 
-        public override void OnHitByItem(NPC npc, Player Player, Item item, int damage, float knockback, bool crit)
+        public override void OnHitByItem(NPC npc, Player player, Item item, NPC.HitInfo hit, int damageDone)
         {
             
             if (HaveModifier(NPCModifier.Dancer))
             {
                 if (Mathf.Random(0, 1) < 0.2f)
                 {
-                    damage = 0;
+                    hit.Damage *= 0;
+                    damageDone = 0;
                     SoundEngine.PlaySound(SoundID.DoubleJump, npc.position);
                 }
             }
 
-            base.OnHitByItem(npc, Player, item, damage, knockback, crit);
+            base.OnHitByItem(npc, player, item, hit, damageDone);
             //MPPacketHandler.SendNpcUpdate(Mod, npc);
         }
 
-        public override void OnHitByProjectile(NPC npc, Projectile projectile, int damage, float knockback, bool crit)
+        public override void OnHitByProjectile(NPC npc, Projectile projectile, NPC.HitInfo hit, int damageDone)
         {
             if (HaveModifier(NPCModifier.Dancer))
             {
                 if (Mathf.Random(0, 1) < 0.2f)
                 {
-                    damage = 0;
+                    hit.Damage *= 0;
+                    damageDone = 0;
                     SoundEngine.PlaySound(SoundID.DoubleJump, npc.position);
                 }
             }
-            base.OnHitByProjectile(npc, projectile, damage, knockback, crit);
+            base.OnHitByProjectile(npc, projectile, hit, damageDone);
             //MPPacketHandler.SendNpcUpdate(Mod, npc);
             //NetMessage.SendData(23, -1, -1, null, npc.whoAmI);
         }

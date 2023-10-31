@@ -5,12 +5,12 @@ using System.Text;
 using System.Threading.Tasks;
 
 using Terraria;
+using Terraria.Localization;
 using Terraria.ModLoader;
 using AnotherRpgMod.RPGModule.Entities;
 using AnotherRpgMod.RPGModule;
 using AnotherRpgMod.Utils;
 using AnotherRpgMod.Items;
-using IL.Terraria.Localization;
 
 namespace AnotherRpgMod.Command
 {
@@ -150,7 +150,7 @@ namespace AnotherRpgMod.Command
             float itemvalue = Player.HeldItem.value;
             int cost = Mathf.RoundInt((itemvalue * 0.33333f));
 
-            if (Player.CanBuyItem(cost))
+            if (Player.CanAfford(cost))
             {
                 Player.BuyItem(cost);
                 int plat = 0;
@@ -285,7 +285,7 @@ namespace AnotherRpgMod.Command
 
             ItemUpdate item = Player.HeldItem.GetGlobalItem<ItemUpdate>();
             int cost = Player.HeldItem.value;
-            if (Player.CanBuyItem(cost))
+            if (Player.CanAfford(cost))
             {
                 Player.BuyItem(cost);
 

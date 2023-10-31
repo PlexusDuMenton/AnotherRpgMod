@@ -500,27 +500,26 @@ namespace AnotherRpgMod.RPGModule.Entities
 			return damage;
 		}
 
-		public override void ModifyHitNPC(Item item, NPC target, ref int damage, ref float knockback, ref bool crit)
+		public override void ModifyHitNPCWithItem(Item item, NPC target, ref NPC.HitModifiers modifiers)/* tModPorter If you don't need the Item, consider using ModifyHitNPC instead */
 		{
-			modifyHitGeneral(item, target, ref damage, ref knockback, ref crit);
+			modifyHitGeneral(item, target, ref modifiers, 1);
 		}
 	   
 
-		private void modifyHitGeneral(Item item, NPC target, ref int damage, ref float knockback, ref bool crit,int pen = 1,bool projMinion = false)
+		private void modifyHitGeneral(Item item, NPC target, ref NPC.HitModifiers modifiers, int pen)
 		{
 			if (Config.gpConfig.RPGPlayer)
 			{
-				if (crit)
-				{
-					damage = (int)(0.5f * damage * GetCriticalDamage());
-				}
+				modifiers.CritDamage*= GetCriticalDamage() * 0.5f;
 			}
-			damage = (int)(damage * DamageMultiplierFromModifier(target, damage));
-			
+			float damage = modifiers.FinalDamage.Additive * modifiers.FinalDamage.Multiplicative;
+			modifiers.FinalDamage *= DamageMultiplierFromModifier(target, Mathf.RoundInt(modifiers.FinalDamage.Additive * modifiers.FinalDamage.Multiplicative));
+
+
 
 			if (ModifierManager.HaveModifier(Modifier.Piercing, Player.HeldItem.GetGlobalItem<ItemUpdate>().modifier))
 			{
-				damage = ApplyPiercing(ModifierManager.GetModifierBonus(Modifier.Piercing, Player.HeldItem.GetGlobalItem<ItemUpdate>()), target.defense, damage);
+				modifiers.ArmorPenetration += ModifierManager.GetModifierBonus(Modifier.Piercing, Player.HeldItem.GetGlobalItem<ItemUpdate>());
 			}
 
 
@@ -548,32 +547,18 @@ namespace AnotherRpgMod.RPGModule.Entities
 					Item.NewItem(Player.GetSource_OnHit(target), target.getRect(), ItemID.Star);
 				}
 			}
-			if (projMinion)
-			{
-				if (target.type != NPCID.TargetDummy)
-				{
-					if (item.DamageType == DamageClass.Summon)
-						AddWeaponXp(damage / pen, item, 1);
-					else
-						AddWeaponXp(damage / pen, item, 0.5f);
-				}
+			if (target.type != NPCID.TargetDummy)
+				AddWeaponXp(Mathf.RoundInt(damage / (float)pen), Player.HeldItem);
 
-			}
-			else if (!projMinion)
-			{
-				if (target.type != NPCID.TargetDummy)
-					AddWeaponXp(damage / pen, Player.HeldItem);
-			}
-
-			Leech(damage);
+			Leech(Mathf.RoundInt(damage));
 			MPPacketHandler.SendNpcUpdate(Mod, target);
 		}
 
-		public override void ModifyHitNPCWithProj(Projectile proj, NPC target, ref int damage, ref float knockback, ref bool crit, ref int hitDirection)
+		public override void ModifyHitNPCWithProj(Projectile proj, NPC target, ref NPC.HitModifiers modifiers)/* tModPorter If you don't need the Projectile, consider using ModifyHitNPC instead */
 		{
 			int pen = proj.penetrate;
 			if (pen == 0) pen++;
-			modifyHitGeneral(Player.HeldItem, target, ref damage, ref knockback, ref crit, pen) ;
+			modifyHitGeneral(Player.HeldItem, target,ref modifiers, pen) ;
 
 		}
 
@@ -604,16 +589,16 @@ namespace AnotherRpgMod.RPGModule.Entities
 			base.GetHealLife(item, quickHeal, ref healValue);
 		}
 
-		public override void OnHitNPC(Item item, NPC target, int damage, float knockback, bool crit)
+		public override void OnHitNPCWithItem(Item item, NPC target, NPC.HitInfo hit, int damageDone)/* tModPorter If you don't need the Item, consider using OnHitNPC instead */
 		{
-			DemonEaterPerk(target,damage);
-			base.OnHitNPC(item, target, damage, knockback, crit);
+			DemonEaterPerk(target, item.damage);
+			base.OnHitNPCWithItem(item, target, hit, damageDone);
 		}
 
-		public override void OnHitNPCWithProj(Projectile proj, NPC target, int damage, float knockback, bool crit)
+		public override void OnHitNPCWithProj(Projectile proj, NPC target, NPC.HitInfo hit, int damageDone)/* tModPorter If you don't need the Projectile, consider using OnHitNPC instead */
 		{
-			DemonEaterPerk(target,damage);
-			base.OnHitNPCWithProj(proj, target, damage, knockback, crit);
+			DemonEaterPerk(target, proj.damage);
+			base.OnHitNPCWithProj(proj, target, hit, damageDone);
 		}
 
 		#region ARMORXP
@@ -632,7 +617,7 @@ namespace AnotherRpgMod.RPGModule.Entities
 			}
 		}
 
-		public void dodge(ref int damage)
+		public void RPGDodge(ref Player.HurtModifiers modifiers)
 		{
 			if (skilltree.ActiveClass != null )
 			{
@@ -644,7 +629,7 @@ namespace AnotherRpgMod.RPGModule.Entities
 					//qint heal = damage;
 					//Player.GetModPlayer<RPGPlayer>().ApplyReduction(ref damage);
 					//Player.statLife = Mathf.Clamp(Player.statLife + damage, 0, Player.statLifeMax2);
-					damage = 0;
+					modifiers.FinalDamage *= 0;
 				}
 				if (Main.netMode == NetmodeID.MultiplayerClient)
 				{
@@ -654,11 +639,13 @@ namespace AnotherRpgMod.RPGModule.Entities
 		}
 
 
-		private void ModifyHitByGeneral(ref int damage)
+		private void ModifyHitByGeneral(ref Player.HurtModifiers modifiers)
 		{
-			if (Config.gpConfig.RPGPlayer) { 
+			if (Config.gpConfig.RPGPlayer) {
 
-				dodge(ref damage);
+				int damage = Mathf.RoundInt(modifiers.FinalDamage.Additive * modifiers.FinalDamage.Multiplicative);
+
+				RPGDodge(ref modifiers);
 				if (damage == 0)
 					return;
 
@@ -681,20 +668,22 @@ namespace AnotherRpgMod.RPGModule.Entities
 			}
 		}
 
-		public override void ModifyHitByNPC(NPC npc, ref int damage, ref bool crit)
+		public override void ModifyHitByNPC(NPC npc, ref Player.HurtModifiers modifiers)
 		{
 
-			ModifyHitByGeneral(ref damage);
-			base.ModifyHitByNPC(npc, ref damage, ref crit);
+			ModifyHitByGeneral(ref modifiers);
+			base.ModifyHitByNPC(npc, ref modifiers);
 		}
-		public override void ModifyHitByProjectile(Projectile proj, ref int damage, ref bool crit)
+		public override void ModifyHitByProjectile(Projectile proj, ref Player.HurtModifiers modifiers)
 		{
-			ModifyHitByGeneral(ref damage);
-			base.ModifyHitByProjectile(proj, ref damage, ref crit);
+			ModifyHitByGeneral(ref modifiers);
+			base.ModifyHitByProjectile(proj, ref modifiers);
 		}
 
-		public override void OnHitByNPC(NPC npc, int damage, bool crit)
+		public override void OnHitByNPC(NPC npc, Player.HurtInfo hurtInfo)
 		{
+			int damage = hurtInfo.Damage;
+
 			AddArmorXp(damage);
 			
 
@@ -706,20 +695,24 @@ namespace AnotherRpgMod.RPGModule.Entities
 					Player.statLife = Player.statLifeMax2;
 			}
 
-			base.OnHitByNPC(npc, damage, crit);
+			base.OnHitByNPC(npc, hurtInfo);
 		}
 
-		public override void OnHitByProjectile(Projectile proj, int damage, bool crit)
+		public override void OnHitByProjectile(Projectile proj, Player.HurtInfo hurtInfo)
 		{
-			AddArmorXp(damage);
+			AddArmorXp(hurtInfo.Damage);
 
-			if (damage > Player.statLife)
+			if (hurtInfo.Damage > Player.statLife)
 			{
 				if (IsSaved())
+                {
+					hurtInfo.Damage *= 0;
 					Player.statLife = Player.statLifeMax2;
+				}
+					
 			}
 
-			base.OnHitByProjectile(proj, damage, crit);
+			base.OnHitByProjectile(proj, hurtInfo);
 		}
 
 		#endregion
@@ -871,10 +864,10 @@ namespace AnotherRpgMod.RPGModule.Entities
 			base.SyncPlayer(toWho, fromWho, newPlayer);
 		}
 
-        public override void clientClone(ModPlayer clientClone)
+        public override void CopyClientState(ModPlayer clientClone)
         {
 
-            base.clientClone(clientClone);
+            base.CopyClientState(clientClone);
         }
 
         public override void SendClientChanges(ModPlayer clientPlayer)
@@ -1064,7 +1057,7 @@ namespace AnotherRpgMod.RPGModule.Entities
 				}
 				*/
 				Player.statManaMax2 = (int)(Player.statManaMax2 * GetManaPerStar() / 20) + 10;
-				Player.statDefense = (int)(GetDefenceMult() * Player.statDefense * GetArmorMult());
+				Player.statDefense *= GetDefenceMult() * GetArmorMult();
 				Player.GetDamage(DamageClass.Melee) *= GetDamageMult(DamageType.Melee, 2);
 				Player.GetDamage(DamageClass.Throwing) *= GetDamageMult(DamageType.Throw, 2);
 				Player.GetDamage(DamageClass.Ranged) *= GetDamageMult(DamageType.Ranged, 2);
@@ -1135,7 +1128,7 @@ namespace AnotherRpgMod.RPGModule.Entities
 			if (skilltree.HavePerk(Perk.Masochist))
 			{
 				int def = Player.statDefense;
-				Player.statDefense = 0;
+				Player.statDefense *= 0;
 				Player.GetDamage(DamageClass.Generic) *= 1 + def * 0.01f * skilltree.nodeList.GetPerk(Perk.Masochist).GetLevel;
 			}
 
@@ -1149,7 +1142,7 @@ namespace AnotherRpgMod.RPGModule.Entities
 			{
 				Player.GetDamage(DamageClass.Generic) *= 0.5f;
 
-				Player.statDefense = Mathf.CeilInt(Player.statDefense * ( 1 + .2f * skilltree.nodeList.GetPerk(Perk.Survivalist).GetLevel));
+				Player.statDefense *= ( 1 + .2f * skilltree.nodeList.GetPerk(Perk.Survivalist).GetLevel);
 			}
 			if (skilltree.HavePerk(Perk.ManaOverBurst))
 			{

@@ -174,8 +174,8 @@ namespace AnotherRpgMod.UI
 
 
 
-            backGround.OnMouseDown += new UIElement.MouseEvent(DragStart);
-            backGround.OnMouseUp += new UIElement.MouseEvent(DragEnd);
+            backGround.OnLeftMouseDown += new UIElement.MouseEvent(DragStart);
+            backGround.OnLeftMouseUp += new UIElement.MouseEvent(DragEnd);
             backGround.OnMiddleClick += new MouseEvent(ResetOffset);
             backGround.OnScrollWheel += new ScrollWheelEvent(iScrollUpDown);
 
@@ -204,7 +204,7 @@ namespace AnotherRpgMod.UI
             ResetText.Top.Set(250* screenMult, 0f);
             ResetText.Width.Set(0, 0f);
             ResetText.Height.Set(0, 0f);
-            ResetText.OnClick += new MouseEvent(ResetStats);
+            ResetText.OnLeftClick += new MouseEvent(ResetStats);
             ResetText.OnMouseOver += new MouseEvent(ResetTextHover);
             ResetText.OnMouseOut += new MouseEvent(ResetTextOut);
             backGround.Append(ResetText);
@@ -332,7 +332,7 @@ namespace AnotherRpgMod.UI
             allText.Add(levelText);
             allBasePanel.Add(basePanel);
             skillIcon.OnMouseOver += new MouseEvent((UIMouseEvent, UIElement) => OpenToolTip(UIMouseEvent, UIElement,node,skillIcon.Hidden));
-            skillIcon.OnClick += new MouseEvent((UIMouseEvent, UIElement) => OnClickNode(UIMouseEvent, UIElement, node));
+            skillIcon.OnLeftClick += new MouseEvent((UIMouseEvent, UIElement) => OnClickNode(UIMouseEvent, UIElement, node));
             skillIcon.OnRightClick += new MouseEvent((UIMouseEvent, UIElement) => OnRightClickNode(UIMouseEvent, UIElement, node));
             skillIcon.OnMouseOut += new MouseEvent(CloseToolTip);
             basePanel.Append(skillIcon);

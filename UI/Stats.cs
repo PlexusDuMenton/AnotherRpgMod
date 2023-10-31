@@ -82,7 +82,7 @@ namespace AnotherRpgMod.UI
             OpenButton.ImageScale = scale;
             OpenButton.Width.Set(32 * scale, 0f);
             OpenButton.Height.Set(64 * scale, 0f);
-            OpenButton.OnClick += new MouseEvent(OpenSTMenu);
+            OpenButton.OnLeftClick += new MouseEvent(OpenSTMenu);
             OpenButton.HAlign = 0;
             OpenButton.VAlign = 0;
             OpenSTPanel.Append(OpenButton);
@@ -166,7 +166,7 @@ namespace AnotherRpgMod.UI
             OpenButton.ImageScale = scale;
             OpenButton.Width.Set(32* scale, 0f);
             OpenButton.Height.Set(64* scale, 0f);
-            OpenButton.OnClick += new MouseEvent(OpenStatMenu);
+            OpenButton.OnLeftClick += new MouseEvent(OpenStatMenu);
             OpenButton.HAlign = 0;
             OpenButton.VAlign = 0;
             OpenStatsPanel.Append(OpenButton);
@@ -243,8 +243,8 @@ namespace AnotherRpgMod.UI
             statsPanel.Height.Set(600* SizeMultiplier, 0f);
             statsPanel.BackgroundColor = new Color(73, 94, 171,150);
 
-            statsPanel.OnMouseDown += new UIElement.MouseEvent(DragStart);
-            statsPanel.OnMouseUp += new UIElement.MouseEvent(DragEnd);
+            statsPanel.OnLeftMouseDown += new UIElement.MouseEvent(DragStart);
+            statsPanel.OnLeftMouseUp += new UIElement.MouseEvent(DragEnd);
 
             PointsLeft = new UIText("Points : 0 / 0", SizeMultiplier);
             PointsLeft.Left.Set(250* SizeMultiplier, 0f);
@@ -263,7 +263,7 @@ namespace AnotherRpgMod.UI
             ResetText.Top.Set(20 * SizeMultiplier, 0f);
             ResetText.Width.Set(0, 0f);
             ResetText.Height.Set(0, 0f);
-            ResetText.OnClick += new MouseEvent(ResetStats);
+            ResetText.OnLeftClick += new MouseEvent(ResetStats);
             ResetText.OnMouseOver += new MouseEvent(ResetTextHover);
             ResetText.OnMouseOut += new MouseEvent(ResetTextOut);
             statsPanel.Append(ResetText);
@@ -281,7 +281,7 @@ namespace AnotherRpgMod.UI
                     Stat Statused = (Stat)i;
                     UpgradeStatButton.OnMouseOver += new MouseEvent((UIMouseEvent, UIElement) => UpdateStat(UIMouseEvent, UIElement, Statused));
                     UpgradeStatButton.OnMouseOut += new MouseEvent(ResetOver);
-                    UpgradeStatButton.OnClick += new MouseEvent((UIMouseEvent, UIElement) => UpgradeStat(UIMouseEvent, UIElement, Statused,1));
+                    UpgradeStatButton.OnLeftClick += new MouseEvent((UIMouseEvent, UIElement) => UpgradeStat(UIMouseEvent, UIElement, Statused,1));
                     UpgradeStatButton.OnRightClick += new MouseEvent((UIMouseEvent, UIElement) => UpgradeStat(UIMouseEvent, UIElement, Statused, 5));
                     UpgradeStatButton.OnMiddleClick += new MouseEvent((UIMouseEvent, UIElement) => UpgradeStat(UIMouseEvent, UIElement, Statused, 25));
                     UpgradeStatButton.OnScrollWheel += new ScrollWheelEvent((UIMouseEvent, UIElement) => UpgradeStatWheel(UIMouseEvent, UIElement, Statused));

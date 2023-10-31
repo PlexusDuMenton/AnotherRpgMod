@@ -148,7 +148,7 @@ namespace AnotherRpgMod
         {
             base.Unload();
 
-            IL.Terraria.Player.Update -= Player_Update;
+            Terraria.IL_Player.Update -= Player_Update;
             JsonSkillTree.Unload();
             JsonCharacterClass.Unload();
 
@@ -209,7 +209,7 @@ namespace AnotherRpgMod
         }
         public override void Load()
         {
-            IL.Terraria.Player.Update += Player_Update;
+            Terraria.IL_Player.Update += Player_Update;
 
             Instance = this;
             Instance.Logger.Info("Another Rpg Mod " + Version + " Correctly loaded");
