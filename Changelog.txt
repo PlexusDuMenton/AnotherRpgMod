@@ -1,4 +1,5 @@
-﻿
+﻿1.9.15
+Fix weapon only gaining 1 xp point per Hit
 
 1.9.14
 Updated to tmod 1.4.4

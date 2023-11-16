@@ -502,26 +502,15 @@ namespace AnotherRpgMod.RPGModule.Entities
 
 		public override void ModifyHitNPCWithItem(Item item, NPC target, ref NPC.HitModifiers modifiers)/* tModPorter If you don't need the Item, consider using ModifyHitNPC instead */
 		{
-			modifyHitGeneral(item, target, ref modifiers, 1);
+			ModifyHitGeneralModifiers(item, target, ref modifiers, 1);
 		}
-	   
-
-		private void modifyHitGeneral(Item item, NPC target, ref NPC.HitModifiers modifiers, int pen)
-		{
-			if (Config.gpConfig.RPGPlayer)
-			{
-				modifiers.CritDamage*= GetCriticalDamage() * 0.5f;
-			}
-			float damage = modifiers.FinalDamage.Additive * modifiers.FinalDamage.Multiplicative;
-			modifiers.FinalDamage *= DamageMultiplierFromModifier(target, Mathf.RoundInt(modifiers.FinalDamage.Additive * modifiers.FinalDamage.Multiplicative));
 
 
+        public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
+        {
+            base.OnHitNPC(target, hit, damageDone);
 
-			if (ModifierManager.HaveModifier(Modifier.Piercing, Player.HeldItem.GetGlobalItem<ItemUpdate>().modifier))
-			{
-				modifiers.ArmorPenetration += ModifierManager.GetModifierBonus(Modifier.Piercing, Player.HeldItem.GetGlobalItem<ItemUpdate>());
-			}
-
+			int damage = hit.Damage;
 
 			if (Config.gpConfig.RPGPlayer)
 			{
@@ -534,7 +523,7 @@ namespace AnotherRpgMod.RPGModule.Entities
 				if (Mathf.Random(0, 1) < CupidonChance)
 				{
 
-					Item.NewItem(Player.GetSource_OnHit(target),target.getRect(), ItemID.Heart);
+					Item.NewItem(Player.GetSource_OnHit(target), target.getRect(), ItemID.Heart);
 				}
 				//StarGatherer Perk
 				float StarChance = 0;
@@ -548,9 +537,31 @@ namespace AnotherRpgMod.RPGModule.Entities
 				}
 			}
 			if (target.type != NPCID.TargetDummy)
-				AddWeaponXp(Mathf.RoundInt(damage / (float)pen), Player.HeldItem);
+				AddWeaponXp(damage, Player.HeldItem);
 
-			Leech(Mathf.RoundInt(damage));
+
+
+			Leech(damage);
+		}
+
+
+
+        private void ModifyHitGeneralModifiers(Item item, NPC target, ref NPC.HitModifiers modifiers, int pen)
+		{
+			if (Config.gpConfig.RPGPlayer)
+			{
+				modifiers.CritDamage*= GetCriticalDamage() * 0.5f;
+			}
+			
+			modifiers.FinalDamage *= DamageMultiplierFromModifier(target, Mathf.RoundInt(modifiers.FinalDamage.Additive * modifiers.FinalDamage.Multiplicative));
+
+			if (ModifierManager.HaveModifier(Modifier.Piercing, Player.HeldItem.GetGlobalItem<ItemUpdate>().modifier))
+			{
+				modifiers.ArmorPenetration += ModifierManager.GetModifierBonus(Modifier.Piercing, Player.HeldItem.GetGlobalItem<ItemUpdate>());
+			}
+
+
+			
 			MPPacketHandler.SendNpcUpdate(Mod, target);
 		}
 
@@ -558,7 +569,7 @@ namespace AnotherRpgMod.RPGModule.Entities
 		{
 			int pen = proj.penetrate;
 			if (pen == 0) pen++;
-			modifyHitGeneral(Player.HeldItem, target,ref modifiers, pen) ;
+			ModifyHitGeneralModifiers(Player.HeldItem, target,ref modifiers, pen) ;
 
 		}
 
