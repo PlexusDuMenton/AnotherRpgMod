@@ -216,36 +216,36 @@ Mods: {
 		}
 
 		SkillTreeUi: {
-			Class: Class:
-			Perk: Perk:
-			Bonus: Bonus:
+			Class: "Class: "
+			Perk: "Perk: "
+			Bonus: "Bonus: "
 			Level:
 				'''
 
-				Level:
+				Level: 
 				'''
 			DamageLevel:
 				'''
 				 Damage
-				Level : 
+				Level: 
 				'''
 			LeechLevel:
 				'''
 				 Leech
-				Level : 
+				Level: 
 				'''
 			SpeedLevel:
 				'''
 				 Speed
-				Level : 
+				Level: 
 				'''
 			StatsLevel:
 				'''
 				 Stats
-				Level : 
+				Level: 
 				'''
 			LIMITBREAK: LIMIT BREAK:
-			LevelRequired: Level Required:
+			LevelRequired: "Level Required: "
 			Cost:
 				'''
 
@@ -258,6 +258,36 @@ Mods: {
 				'''
 			Immunity: "Immunity : "
 			SkillPoints: Skill Points :
+			RESET: RESET
+		}
+
+		ItemTreeUi: {
+			Level:
+				'''
+
+				 Level: 
+				'''
+			Unknown: ???
+			LevelUnknown: ?? / ??
+			Cost: "Cost: "
+			State: "State: "
+			CostUnknown: Cost ??? Points
+			Point: Points
+			AscendencePoints:
+				'''
+				 Ascendence Points
+
+				'''
+			EvolutionPoints:
+				'''
+				 Evolution Points
+
+				'''
+			UnknownDesc:
+				'''
+				Unknow Bonus
+				Unlock a close node to know what this one does !
+				'''
 			RESET: RESET
 		}
 
@@ -274,9 +304,9 @@ Mods: {
 			Defense: Defense :
 			Armorx: " Armor x "
 			DefensePerArmor: " Defense Per Armor )"
-			CritChance: "Crit Chance : + "
-			CritDamage: "Crit Damage : "
-			HealthRegen: HealthRegen : +
+			CritChance: "Crit Chance: + "
+			CritDamage: "Crit Damage: "
+			HealthRegen: HealthRegen: +
 			PerSec: " Per Sec"
 			ManaRegen: ManaRegen : +
 			DamageMultiplier: " Damage Multiplier : "
@@ -286,11 +316,86 @@ Mods: {
 		}
 
 		ItemUpdate: {
-			Armorupgrade: Armor upgrade !
-			Weaponupgrade: Weapon upgrade !
+			Armorupgrade: Armor upgrade!
+			Weaponupgrade: Weapon upgrade!
 			Damage: % Damage
 			Raritybonus: "Rarity bonus + "
 			BaseDamage: " Base Damage"
+		}
+
+		ClassName: {
+			Hobo: Hobo
+			Tourist: Tourist
+			Apprentice: Apprentice
+			Archer: Archer
+			Gunner: Gunner
+			SwordMan: Swordman
+			Spiritualist: Spiritualist
+			Mage: Mage
+			Ninja: Ninja
+			Acolyte: Acolyte
+			Cavalier: Cavalier
+			Regular: Regular
+			Hunter: Hunter
+			Gunslinger: Gunslinger
+			Mercenary: Mercenary
+			Invoker: Invoker
+			ArchMage: ArchMage
+			Shinobi: Shinobi
+			Monk: Monk
+			Knight: Knight
+			Expert: Expert
+			Ranger: Ranger
+			Spitfire: Spitfire
+			SwordMaster: SwordMaster
+			Summoner: Summoner
+			Arcanist: Arcanist
+			Rogue: Rogue
+			Templar: Templar
+			IronKnight: IronKnight
+			Master: Master
+			Marksman: Marksman
+			Sniper: Sniper
+			Champion: Champion
+			SoulBinder: Soul-Binder
+			Warlock: Warlock
+			Assassin: Assassin
+			Paladin: Paladin
+			Mountain: Mountain
+			PerfectBeing: Perfect Being
+			WindWalker: Wind-Walker
+			Hitman: Hitman
+			SwordSaint: Sword Saint
+			SoulLord: Soul-Lord
+			Mystic: Mystic
+			ShadowDancer: Shadow-Dancer
+			Deity: Deity
+			Fortress: Fortress
+			Ascended: Ascended
+			AscendedDeity: Ascended Deity
+			AscendedFortress: Ascended Fortress
+			AscendedHitman: Ascended Hitman
+			AscendedMystic: Ascended Mystic
+			AscendedShadowDancer: Ascended Shadow-Dancer
+			AscendedSoulLord: Ascended Soul-Lord
+			AscendedSwordSaint: Ascended Sword Saint
+			AscendedWindWalker: Ascended Wind-Walker
+			TranscendentalBeing: Transcendental Being
+		}
+
+		PerkName: {
+			BloodMage: Blood Mage
+			Vampire: Vampire
+			DemonEater: Demon Eater
+			Cupidon: Cupidon
+			StarGatherer: Star Gatherer
+			Biologist: Biologist
+			Berserk: Berserk
+			Masochist: Masochist
+			Survivalist: Survivalist
+			TheGambler: The Gambler
+			Chlorophyll: Chlorophyll
+			ManaOverBurst: Mana Overburst
 		}
 
 		SkillInfo: {

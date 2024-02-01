@@ -4,6 +4,7 @@ using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.ID;
 using AnotherRpgMod.RPGModule.Entities;
+using Terraria.Localization;
 namespace AnotherRpgMod.RPGModule
 {
     class ClassNode : Node
@@ -21,32 +22,7 @@ namespace AnotherRpgMod.RPGModule
         {
             get
             {
-                switch(classType)
-                {
-                    case ClassType.AscendedDeity:
-                        return "Ascended Deity";
-                    case ClassType.AscendedFortress:
-                        return "Ascended Fortress";
-                    case ClassType.AscendedHitman:
-                        return "Ascended Hitman";
-                    case ClassType.AscendedMystic:
-                        return "Ascended Mystic";
-                    case ClassType.AscendedShadowDancer:
-                        return "Ascended ShadowDancer";
-                    case ClassType.AscendedSoulLord:
-                        return "Ascended SoulLord";
-                    case ClassType.AscendedSwordSaint:
-                        return "Ascended SwordSaint";
-                    case ClassType.AscendedWindWalker:
-                        return "Ascended WindWalker";
-                    case ClassType.TranscendentalBeing:
-                        return "Transcendental Being";
-                    default:
-                        return "" + classType;
-
-                }
-
-                
+                return Language.GetTextValue("Mods.AnotherRpgMod.ClassName." + classType.ToString());
             }
         }
 
