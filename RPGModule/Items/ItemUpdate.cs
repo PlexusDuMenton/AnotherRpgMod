@@ -12,6 +12,7 @@ using AnotherRpgMod.RPGModule.Entities;
 using AnotherRpgMod.Utils;
 using AnotherRpgMod.RPGModule;
 using Terraria.DataStructures;
+using Terraria.Localization;
 
 namespace AnotherRpgMod.Items
 {
@@ -958,13 +959,13 @@ namespace AnotherRpgMod.Items
                         TooltipLine Stt;
                         RPGPlayer p = Main.LocalPlayer.GetModPlayer<RPGPlayer>();
                         if (ModifierManager.GetRarityDamageBoost(rarity) > 0)
-                            Stt = new TooltipLine(Mod, "statsInfo", "Rarity bonus + " + ModifierManager.GetRarityDamageBoost(rarity) + "% Damage")
+                            Stt = new TooltipLine(Mod, "statsInfo", Language.GetTextValue("Mods.AnotherRpgMod.ItemUpdate.Raritybonus") + ModifierManager.GetRarityDamageBoost(rarity) + Language.GetTextValue("Mods.AnotherRpgMod.ItemUpdate.Damage"))
                             {
                                 OverrideColor = ModifierManager.GetRarityColor(rarity)
                             };
                         else
                         {
-                            Stt = new TooltipLine(Mod, "statsInfo", "Rarity bonus " + ModifierManager.GetRarityDamageBoost(rarity) + "% Damage")
+                            Stt = new TooltipLine(Mod, "statsInfo", Language.GetTextValue("Mods.AnotherRpgMod.ItemUpdate.Raritybonus") + ModifierManager.GetRarityDamageBoost(rarity) + Language.GetTextValue("Mods.AnotherRpgMod.ItemUpdate.Damage"))
                             {
                                 OverrideColor = ModifierManager.GetRarityColor(rarity)
                             };
@@ -992,12 +993,12 @@ namespace AnotherRpgMod.Items
                 {
                     if (itemType == ItemType.Weapon)
                     {
-                        TooltipLine bt = new TooltipLine(Mod, "BaseDamage", "" + baseDamage + " Base Damage");
+                        TooltipLine bt = new TooltipLine(Mod, "BaseDamage", "" + baseDamage + Language.GetTextValue("Mods.AnotherRpgMod.ItemUpdate.BaseDamage"));
                         tooltips.Add(bt);
                     }
                     else if (itemType == ItemType.Armor)
                     {
-                        TooltipLine bt = new TooltipLine(Mod, "BaseDefense", "" + baseArmor + " Base Defense");
+                        TooltipLine bt = new TooltipLine(Mod, "BaseDefense", "" + baseArmor + Language.GetTextValue("Mods.AnotherRpgMod.ItemUpdate.BaseDamage"));
                         tooltips.Add(bt);
                     }
 
@@ -1539,9 +1540,9 @@ namespace AnotherRpgMod.Items
 
             xp -= GetExpToNextLevel(level, ascendedLevel);
             if (itemType == ItemType.Armor)
-                CombatText.NewText(Player.getRect(), new Color(255, 26, 255), "Armor upgrade !", true);
+                CombatText.NewText(Player.getRect(), new Color(255, 26, 255), Language.GetTextValue("Mods.AnotherRpgMod.ItemUpdate.Armorupgrade"), true);
             if (itemType == ItemType.Weapon)
-                CombatText.NewText(Player.getRect(), new Color(255, 26, 255), "Weapon upgrade !", true);
+                CombatText.NewText(Player.getRect(), new Color(255, 26, 255), Language.GetTextValue("Mods.AnotherRpgMod.ItemUpdate.Weaponupgrade"), true);
             level++;
             m_itemTree.MaxEvolutionPoints++;
             m_itemTree.EvolutionPoints++;
@@ -1655,3 +1656,4 @@ namespace AnotherRpgMod.Items
 
     }
 }
+
