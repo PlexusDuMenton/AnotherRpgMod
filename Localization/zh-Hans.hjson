@@ -1,0 +1,531 @@
+Mods: {
+	AnotherRpgMod: {
+		Configs: {
+			GamePlayConfig: {
+				ItemModifier: {
+					Tooltip: 开启物品修饰符，如：根据距离增加伤害…
+					Label: 物品修饰符
+				}
+
+				ItemRarity: {
+					Tooltip: 开启物品稀有度：破碎、神级、传奇…
+					Label: 物品稀有度
+				}
+
+				RPGPlayer: {
+					Tooltip: 开启所有与玩家相关的RPG元素
+					Label: RPG玩家模块
+				}
+
+				XPReduction: {
+					Tooltip: 减少敌人等级过低时获得的经验值，查看经验值减少增量来更改值
+					Label: 经验值降低
+				}
+
+				DisplayName: AnRPG游戏配置
+
+				ItemTree: {
+					Label: 物品树
+					Tooltip: 开启物品的技能树进化
+				}
+
+				AscendLimit: {
+					Label: 物品提升限制
+					Tooltip: 根据世界进度限制上限
+				}
+
+				AscendLimitPerBoss: {
+					Label: 每个Boss的物品提升限制
+					Tooltip: 每个boss的提升限制是多少，0.5表示每杀死两个boss就增加一个，2表示每杀死一个boss就增加两个
+				}
+
+				XPReductionDelta: {
+					Label: 经验减少增量
+					Tooltip: 获得经验值开始下降的等级范围
+				}
+
+				XpMultiplier: {
+					Label: 经验倍率
+					Tooltip: 将玩家获得的所有经验值乘以该值
+				}
+
+				ItemXpMultiplier: {
+					Label: 物品经验倍率
+					Tooltip: 将武器获得的所有经验值乘以该值
+				}
+
+				LifeLeechCD: {
+					Label: 吸血冷却时间
+					Tooltip: 每个生命吸取过程之间的冷却时间
+				}
+
+				VanityGiveStat: {
+					Label: 虚荣给予属性
+					Tooltip: 允许虚荣物品给予属性
+				}
+
+				UseCustomSkillTree: {
+					Label: 使用自定义技能树
+					Tooltip: '''当为true时，它将使用json技能树 "Documents\My Games\Terraria\ModLoader\Mod Configs\AnRPG" '''
+				}
+			}
+
+			NPCConfig: {
+				DisplayName: AnRPG敌人配置
+
+				NPCProgress: {
+					Label: Npc进度
+					Tooltip: Npc等级启用/禁用
+				}
+
+				NPCRarity: {
+					Label: NPC级别
+					Tooltip: 启用NPC级别，如:阿尔法，传奇等…
+				}
+
+				NPCModifier: {
+					Label: NPC修饰符
+					Tooltip: 启用NPC修饰符，如:黄金，聚集等…
+				}
+
+				BossRarity: {
+					Label: Boss稀有度
+					Tooltip: 给boss添加稀有度
+				}
+
+				BossModifier: {
+					Label: Boss修饰符
+					Tooltip: 给boss添加修饰符
+				}
+
+				BossClustered: {
+					Label: Boss集群
+					Tooltip: 在boss上启用集群修饰符，因为大多数人不希望在杀死一个boss后生成一群boss
+				}
+
+				LimitNPCGrowth: {
+					Label: 限制NPC增长
+					Tooltip: 如果激活上限，则根据限制NPC成长值来调整玩家等级
+				}
+
+				LimitNPCGrowthValue: {
+					Label: 限制NPC成长值
+					Tooltip: 如果激活了限制Npc增长，则将NPC等级限制为您的等级+此值+等级X增长百分比
+				}
+
+				LimitNPCGrowthPercent: {
+					Label: 限制NPC成长百分比
+					Tooltip: 如果限制 NPC 增长被激活，则将 NPC 等级限制为你的等级 + 成长值 + 等级 X 成长百分比
+				}
+
+				NpclevelMultiplier: {
+					Label: Npc等级倍率
+					Tooltip: 将所有npc等级乘以此值
+				}
+
+				NPCProjectileDamageLevel: {
+					Label: Npc弹幕等级
+					Tooltip: 用作缩放NPC弹幕的变通方法，如果需要的话调整这个值
+				}
+
+				NpcDamageMultiplier: {
+					Label: Npc伤害倍率
+					Tooltip: 所有npc的伤害乘以这个值
+				}
+
+				NpcHealthMultiplier: {
+					Label: Npc生命倍率
+					Tooltip: 所有npc的生命值乘以这个值
+				}
+
+				BossHealthMultiplier: {
+					Label: Boss血量增加
+					Tooltip: 增加boss生命值
+				}
+
+				BossKillLevelIncrease: {
+					Label: 每个Boss杀死NPC成长
+					Tooltip: 当为True时，每次杀死boss都会增加全局等级(而不仅仅是第一次杀死)
+				}
+
+				NPCGrowthValue: {
+					Label: 每个Boss的NPC增长
+					Tooltip: 当杀死一个boss时，世界将获得多少等级
+				}
+
+				NPCGrowthHardMode: {
+					Label: 困难模式下的NPC成长
+					Tooltip: 当进入困难模式时，世界会获得多少等级
+				}
+
+				NPCGrowthHardModePercent: {
+					Label: NPC困难模式成长百分比
+					Tooltip: 将世界等级乘以这个值(在“NPC增长OnHardMode”之前应用)
+				}
+			}
+
+			VisualConfig: {
+				DisplayName: AnRPG显示配置
+
+				HealthBarYoffSet: {
+					Label: 生命条偏移量
+					Tooltip: 生命条在Y轴上的偏移量
+				}
+
+				HealthBarScale: {
+					Label: 生命条缩放
+					Tooltip: ""
+				}
+
+				UI_Scale: {
+					Label: 其他UI尺寸
+					Tooltip: 用于另一个RPG Mod中所有其他UI元素的缩放
+				}
+
+				DisplayNpcName: {
+					Label: 显示npc名称
+					Tooltip: 随时显示NPC信息，鼠标悬停时显示详细信息
+				}
+
+				DisplayTownName: {
+					Label: 显示城镇名称
+					Tooltip: 随时显示城镇Npc信息，鼠标悬停时显示详细信息
+				}
+
+				HideVanillaHB: {
+					Label: 隐藏生命条
+					Tooltip: 隐藏原版游戏的生命条
+				}
+			}
+		}
+
+		Keybinds: {
+			"Open Stats Menu.DisplayName": 打开属性菜单
+			"Open SkillTree.DisplayName": 打开技能树
+			"Open Item Tree.DisplayName": 打开物品树
+			"Open Helmet Item Tree.DisplayName": 打开头盔物品树
+			"Open Chest Item Tree.DisplayName": 打开箱子物品树
+			"Open Legs Item Tree.DisplayName": 打开护腿物品树
+		}
+
+		RPGPlayer: {
+			LEVELUP: 升级！！！！
+			SKILLPOINTS: +1 技能点
+			Abilitypoints: 能力点
+			Isnowlevel: 已达到等级：
+		}
+
+		SkillTreeUi: {
+			Class: 类型：
+			Perk: 加成：
+			Bonus: 奖励：
+			Level:
+				'''
+
+				等级：
+				'''
+			DamageLevel:
+				'''
+				伤害
+				等级：
+				'''
+			LeechLevel:
+				'''
+				吸血
+				等级： 
+				'''
+			SpeedLevel:
+				'''
+				速度
+				等级： 
+				'''
+			StatsLevel:
+				'''
+				属性
+				等级： 
+				'''
+			LIMITBREAK: 极限突破：
+			LevelRequired: 等级要求：
+			Cost:
+				'''
+
+				花费
+				'''
+			PointsPerLevel:
+				'''
+				技能点来升级
+
+				'''
+			Immunity: 伤害减免：
+			SkillPoints: 技能点：
+			RESET: 重置
+		}
+
+		Stats: {
+			Mana: 魔力： 10 + 10
+			Health: 生命值:100 - 5颗心x 20颗心
+			MeleeDamageMultiplier: 近战伤害倍率：1
+			Health1: 生命值：
+			Mana1: 魔力：
+			Heartx: 心x
+			HealthPerHeart: 每颗心的生命值+ 10)
+			Crystalx: 水晶x
+			Manapercrystal: 每颗水晶的魔法值 + 4)
+			Defense: 防御：
+			Armorx: 盔甲x
+			DefensePerArmor: 每个盔甲的防御)
+			CritChance: 暴击率：+
+			CritDamage: 暴击伤害：
+			HealthRegen: 生命回复：+
+			PerSec: 每秒
+			ManaRegen: 魔力回复：+
+			DamageMultiplier: 伤害倍率：
+			Points: 点数：
+			Multiplier: 倍率
+			Armor: 盔甲
+		}
+
+		ItemUpdate: {
+			Armorupgrade: 盔甲升级！
+			Weaponupgrade: 武器升级！
+			Damage: %伤害
+			Raritybonus: 稀有度奖励+
+			BaseDamage: 基础伤害
+		}
+
+		SkillInfo: {
+			Masochist:
+				'''
+				设置盔甲值为0
+				盔甲值增加伤害
+				'''
+
+			BloodMage: {
+				1: 减少50%魔力消耗，但节省的魔力消耗生命值
+				2: 减少75%魔力消耗，但节省的魔力消耗生命值
+				3: 减少90%魔力消耗，但节省的魔力消耗生命值
+			}
+
+			Onlyhave:
+				'''
+				只能拥有1个职业
+
+				'''
+			AllDamage:
+				'''
+				% 全伤害
+
+				'''
+
+			Vampire: {
+				1:
+					'''
+					在夜间给予0.5%的吸血值
+					在夜间增加25%的属性
+					在白天减少50%的属性
+					'''
+				2:
+					'''
+					在夜间给予0.75%的吸血值
+					在夜间增加50%的属性
+					在白天减少25%的属性
+					'''
+				3:
+					'''
+					在夜间给予1%的吸血值
+					在夜间增加100%的属性
+					在白天减少10%的属性
+					'''
+			}
+
+			Chlorophyll: {
+				1:
+					'''
+					白天+50%生命值和魔力回复值
+					白天增加25%属性
+					夜晚减少50%属性
+					'''
+				2:
+					'''
+					白天+75%生命值和魔力回复值
+					白天增加50%属性
+					夜晚减少25%属性
+					'''
+				3:
+					'''
+					白天+100%生命值和魔力回复值
+					白天增加100%属性
+					夜晚减少10%属性
+					'''
+			}
+
+			DemonEater: {
+				1: 每次击杀回复
+				2: %你的最大生命值
+			}
+
+			Cupidon: {
+				1: 每次攻击都有
+				2: %几率掉落一颗心
+			}
+
+			StarGatherer: {
+				1: 每次攻击都有
+				2: %的几率掉落一颗星星
+			}
+
+			Biologist: {
+				1: 药水治疗
+				2: %治疗效果
+			}
+
+			Berserk: {
+				1: 生命值每减少一个百分比，你的伤害增加
+				2: %
+			}
+
+			Survivalist: {
+				1: 降低50%伤害获得
+				2: %防御
+			}
+
+			TheGambler: 50%的伤害得到治疗，50%的伤害加倍
+
+			ManaOverBurst: {
+				1: 增加魔法消耗
+				2:
+					'''
+					%当前魔法消耗
+					增加魔法伤害
+					'''
+			}
+
+			Damage1:
+				'''
+				伤害
+
+				'''
+			MeleeSpeed:
+				'''
+				% 近战速度
+
+				'''
+			Health:
+				'''
+				% 生命值
+
+				'''
+			Armor:
+				'''
+				% 盔甲
+
+				'''
+			MovementSpeed:
+				'''
+				% 移动速度
+
+				'''
+			Dodge:
+				'''
+				% 闪避
+
+				'''
+			Ammo:
+				'''
+				% 弹药消耗
+
+				'''
+			Summons:
+				'''
+				 最大召唤
+
+				'''
+			ManaCost:
+				'''
+				 % 魔力消耗
+
+				'''
+
+			ManaShield: {
+				1: 大法力护盾:
+				2:
+					'''
+					%
+					伤害被魔法吸收(
+					'''
+				3:
+					'''
+					伤害/法力值)
+
+					'''
+			}
+
+			throwvelocity: {
+				1:
+					'''
+					+200% 投掷速度
+
+					'''
+				2:
+					'''
+					+150% 投掷速度
+
+					'''
+				3:
+					'''
+					+100% 投掷速度
+
+					'''
+				4:
+					'''
+					+75% 投掷速度
+
+					'''
+				5:
+					'''
+					+50% 投掷速度
+
+					'''
+				6:
+					'''
+					+20% 投掷速度
+
+					'''
+			}
+
+			NextLevel:
+				'''
+
+				下一等级：
+				'''
+			DamageMultiplier: 伤害倍率
+			Damage2: 伤害
+			Speed: 速度
+			Leech: 吸血
+			NextLevel1:
+				'''
+
+				下一等级：
+
+				'''
+
+			LimitBreak: {
+				1:
+					'''
+					解锁深不可测的力量
+
+					'''
+				2:
+					'''
+					全属性
+
+					'''
+				3:
+					'''
+					允许在1000级后获得经验
+
+					'''
+			}
+		}
+	}
+}

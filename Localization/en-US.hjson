@@ -1,0 +1,531 @@
+Mods: {
+	AnotherRpgMod: {
+		Configs: {
+			GamePlayConfig: {
+				ItemModifier: {
+					Tooltip: Enable Item modifier like : Bonus damage based on distance...
+					Label: Item Modifier
+				}
+
+				ItemRarity: {
+					Tooltip: Enable item rarity like : Broken, Masterpiece, Legendary...
+					Label: Item Rarity
+				}
+
+				RPGPlayer: {
+					Tooltip: Enable all Player related RPG elements
+					Label: RPG Player Module
+				}
+
+				XPReduction: {
+					Tooltip: Reduce the exp gained when the entity level is too low, look at Xp Reduction delta to change the value
+					Label: Xp Level Reduction
+				}
+
+				DisplayName: AnRPG gameplay config
+
+				ItemTree: {
+					Label: Item Tree
+					Tooltip: Enable Skill Tree evolution for Item
+				}
+
+				AscendLimit: {
+					Label: Item Ascension Limit
+					Tooltip: Cap the maximum ascension based on the world progress
+				}
+
+				AscendLimitPerBoss: {
+					Label: Item Ascension Limit Per Boss
+					Tooltip: How much the ascend limit Increase Per boss, 0.5 mean one for two each boss killed, '2' mean two for each boss killed
+				}
+
+				XPReductionDelta: {
+					Label: Xp Reduction Delta
+					Tooltip: Level range at which the xp gain will start to be reduced
+				}
+
+				XpMultiplier: {
+					Label: Xp Multiplier
+					Tooltip: Multiply all xp gain for Player by this value
+				}
+
+				ItemXpMultiplier: {
+					Label: Item Xp Multiplier
+					Tooltip: Multiply all xp gain for weapon by this value
+				}
+
+				LifeLeechCD: {
+					Label: Life Leech Cooldown
+					Tooltip: CoolDown between Each LifeLeech procc
+				}
+
+				VanityGiveStat: {
+					Label: Vanity give stat
+					Tooltip: Allow vanity object to give stat
+				}
+
+				UseCustomSkillTree: {
+					Label: Use Custom SkillTree
+					Tooltip: '''When true, it'll use the JsonSkillTree in "Documents\My Games\Terraria\ModLoader\Mod Configs\AnRPG" '''
+				}
+			}
+
+			NPCConfig: {
+				DisplayName: AnRPG Enemies config
+
+				NPCProgress: {
+					Label: Npc Progression
+					Tooltip: Npc level enable/Disable
+				}
+
+				NPCRarity: {
+					Label: NPC Rank
+					Tooltip: Enable NPC rank, like : Alpha, Legendary ect ...
+				}
+
+				NPCModifier: {
+					Label: NPC Modifier
+					Tooltip: Enable NPC modifier, like : The golden, Clustered ect ...
+				}
+
+				BossRarity: {
+					Label: Boss Rarity
+					Tooltip: Apply Rarity to boss
+				}
+
+				BossModifier: {
+					Label: Boss Modifier
+					Tooltip: Apply modifier to boss
+				}
+
+				BossClustered: {
+					Label: Boss Clustered
+					Tooltip: Enable Clustered modifier on boss, it's disable since most people don't want an army of boss spawning after killing one
+				}
+
+				LimitNPCGrowth: {
+					Label: Limit NPC growth
+					Tooltip: If activated cap max npc level arround the Player level based on Limit NPC growth Value
+				}
+
+				LimitNPCGrowthValue: {
+					Label: Limit NPC growth Value
+					Tooltip: If Limit Npc Growth is actiaved, limit npc level by your level + this value + level X Growth Percent
+				}
+
+				LimitNPCGrowthPercent: {
+					Label: Limit NPC growth Percent
+					Tooltip: "If Limit Npc Growth is actiaved, limit npc level by your level + Growth Value + level X Growth Percent "
+				}
+
+				NpclevelMultiplier: {
+					Label: Npc Level Multiplier
+					Tooltip: Multiply all npc level by this value
+				}
+
+				NPCProjectileDamageLevel: {
+					Label: Npc Projectile Level
+					Tooltip: Used as a workd-arround to scale NPC projectile, tweak this value if needed
+				}
+
+				NpcDamageMultiplier: {
+					Label: Npc Damage Multiplier
+					Tooltip: Multiply all npc Damage by this value
+				}
+
+				NpcHealthMultiplier: {
+					Label: Npc Health Multiplier
+					Tooltip: Multiply all npc Health by this value
+				}
+
+				BossHealthMultiplier: {
+					Label: Boss Health multiplier
+					Tooltip: Multiplier to boss health
+				}
+
+				BossKillLevelIncrease: {
+					Label: Each Boss Kill NPC growth
+					Tooltip: "When True, Each boss kill will increase the global level (instead of just the first kill) "
+				}
+
+				NPCGrowthValue: {
+					Label: NPC growth Per Boss
+					Tooltip: How many level the world gain when killing a boss
+				}
+
+				NPCGrowthHardMode: {
+					Label: NPC growth OnHardMode
+					Tooltip: How many level the world gain when entering hardmode
+				}
+
+				NPCGrowthHardModePercent: {
+					Label: NPC growth Hard Mode Percent
+					Tooltip: Multiply the world level by this value (applied before "NPC growth OnHardMode")
+				}
+			}
+
+			VisualConfig: {
+				DisplayName: AnRPG display config
+
+				HealthBarYoffSet: {
+					Label: HealthBar Offset
+					Tooltip: Health Bar Offset on the Y axis
+				}
+
+				HealthBarScale: {
+					Label: Health Bar Scale
+					Tooltip: ""
+				}
+
+				UI_Scale: {
+					Label: Other UI Scale
+					Tooltip: Used for the scale of all other UI element from Another RPG Mod
+				}
+
+				DisplayNpcName: {
+					Label: Display npc name
+					Tooltip: Display NPC information at all time and detailed information when mouse over
+				}
+
+				DisplayTownName: {
+					Label: Display Town names
+					Tooltip: Display Town Npc information at all time and detailed information when mouse over
+				}
+
+				HideVanillaHB: {
+					Label: Hide Old Bar
+					Tooltip: Hide The vanilla game HealthBar
+				}
+			}
+		}
+
+		Keybinds: {
+			"Open Stats Menu.DisplayName": Open  Stats  Menu
+			"Open SkillTree.DisplayName": Open  Skill Tree
+			"Open Item Tree.DisplayName": Open  Item  Tree
+			"Open Helmet Item Tree.DisplayName": Open  Helmet  Item  Tree
+			"Open Chest Item Tree.DisplayName": Open  Chest  Item  Tree
+			"Open Legs Item Tree.DisplayName": Open  Legs  Item  Tree
+		}
+
+		RPGPlayer: {
+			LEVELUP: LEVEL UP !!!!
+			SKILLPOINTS: +1 SKILL POINTS
+			Abilitypoints: Ability points
+			Isnowlevel: " Is now level:"
+		}
+
+		SkillTreeUi: {
+			Class: Class:
+			Perk: Perk:
+			Bonus: Bonus:
+			Level:
+				'''
+
+				Level:
+				'''
+			DamageLevel:
+				'''
+				 Damage
+				Level : 
+				'''
+			LeechLevel:
+				'''
+				 Leech
+				Level : 
+				'''
+			SpeedLevel:
+				'''
+				 Speed
+				Level : 
+				'''
+			StatsLevel:
+				'''
+				 Stats
+				Level : 
+				'''
+			LIMITBREAK: LIMIT BREAK:
+			LevelRequired: Level Required:
+			Cost:
+				'''
+
+				Cost 
+				'''
+			PointsPerLevel:
+				'''
+				 Points Per Level
+
+				'''
+			Immunity: "Immunity : "
+			SkillPoints: Skill Points :
+			RESET: RESET
+		}
+
+		Stats: {
+			Mana: Mana : 10 + 10
+			Health: Health : 100 - 5 Heart x 20 Health Per Heart
+			MeleeDamageMultiplier: Melee Damage Multiplier: 1
+			Health1: Health :
+			Mana1: Mana :
+			Heartx: " Heart x "
+			HealthPerHeart: " Health Per Heart + 10 )"
+			Crystalx: " Crystal x "
+			Manapercrystal: " Mana per crystal + 4 )"
+			Defense: Defense :
+			Armorx: " Armor x "
+			DefensePerArmor: " Defense Per Armor )"
+			CritChance: "Crit Chance : + "
+			CritDamage: "Crit Damage : "
+			HealthRegen: HealthRegen : +
+			PerSec: " Per Sec"
+			ManaRegen: ManaRegen : +
+			DamageMultiplier: " Damage Multiplier : "
+			Points: "Points : "
+			Multiplier: " Multiplier"
+			Armor: " Armor"
+		}
+
+		ItemUpdate: {
+			Armorupgrade: Armor upgrade !
+			Weaponupgrade: Weapon upgrade !
+			Damage: % Damage
+			Raritybonus: "Rarity bonus + "
+			BaseDamage: " Base Damage"
+		}
+
+		SkillInfo: {
+			Masochist:
+				'''
+				Set armor to 0 
+				Each armor point Increase your damage by 
+				'''
+
+			BloodMage: {
+				1: Reduce mana cost by 50% but the saved mana consume health
+				2: Reduce mana cost by 75% but the saved mana consume health
+				3: Reduce mana cost by 90% but the saved mana consume health
+			}
+
+			Onlyhave:
+				'''
+				You can only have 1 active class
+
+				'''
+			AllDamage:
+				'''
+				% All Damage
+
+				'''
+
+			Vampire: {
+				1:
+					'''
+					Give 0.5% LifeSteal at night
+					Increase stats by 25% at night
+					Reduce stat by 50% at day
+					'''
+				2:
+					'''
+					Give 0.75% LifeSteal at night
+					Increase stats by 50% at night
+					Reduce stat by 25% at day
+					'''
+				3:
+					'''
+					Give 1% LifeSteal at night
+					Increase stats by 100% at night
+					Reduce stat by 10% at day
+					'''
+			}
+
+			Chlorophyll: {
+				1:
+					'''
+					+50% health and mana regen at day
+					Increase stats by 25% at day
+					Reduce stat by 50% at night
+					'''
+				2:
+					'''
+					+75% health and mana regen at day
+					Increase stats by 50% at day
+					Reduce stat by 25% at night
+					'''
+				3:
+					'''
+					+100% health and mana regen at day
+					Increase stats by 100% at day
+					Reduce stat by 10% at night
+					'''
+			}
+
+			DemonEater: {
+				1: "Each kill regen "
+				2: % of your max health
+			}
+
+			Cupidon: {
+				1: "Each attack have "
+				2: % chance to drop an heart
+			}
+
+			StarGatherer: {
+				1: "Each attack have "
+				2: % chance to drop a star
+			}
+
+			Biologist: {
+				1: "Potions heal "
+				2: % more heal
+			}
+
+			Berserk: {
+				1: "each percent of health missing increase your damage by "
+				2: %
+			}
+
+			Survivalist: {
+				1: "Reduce Damage by 50% to gain "
+				2: % of defense
+			}
+
+			TheGambler: 50% for damage receive to heal, 50% to double damage
+
+			ManaOverBurst: {
+				1: "Increase mana cost by "
+				2:
+					'''
+					% of current mana
+					Increase magic damage by 
+					'''
+			}
+
+			Damage1:
+				'''
+				 Damage
+
+				'''
+			MeleeSpeed:
+				'''
+				% Melee Speed
+
+				'''
+			Health:
+				'''
+				% Health
+
+				'''
+			Armor:
+				'''
+				% Armor
+
+				'''
+			MovementSpeed:
+				'''
+				% Movement Speed
+
+				'''
+			Dodge:
+				'''
+				% Dodge
+
+				'''
+			Ammo:
+				'''
+				% Ammo consumation
+
+				'''
+			Summons:
+				'''
+				 Max Summon
+
+				'''
+			ManaCost:
+				'''
+				 % Mana Cost
+
+				'''
+
+			ManaShield: {
+				1: "Grand Mana Shield : "
+				2:
+					'''
+					%
+					   damage absorbed by mana (
+					'''
+				3:
+					'''
+					 Damage per mana)
+
+					'''
+			}
+
+			throwvelocity: {
+				1:
+					'''
+					+200% throw velocity
+
+					'''
+				2:
+					'''
+					+150% throw velocity
+
+					'''
+				3:
+					'''
+					+100% throw velocity
+
+					'''
+				4:
+					'''
+					+75% throw velocity
+
+					'''
+				5:
+					'''
+					+50% throw velocity
+
+					'''
+				6:
+					'''
+					+20% throw velocity
+
+					'''
+			}
+
+			NextLevel:
+				'''
+
+				 Next Level :
+				'''
+			DamageMultiplier: " Damage Multiplier"
+			Damage2: " Damage"
+			Speed: " Speed"
+			Leech: " Leech"
+			NextLevel1:
+				'''
+
+				 Next Level :
+
+				'''
+
+			LimitBreak: {
+				1:
+					'''
+					Unlock Unfathomable Power
+
+					'''
+				2:
+					'''
+					 All Stat
+
+					'''
+				3:
+					'''
+					Allow Exp Gain after level 1000
+
+					'''
+			}
+		}
+	}
+}
