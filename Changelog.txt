@@ -1,4 +1,7 @@
-﻿1.9.15
+﻿1.9.16
+Added (imcomplete) Chinese localization (thank to bilimoing(末泠))
+
+1.9.15
 Fix weapon only gaining 1 xp point per Hit
 
 1.9.14
